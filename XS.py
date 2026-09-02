@@ -819,22 +819,259 @@ def Markus_skioliose_XS(scenario, trigger_manager):
     xs_input_path = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\AoE2DE\\resources\\_common\\xs\\security_breach_in_ruin.xs"
     xs_function = f"""
 int tech_selection = 0;
-void vintage_point {{
-    int markus_skoliose = xsGetWorldPlayerId(1);
+void vintage_point() {{
+    int markus_skoliose = xsGetWorldPlayerId(3);
     int tower_range = 1 + tech_selection;
-    int tower_atk = 1 + tech_selection + tech_selection;
-    int XS_markus_tower = xsArrayCreateInt(11, 0, "XS_markus_tower");
-    xsArraySetInt(XS_markus_tower, 0, {BuildingInfo.WATCH_TOWER.ID});
-    xsArraySetInt(XS_markus_tower, 1, {BuildingInfo.GUARD_TOWER.ID});
-    xsArraySetInt(XS_markus_tower, 2, {BuildingInfo.DONJON.ID});
-    xsArraySetInt(XS_markus_tower, 3, {BuildingInfo.BOMBARD_TOWER.ID});
-    xsArraySetInt(XS_markus_tower, 3, {BuildingInfo.KEEP.ID});
-    for (i = 0; < xsArrayGetSize(XS_markus_tower))
-        {{
-            int tower_id = xsArrayGetInt(XS_markus_tower, i);
-            xsEffectAmount(cSetAttribute,john_expedition_manager, cAttack, 256*3 + tower_atk, markus_skoliose);
-            xsEffectAmount(cSetAttribute,john_expedition_manager, {ObjectAttribute.MAXIMUM_RANGE}, tower_range, markus_skoliose);
-        }}
+    int tower_atk = 1 + tech_selection;
+    xsEffectAmount(cAddAttribute,952, cAttack, 256*3 + tower_atk, markus_skoliose);
+    xsEffectAmount(cAddAttribute,952, {ObjectAttribute.MAXIMUM_RANGE},tower_range , markus_skoliose);
 }}
+void soil_science() {{
+    int markus_skoliose = xsGetWorldPlayerId(3);
+    float decote = 0.05 * tech_selection;
+    float price_reduction = 0.95 - decote;
+    xsEffectAmount(cMulAttribute,903, 104, price_reduction, markus_skoliose);
+    xsEffectAmount(cMulAttribute,903, 106, price_reduction, markus_skoliose);
+    xsEffectAmount(cMulAttribute,952, 104, price_reduction, markus_skoliose);
+    xsEffectAmount(cMulAttribute,952, 106, price_reduction, markus_skoliose);
+}} 
+int skill_point_markus_soldier = 0;
+int skill_point_markus_relic = 0;
+void draw_the_mediant_line() {{
+int bonus_skill = 2 * tech_selection;
+if (bonus_skill == 0) {{bonus_skill = 1; }}
+skill_point_markus_soldier = skill_point_markus_soldier + bonus_skill;
+skill_point_markus_relic = skill_point_markus_relic + bonus_skill;
+}}
+void commercial_road() {{
+    int markus_skoliose = xsGetWorldPlayerId(3);
+    float cote = 0.10 * tech_selection;
+    float trade_workrate = 1.10 + cote;
+    xsEffectAmount(cMulAttribute,{UnitInfo.TRADE_CART_FULL.ID}, cWorkRate, trade_workrate, markus_skoliose);
+    xsEffectAmount(cMulAttribute,{UnitInfo.TRADE_CART_EMPTY.ID}, cWorkRate, trade_workrate, markus_skoliose);
+}}
+
+void clear_the_path () {{
+    int markus_skoliose = xsGetWorldPlayerId(3);
+    int number_saboteur = 1 + tech_selection;
+    xsEffectAmount(cModResource, cAttributeSpawnCap, cAttributeSet, 1);
+    xsEffectAmount(cSpawnUnit, {HeroInfo.SABOTEUR.ID}, {BuildingInfo.TENT_C.ID}, number_saboteur, markus_skoliose);
+}}
+void know_the_environnement() {{
+    int markus_skoliose = xsGetWorldPlayerId(3);
+    int atk_value = 2 * tech_selection + 2 ;
+"""
+    XS_general_ID = [900, 936, 944, 912, 947, 923, 906, 912, 947]
+    melee_general_ID = [906, 912, 947]
+    size = len(XS_general_ID)
+    xs_function += f"""int class_id_units_markus = xsArrayCreateInt({size}, 0, "markus_array_buff");\n"""
+    for i in range(len(XS_general_ID)):
+        class_id = XS_general_ID[i]
+        xs_function += f"xsArraySetInt(class_id_units_markus, {i},{class_id});\n"
+    xs_function += f"""
+for (i = 0; < xsArrayGetSize(class_id_units)) {{
+    int class_id = xsArrayGetInt(class_id_units_markus, i);
+    bool check_melee = (class_id_units_markus == 906) || (class_id_units_markus == 912) || (class_id_units_markus == 947);
+    if (check_melee == true) {{
+        xsEffectAmount(cAddAttribute,class_id, cAttack, 256*4 + atk_value, markus_skoliose);
+    }}
+    else {{
+        xsEffectAmount(cAddAttribute,class_id, cAttack, 256*3 + atk_value, markus_skoliose);
+    }}
+}}
+}}
+void catograph_defensive_gear() {{
+    int markus_skoliose = xsGetWorldPlayerId(3);
+    int defense_value = 1 + tech_selection;
+    xsEffectAmount(cAddAttribute,906, cArmor, 256*4 + defense_value, markus_skoliose);
+    xsEffectAmount(cAddAttribute,906, cArmor, 256*3 + defense_value, markus_skoliose);
+    xsEffectAmount(cAddAttribute,900, cArmor, 256*4 + defense_value, markus_skoliose);
+    xsEffectAmount(cAddAttribute,900, cArmor, 256*3 + defense_value, markus_skoliose);
+}}
+void green_gimmick() {{
+    tech_selection = tech_selection + 1;
     
+}}
     """
+    with open(xs_input_path, "a") as script_sister_land_pine:
+        script_sister_land_pine.write(xs_function)
+    return xs_function
+
+def Morange_legellan_xs(scenario, trigger_manager):
+    merc_list = [HeroInfo.CUSI_YUPANQUI.ID,HeroInfo.PACAL_II.ID,HeroInfo.CUNHAMBEBE.ID,
+                 HeroInfo.FRANKISH_PALADIN.ID,HeroInfo.LA_HIRE.ID,HeroInfo.CHARLEMAGNE.ID,
+                 HeroInfo.JAYAVIRAVARMAN.ID,HeroInfo.GAJAH_MADA.ID,HeroInfo.DAGNAJAN.ID,HeroInfo.RAJENDRA_CHOLA.ID,
+                 HeroInfo.JEAN_BUREAU.ID,HeroInfo.GUGLIELMO_EMBRIACO.ID,HeroInfo.FRANCESCO_SFORZA.ID]
+    stat_list = [(50,"256*4 + 5","256 * 4 + 3","256 * 3 + 1"),(45,"256*3 + 4","256 * 4 + 1","256 * 3 + 1"),(45,"256*4 + 8","256 * 4 + 0","256 * 3 + 0"),
+                 (125, "256*4 + 10", "256 * 4 + 4", "256 * 3 + 2"), (65, "256*3 + 8", "256 * 4 + 1", "256 * 3 + 6"),(70, "256*4 + 6", "256 * 4 + 1", "256 * 3 + 1"),
+                 (80, "256*4 + 9", "256 * 4 + 3", "256 * 3 + 3"), (125, "256*3 + 8", "256 * 4 + 1", "256 * 3 + 1"),(320, "256*3 + 10", "256 * 4 + 1", "256 * 3 + 1"), (95, "256*4 + 8", "256 * 4 + 0", "256 * 3 + 3"),
+                 (80, "256*4 + 45", "256 * 4 + 0", "256 * 3 + 15"), (100, "256*3 + 15", "256 * 4 + 3", "256 * 3 + 3"),(95, "256*4 + 11", "256 * 4 + 4", "256 * 3 + 3"),
+                 ]
+    xs_input_path = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\AoE2DE\\resources\\_common\\xs\\security_breach_in_ruin.xs"
+    xs_function = f"""
+int mercenarie_array = -1;
+int morrange = -1;
+void setup_morrange(){{
+morrange = xsGetWorldPlayerId(4);
+xsEffectAmount(cMulAttribute,{HeroInfo.ZHOU_YU.ID},{ObjectAttribute.TRAIN_TIME} , 15, morrange);
+xsEffectAmount(cMulAttribute,{HeroInfo.ZHAO_YUN.ID},{ObjectAttribute.TRAIN_TIME} , 45, morrange);
+xsEffectAmount(cMulAttribute,{HeroInfo.ZHANG_FEI.ID},{ObjectAttribute.TRAIN_TIME} , 30, morrange);
+xsEffectAmount(cMulAttribute,{HeroInfo.ZAKARE.ID},{ObjectAttribute.TRAIN_TIME} , 45, morrange);
+"""
+    merc_size = len(merc_list)
+    xs_function += f"""
+mercenarie_array = xsArrayCreateInt(11, {merc_size}, "mercenarie_array");
+"""
+    for mercenaries in range(len(merc_list)):
+        unit_id=merc_list[mercenaries]
+        xs_function += f"""
+xsArraySetInt(mercenarie_array, {mercenaries}, {unit_id});
+"""
+    for mercenaries in range(len(merc_list)):
+        unit_id = merc_list[mercenaries]
+        hp, atk, armor, piercing = stat_list[mercenaries]
+        xs_function += f"""
+xsEffectAmount(cSetAttribute,{unit_id}, {ObjectAttribute.HIT_POINTS}, {hp}, morrange);
+xsEffectAmount(cSetAttribute,{unit_id}, {ObjectAttribute.ATTACK}, {atk}, morrange);
+xsEffectAmount(cSetAttribute,{unit_id}, {ObjectAttribute.ARMOR}, {armor}, morrange);
+xsEffectAmount(cSetAttribute,{unit_id}, {ObjectAttribute.ARMOR}, {piercing}, morrange);
+xsEffectAmount(cSetAttribute,{unit_id}, {ObjectAttribute.DEAD_UNIT_ID}, {UnitInfo.INVISIBLE_OBJECT_A.ID}, morrange);
+"""
+        if unit_id == HeroInfo.CHARLEMAGNE.ID:
+            xs_function += f"""
+xsEffectAmount(cSetAttribute,{unit_id}, {ObjectAttribute.COMBAT_ABILITY}, 4, morrange);
+            """
+        elif unit_id == HeroInfo.RAJENDRA_CHOLA.ID:
+            xs_function += f"""
+            xsEffectAmount(cSetAttribute,{unit_id}, {ObjectAttribute.MOVEMENT_SPEED}, 6, morrange);
+                        """
+    xs_function += f"""
+    
+"""
+    xs_function += "}"
+
+    xs_function += f"""
+void toulouse_sword(){{
+for (i = 0; < xsArrayGetSize(mercenarie_array))
+    {{
+        int merc_id = xsArrayGetInt(mercenarie_array, i);
+        bool check_melee = (merc_id == {HeroInfo.CHARLEMAGNE.ID}) || (merc_id == {HeroInfo.DAGNAJAN.ID}) || (merc_id == {HeroInfo.PACAL_II.ID}) || (merc_id == {HeroInfo.GUGLIELMO_EMBRIACO.ID}) || (merc_id == {HeroInfo.JEAN_BUREAU.ID}); 
+        if (check_melee != true){{
+            xsEffectAmount(cAddAttribute,merc_id, cAttack, 256*4 + 2, morrange);
+        }}
+    }}
+}}
+void armor_from_poitier(){{
+    for (i = 0; < xsArrayGetSize(mercenarie_array))
+    {{
+        int merc_id = xsArrayGetInt(mercenarie_array, i);
+        xsEffectAmount(cAddAttribute,merc_id, cArmor, 256*4 + 2, morrange);
+        xsEffectAmount(cAddAttribute,merc_id, cArmor, 256*3 + 2, morrange);
+        
+    }}
+}}
+void projectile_from_brezt(){{
+    for (i = 0; < xsArrayGetSize(mercenarie_array))
+    {{
+        int merc_id = xsArrayGetInt(mercenarie_array, i);
+        bool check_melee = (merc_id == {HeroInfo.CHARLEMAGNE.ID}) || (merc_id == {HeroInfo.DAGNAJAN.ID}) || (merc_id == {HeroInfo.PACAL_II.ID}) || (merc_id == {HeroInfo.GUGLIELMO_EMBRIACO.ID}) || (merc_id == {HeroInfo.JEAN_BUREAU.ID}); 
+        if (check_melee == true){{
+            xsEffectAmount(cAddAttribute,merc_id, cAttack, 256*4 + 2, morrange);
+            xsEffectAmount(cAddAttribute,merc_id, cAttack, 256*3 + 2, morrange);
+        }}   
+    }}
+}}
+int dead_merc = 0;
+int dead_count_reached = 0;
+int brought_merc = 0;
+int brought_merc_limit = 35;
+int dead_marc_limit = 45;
+float inflation = 1.0;
+float inflation_east_merc = 1.0;
+void french_charisma(){{
+    xsEffectAmount(cMulAttribute,{HeroInfo.ZHOU_YU.ID},{ObjectAttribute.GOLD_COSTS} , 0.90, morrange);
+    xsEffectAmount(cMulAttribute,{HeroInfo.ZHAO_YUN.ID},{ObjectAttribute.GOLD_COSTS} , 0.90, morrange);
+    xsEffectAmount(cMulAttribute,{HeroInfo.ZAKARE.ID},{ObjectAttribute.GOLD_COSTS} , 0.90, morrange);
+    xsEffectAmount(cMulAttribute,{HeroInfo.ZHANG_FEI.ID},{ObjectAttribute.GOLD_COSTS} , 0.90, morrange);
+    if (inflation >= 1.20) {{
+        inflation = inflation - 0.20;
+    }}
+}}
+
+rule inflation_mercenaries
+    active
+    minInterval 15
+    maxInterval 15
+    {{
+    if (dead_merc >= dead_marc_limit) {{
+        inflation = inflation + 0.15;
+        dead_merc = 0;
+        dead_count_reached = dead_count_reached +1;
+        bool lost_lot = (dead_count_reached >= 15) && (danger_level >= 80);
+            if (danger_level >= 40) {{
+                dead_marc_limit = dead_marc_limit - 5;
+            }}
+            else if (danger_level >= 80) {{
+                dead_marc_limit = dead_marc_limit - 5;
+            }}
+            else if (danger_level >= 120) {{
+                dead_marc_limit = dead_marc_limit - 10;
+            }}
+            else if (danger_level >= 160) {{
+                dead_marc_limit = dead_marc_limit - 5;
+            }}
+            
+            if (lost_lot == true) {{
+                dead_marc_limit = dead_marc_limit - 5;
+            }}
+    if (brought_merc >= brought_merc_limit) {{
+        inflation = inflation + 0.10;
+        inflation_east_merc = inflation_east_merc + inflation + 0.20;
+        brought_merc = 0;
+    }}
+    xsEffectAmount(cMulAttribute,{HeroInfo.ZHOU_YU.ID},{ObjectAttribute.GOLD_COSTS} , inflation, morrange);
+    xsEffectAmount(cMulAttribute,{HeroInfo.ZHAO_YUN.ID},{ObjectAttribute.GOLD_COSTS} , inflation, morrange);
+    xsEffectAmount(cMulAttribute,{HeroInfo.ZHANG_FEI.ID},{ObjectAttribute.GOLD_COSTS} , inflation_east_merc, morrange);
+    xsEffectAmount(cMulAttribute,{HeroInfo.ZAKARE.ID},{ObjectAttribute.GOLD_COSTS} , inflation, morrange);
+    }}
+    }}
+void local_merc(){{
+    xsEffectAmount(cModResource, cAttributeSpawnCap, cAttributeSet, 1);
+    xsEffectAmount(cSpawnUnit, {HeroInfo.CUSI_YUPANQUI.ID}, {BuildingInfo.TRADE_WORKSHOP.ID}, 2, morrange);
+    xsEffectAmount(cSpawnUnit, {HeroInfo.PACAL_II.ID}, {BuildingInfo.TRADE_WORKSHOP.ID}, 3, morrange);
+    xsEffectAmount(cSpawnUnit, {HeroInfo.CUNHAMBEBE.ID}, {BuildingInfo.TRADE_WORKSHOP.ID}, 4, morrange);
+    brought_merc = brought_merc + 1;
+}}
+void french_merc(){{
+    xsEffectAmount(cModResource, cAttributeSpawnCap, cAttributeSet, 1);
+    xsEffectAmount(cSpawnUnit, {HeroInfo.FRANKISH_PALADIN.ID}, {BuildingInfo.TRADE_WORKSHOP.ID}, 3, morrange);
+    xsEffectAmount(cSpawnUnit, {HeroInfo.CHARLEMAGNE.ID}, {BuildingInfo.TRADE_WORKSHOP.ID}, 3, morrange);
+    xsEffectAmount(cSpawnUnit, {HeroInfo.LA_HIRE.ID}, {BuildingInfo.TRADE_WORKSHOP.ID}, 4, morrange);
+    brought_merc = brought_merc + 1;
+}}
+void east_merc(){{
+    xsEffectAmount(cModResource, cAttributeSpawnCap, cAttributeSet, 1);
+    xsEffectAmount(cSpawnUnit, {HeroInfo.DAGNAJAN.ID}, {BuildingInfo.TRADE_WORKSHOP.ID}, 2, morrange);
+    xsEffectAmount(cSpawnUnit, {HeroInfo.GAJAH_MADA.ID}, {BuildingInfo.TRADE_WORKSHOP.ID}, 2, morrange);
+    xsEffectAmount(cSpawnUnit, {HeroInfo.JAYAVIRAVARMAN.ID}, {BuildingInfo.TRADE_WORKSHOP.ID}, 6, morrange);
+    xsEffectAmount(cSpawnUnit, {HeroInfo.RAJENDRA_CHOLA.ID}, {BuildingInfo.TRADE_WORKSHOP.ID}, 2, morrange);
+    brought_merc = brought_merc + 1;
+}}
+void italian_merc(){{
+    xsEffectAmount(cModResource, cAttributeSpawnCap, cAttributeSet, 1);
+    xsEffectAmount(cSpawnUnit, {HeroInfo.FRANCESCO_SFORZA.ID}, {BuildingInfo.TRADE_WORKSHOP.ID}, 5, morrange);
+    xsEffectAmount(cSpawnUnit, {HeroInfo.GUGLIELMO_EMBRIACO.ID}, {BuildingInfo.TRADE_WORKSHOP.ID}, 5, morrange);
+    xsEffectAmount(cSpawnUnit, {HeroInfo.JEAN_BUREAU.ID}, {BuildingInfo.TRADE_WORKSHOP.ID}, 3, morrange);
+    brought_merc = brought_merc + 1;
+
+}}
+void dead_merc_count() {{
+
+    dead_merc = dead_merc + 1;
+
+}}
+    """
+
+    with open(xs_input_path, "a") as script_sister_land_pine:
+        script_sister_land_pine.write(xs_function)
+    return xs_function
