@@ -60,20 +60,28 @@ def xs_function (scenario,trigger_manager):
     xs_input_path = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\AoE2DE\\resources\\_common\\xs\\security_breach_in_ruin.xs"
     xs_level_function = f"""//XS script for security breach in ruin, feel free to read it to crack the map\n
 int pop_cap_res = 32;
-float up_value = 0;"""
+float up_value = 0;
+float gary_atk_bonus = 1.0;"""
 
     for p in range (1,8):
         xs_level_function +=f"""
 int P{p}_KILL = 0; //Keep track of the kill P{p} made
 int previous_value_P{p} = 0; //used for the IF condition to detect if P{p} made a new kill
+int chief_tent_skillpoint_{p} = 0;
+int command_post_skillpoint_{p} = 0;
+int skill_point_player_{p} = 0 ;
 int P{p}_level = 0;
-
+int P{p}_five_level_treshold = 5;
+int P{p}_ten_level_treshold = 10;
+int P{p}_fifty_level_treshold = 15;
 float P{p}_required_XP = 36;
 float XP_P{p} = 0; // The value for P{p} XP and level
 float XP_value_P{p} = 1.0; // The value of XP P{p} receive after each kill, this value is meant to be changed by outside factor
 float P{p}_XP_increase = 1.20;
 float more_pop_P{p} = 0.0;
 float bonus_pop_P{p} = 0.0;
+
+
     """
         #XS AURA FUNCTION
     xs_level_function += """
@@ -236,7 +244,8 @@ extern const int cAuraDiplomacyAllButYou = 6;
 
 
 
-    xs_level_function += """int kill_res = 20; //The id of the Unit killed in resource
+    xs_level_function += """
+int kill_res = 20; //The id of the Unit killed in resource
 rule setup_variable
     active
     minInterval 1
@@ -272,39 +281,127 @@ rule setup_variable
         xsDisableSelf();
     }    
     """
+
     for p in range (1,8):
+        XS_general_ID = [900, 936, 944, 912, 947, 923, 906, 912, 947]
+        melee_general_ID = [906, 912, 947]
+        xs_to_add_five = None
+        xs_to_add_fifty = None
+        xs_to_add_ten = None
         if p == PlayerId.ONE:
             variable_1 = 1
             variable_2 = 2
             variable_3 = 3
+            xs_to_add_five = f"""
+command_post_skillpoint_{p} = xsPlayerAttribute(tracked_player_P{p}, 500); 
+chief_tent_skillpoint_{p} = xsPlayerAttribute(tracked_player_P{p}, 499);
+skill_point_player_{p} = xsPlayerAttribute(tracked_player_P{p}, 498);
+xsSetPlayerAttribute(tracked_player_P{p}, 498, skill_point_player_{p});
+xsSetPlayerAttribute(tracked_player_P{p}, 499, chief_tent_skillpoint_{p}) ;
+xsSetPlayerAttribute(tracked_player_P{p}, 500, command_post_skillpoint_{p}) ;
+P{p}_five_level_treshold = P{p}_five_level_treshold + 5;
+"""
+
         elif p == PlayerId.TWO:
             variable_1 = 4
             variable_2 = 5
             variable_3 = 6
+            xs_to_add_five = f"""
+command_post_skillpoint_{p} = xsPlayerAttribute(tracked_player_P{p}, 500); 
+chief_tent_skillpoint_{p} = xsPlayerAttribute(tracked_player_P{p}, 499); 
+xsSetPlayerAttribute(tracked_player_P{p}, 499, chief_tent_skillpoint_{p}) ;
+xsSetPlayerAttribute(tracked_player_P{p}, 500, command_post_skillpoint_{p}) ;
+P{p}_five_level_treshold = P{p}_five_level_treshold + 5;
+"""
+
+            xs_to_add_fifty = f"""
+gary_atk_bonus = gary_atk_bonus + 1;
+"""
+
         elif p == PlayerId.THREE:
             variable_1 = 7
             variable_2 = 8
             variable_3 = 9
+            xs_to_add_five = f"""
+command_post_skillpoint_{p} = xsPlayerAttribute(tracked_player_P{p}, 500); 
+chief_tent_skillpoint_{p} = xsPlayerAttribute(tracked_player_P{p}, 499);
+xsSetPlayerAttribute(tracked_player_P{p}, 499, chief_tent_skillpoint_{p}) ;
+xsSetPlayerAttribute(tracked_player_P{p}, 500, command_post_skillpoint_{p}) ;
+P{p}_five_level_treshold = P{p}_five_level_treshold + 5;
+            """
+            xs_to_add_ten =f"""
+skill_point_player_{p} = xsPlayerAttribute(tracked_player_P{p}, 498);
+xsSetPlayerAttribute(tracked_player_P{p}, 498, skill_point_player_{p});
+"""
+
         elif p == PlayerId.FOUR:
             variable_1 = 10
             variable_2 = 11
             variable_3 = 12
+            xs_to_add_five = f"""
+command_post_skillpoint_{p} = xsPlayerAttribute(tracked_player_P{p}, 500); 
+chief_tent_skillpoint_{p} = xsPlayerAttribute(tracked_player_P{p}, 499);
+xsSetPlayerAttribute(tracked_player_P{p}, 499, chief_tent_skillpoint_{p}) ;
+xsSetPlayerAttribute(tracked_player_P{p}, 500, command_post_skillpoint_{p}) ;
+P{p}_five_level_treshold = P{p}_five_level_treshold + 5;
+            """
+            xs_to_add_ten = f"""
+skill_point_player_{p} = xsPlayerAttribute(tracked_player_P{p}, 498);
+xsSetPlayerAttribute(tracked_player_P{p}, 498, skill_point_player_{p});
+"""
         elif p == PlayerId.FIVE:
             variable_1 = 13
             variable_2 = 14
             variable_3 = 15
+            xs_to_add_five = f"""
+command_post_skillpoint_{p} = xsPlayerAttribute(tracked_player_P{p}, 500); 
+chief_tent_skillpoint_{p} = xsPlayerAttribute(tracked_player_P{p}, 499); 
+xsSetPlayerAttribute(tracked_player_P{p}, 499, chief_tent_skillpoint_{p}) ;
+xsSetPlayerAttribute(tracked_player_P{p}, 500, command_post_skillpoint_{p}) ;
+P{p}_five_level_treshold = P{p}_five_level_treshold + 5;
+            """
         elif p == PlayerId.SIX:
             variable_1 = 16
             variable_2 = 17
             variable_3 = 18
+            xs_to_add_five = f"""
+command_post_skillpoint_{p} = xsPlayerAttribute(tracked_player_P{p}, 500); 
+chief_tent_skillpoint_{p} = xsPlayerAttribute(tracked_player_P{p}, 499);
+
+xsSetPlayerAttribute(tracked_player_P{p}, 499, chief_tent_skillpoint_{p}) ;
+xsSetPlayerAttribute(tracked_player_P{p}, 500, command_post_skillpoint_{p}) ;
+
+P{p}_five_level_treshold = P{p}_five_level_treshold + 5;
+            """
+            xs_to_add_ten = f"""
+if (P{p}_ten_level_treshold <= 40)  {{
+skill_point_player_{p} = xsPlayerAttribute(tracked_player_P{p}, 498);
+xsSetPlayerAttribute(tracked_player_P{p}, 498, skill_point_player_{p});
+P{p}_ten_level_treshold = P{p}_ten_level_treshold + 10 ;
+}}
+"""
         elif p == PlayerId.SEVEN:
             variable_1 = 19
             variable_2 = 20
             variable_3 = 21
+            xs_to_add_five = f"""
+command_post_skillpoint_{p} = xsPlayerAttribute(tracked_player_P{p}, 500); 
+chief_tent_skillpoint_{p} = xsPlayerAttribute(tracked_player_P{p}, 499); 
+xsSetPlayerAttribute(tracked_player_P{p}, 499, chief_tent_skillpoint_{p}) ;
+xsSetPlayerAttribute(tracked_player_P{p}, 500, command_post_skillpoint_{p}) ;
+P{p}_five_level_treshold = P{p}_five_level_treshold + 5;
+            """
         else :
             variable_1 = 0
             variable_2 = 0
             variable_3 = 0
+            xs_to_add_five = f"""
+command_post_skillpoint_{p} = xsPlayerAttribute(tracked_player_P{p}, 500); 
+chief_tent_skillpoint_{p} = xsPlayerAttribute(tracked_player_P{p}, 499); 
+xsSetPlayerAttribute(tracked_player_P{p}, 499, chief_tent_skillpoint_{p}) ;
+xsSetPlayerAttribute(tracked_player_P{p}, 500, command_post_skillpoint_{p}) ;
+P{p}_five_level_treshold = P{p}_five_level_treshold + 5;
+            """
         xs_level_function +=f"""
 
 
@@ -327,7 +424,8 @@ rule XP_tracker_P{p}
         XP_P{p} = XP_P{p} + XP_value_P{p}; //GIVE THE XP
     }}    
 }}
-
+"""
+        xs_level_function += f"""
 rule P{p}_level_function
     active
     minInterval 1
@@ -347,7 +445,27 @@ rule P{p}_level_function
         xsSetTriggerVariable({variable_2}, P{p}_required_XP);
         xsSetTriggerVariable({variable_3}, XP_P{p});
         up_value = up_value + 0.25;
-    }}
+    }}"""
+        if xs_to_add_five != None:
+            xs_level_function += f"""
+        if (P{p}_level >= P{p}_five_level_treshold) {{
+            {xs_to_add_five}
+        }}"""
+        if xs_to_add_ten != None:
+                xs_level_function += f"""
+        if (P{p}_level >= P{p}_ten_level_treshold) {{
+            {xs_to_add_ten}
+        }}"""
+        if xs_to_add_fifty != None:
+            xs_level_function +=f"""
+        if (P{p}_level >= P{p}_fifty_level_treshold) {{
+            {xs_to_add_fifty}
+        }}
+
+"""
+
+
+        xs_level_function += f"""
 }}
     """
     with open(xs_input_path, "w") as script_sister_land_pine:
@@ -382,7 +500,6 @@ void castle_age_reached (){
 void imperial_age_reached (){
     Age_up_value = Age_up_value + 5;
 }
-int value = 0;
     float danger_level = 0.0;
     rule danger_level_operation
     //Minimum time between the execution of the rule
@@ -399,191 +516,7 @@ int value = 0;
 """
     with open(xs_input_path, "a") as script_sister_land_pine:
         script_sister_land_pine.write(xs_script_area)
-def wave_function(scenario, trigger_manager, vector,unit,danger_level,quantity,spawn_rate,rule_name,second_area_vector):
 
-    xs_input_path = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\AoE2DE\\resources\\_common\\xs\\security_breach_in_ruin.xs"
-    #Define the rule and the player
-    # In XS  a comment start with //
-
-    # For this ONE I'd like to start with an empty space to separate it form the rest
-    xs_script_wave = f"""
-"""
-    #check if every variable is in order and unpack
-    if len(unit) != len(quantity) or len(unit) != len(spawn_rate) :
-        raise f"Error : quantity, unit and spawn_rate must have the same lenght if it's not the case the XS code will not work check\n Unit dictionary : {unit} \n quantity : {quantity} \n spawn rate : {spawn_rate} "
-    else:
-        for i in range (len(unit)):
-            unit_id = unit[i]
-            quantity_value = quantity[i]
-            spawn_rate_value = spawn_rate[i]
-            xs_script_wave +=f"""
-//Count the total unit spawned
-int totalSpawnedEnemy_{rule_name}_{unit_id}_{i} = 0;
-//Is the max unit that can spawn when the rule start
-int maxSpawnEnemy_{rule_name}_{unit_id}_{i} = {quantity_value};
-//Spawn_rate of the unit
-int SpawnRateEnemy_{rule_name}_{unit_id}_{i} = {spawn_rate_value};
-    """
-    # check the length because if not then it will break stuff, although the scenario is rewritten every time so it's just more a way to point it out before entering it
-
-        xs_script_wave += f"""
-// Rule name, spawn interval XS required each rule to have a different name
-rule {rule_name} 
-//Minimum time between the execution of the rule
-minInterval 15
-maxInterval 15
-//Status of the rule when the game start, rule is activated in the danger rule function
-inactive
-
-{{ 
-// Get player 8 real ID, lobby order mess ID 
-int PlayerID = xsGetWorldPlayerId(8);
-"""
-        if len(unit) != len(vector):
-            raise f"Error : Unit and vector must be the same lenght, one vector per unit, to define a vector make list with tuple [(x_coord,y_coord,x_increment,y_increment, limit_x, limit_y), and so on and so on] "
-        else:
-            for i in range(len(vector)):
-                if isinstance(second_area_vector, list):
-                    # In case of the second area, we unpack it's value for XS too
-                    unit_id = unit[i]
-                    second_area_x, second_area_y, x_incrementation_second_area, y_incrementation_second_area, limit_x_sec_area, limit_y_sec_area, open_variable = \
-                        second_area_vector[i][0]
-                    xs_script_wave += f"""
-    //Varible for spawning and coordinate define inside the rule, so it's reset at every interaction with the rule
-    float x_spawn_sec_area_{rule_name}_{unit_id}_{i} = {second_area_x};
-    float y_spawn_sec_area_{rule_name}_{unit_id}_{i} = {second_area_y};
-
-    float base_x_spawn_sec_area_{rule_name}_{unit_id}_{i} = {second_area_x};
-    float base_y_spawn_sec_area_{rule_name}_{unit_id}_{i} = {second_area_y};
-
-    float x_incrementation_sec_area_{rule_name}_{unit_id}_{i} = {x_incrementation_second_area};
-    float y_incrementation_sec_area_{rule_name}_{unit_id}_{i} = {y_incrementation_second_area};
-
-    float limit_x_sec_area_{rule_name}_{unit_id}_{i} = {limit_x_sec_area};
-    float limit_y_sec_area_{rule_name}_{unit_id}_{i} = {limit_y_sec_area};
-    """
-
-                unit_id = unit[i]
-                x_spawn, y_spawn, x_incrementation, y_incrementation, limit_x, limit_y = vector[i][0]
-                xs_script_wave += f"""
-    //Coordinate for the normal spawn, those are always define no matter the choice
-    float x_spawn_{rule_name}_{unit_id}_{i} = {x_spawn};
-    float y_spawn_{rule_name}_{unit_id}_{i} = {y_spawn};
-
-    float base_x_spawn_{rule_name}_{unit_id}_{i} = {x_spawn};
-    float base_y_spawn_{rule_name}_{unit_id}_{i} = {y_spawn};
-
-    float x_incrementation_{rule_name}_{unit_id}_{i} = {x_incrementation};
-    float y_incrementation_{rule_name}_{unit_id}_{i} = {y_incrementation};
-
-    float limit_x_{rule_name}_{unit_id}_{i} = {limit_x};
-    float limit_y_{rule_name}_{unit_id}_{i} = {limit_y};
-            """
-    for i in range(len(unit)):
-        unit_id = unit[i]
-        # create the vectors depending if the secondary area is a case or not
-        if not isinstance(second_area_vector, list):
-            second_area_vector = None
-            vector_line  = f"vector spawnPos_{rule_name}_{unit_id}_{i} = xsVectorSet(x_spawn_{rule_name}_{unit_id}_{i}, y_spawn_{rule_name}_{unit_id}_{i}, 0);"
-            vector_second = None
-        else :
-            vector_line  = f"vector spawnPos_{rule_name}_{unit_id}_{i} = xsVectorSet(x_spawn_{rule_name}_{unit_id}_{i}, y_spawn_{rule_name}_{unit_id}_{i}, 0);"
-            vector_second = f"vector spawnPos_sec_area{rule_name}_{unit_id}_{i} = xsVectorSet(x_spawn_sec_area_{rule_name}_{unit_id}_{i}, y_spawn_sec_area_{rule_name}_{unit_id}_{i}, 0);"
-
-        xs_script_wave += f"""
-    // ----------------------------------------
-        
-        
-        for (qty_{rule_name}_{unit_id}_{i} = 0; < SpawnRateEnemy_{rule_name}_{unit_id}_{i}) {{
-        
-"""
-        if not isinstance(second_area_vector, list):
-            # if the second area isn't define we do a normal rule
-            xs_script_wave += f"""
-{vector_line}
-int newUnit_{rule_name}_{unit_id}_{i} = xsCreateUnit({unit_id}, PlayerID, spawnPos_{rule_name}_{unit_id}_{i}, false, true, false);
-totalSpawnedEnemy_{rule_name}_{unit_id}_{i} = totalSpawnedEnemy_{rule_name}_{unit_id}_{i} + 1;
-if (x_spawn_{rule_name}_{unit_id}_{i}>= limit_x_{rule_name}_{unit_id}_{i}) {{
-    y_spawn_{rule_name}_{unit_id}_{i} = y_incrementation_{rule_name}_{unit_id}_{i} + y_spawn_{rule_name}_{unit_id}_{i};
-    x_spawn_{rule_name}_{unit_id}_{i} = base_x_spawn_{rule_name}_{unit_id}_{i};
-}} else {{
-    x_spawn_{rule_name}_{unit_id}_{i} = x_incrementation_{rule_name}_{unit_id}_{i} + x_spawn_{rule_name}_{unit_id}_{i};
-}}
-
-        }}
-"""
-        else :
-            # if the second area is define we do a rule that check if that area has been reached the boolean, if not then we do normal spawn, but the number of unit count is double to reduce the amount of spawn
-
-            xs_script_wave +=f"""
-            // if that check is the area is reached
-             if ({open_variable} == 1) {{
-                {vector_second}
-                // it's better to have the spawn function returning is ID to avoid desync
-                int newUnitSEC_{rule_name}_{unit_id}_{i} = xsCreateUnit({unit_id}, PlayerID, spawnPos_sec_area{rule_name}_{unit_id}_{i}, false, true, false);
-                //Total enemy count, rule disable itself when the count reached it's maximum
-                totalSpawnedEnemy_{rule_name}_{unit_id}_{i} = totalSpawnedEnemy_{rule_name}_{unit_id}_{i} + 1;
-                // Once X has reached is limit, it goes back to it's value and Y get an increase
-                if (x_spawn_sec_area_{rule_name}_{unit_id}_{i}>= limit_x_sec_area_{rule_name}_{unit_id}_{i}) 
-                {{
-                    //ADD the incrementation to Y
-                    y_spawn_sec_area_{rule_name}_{unit_id}_{i} = y_incrementation_sec_area_{rule_name}_{unit_id}_{i} + y_spawn_sec_area_{rule_name}_{unit_id}_{i};
-                    //RESET X
-                    x_spawn_sec_area_{rule_name}_{unit_id}_{i} = base_x_spawn_sec_area_{rule_name}_{unit_id}_{i};
-                }} 
-                else 
-                {{
-                // Well if X hasn't reached is value it get increase
-                    x_spawn_{rule_name}_{unit_id}_{i} = x_incrementation_{rule_name}_{unit_id}_{i} + y_spawn_sec_area_{rule_name}_{unit_id}_{i};
-                }}
-             }}
-            else {{
-                {vector_line}
-                int newUnit_{rule_name}_{unit_id}_{i} = xsCreateUnit({unit_id}, PlayerID, spawnPos_{rule_name}_{unit_id}_{i}, false, true, false);
-                totalSpawnedEnemy_{rule_name}_{unit_id}_{i} = totalSpawnedEnemy_{rule_name}_{unit_id}_{i} + 2;
-                // Once X has reached is limit, it goes back to it's value and Y get an increase
-                if (x_spawn_{rule_name}_{unit_id}_{i}>= limit_x_{rule_name}_{unit_id}_{i}) {{
-                    y_spawn_{rule_name}_{unit_id}_{i} = y_incrementation_{rule_name}_{unit_id}_{i} +  y_spawn_{rule_name}_{unit_id}_{i};
-                    x_spawn_{rule_name}_{unit_id}_{i} = base_x_spawn_{rule_name}_{unit_id}_{i};
-                }} else {{
-                    // Well if X hasn't reached is value it get increase
-                    x_spawn_{rule_name}_{unit_id}_{i} = x_incrementation_{rule_name}_{unit_id}_{i} + x_spawn_{rule_name}_{unit_id}_{i};
-                }}
-                            
-            }}                 
-        }}
-            """
-    mount_the_bool = """"""
-    for i in range (len(unit)):
-        unit_id = unit[i]
-        if i == len(unit) - 1:
-
-            mount_the_bool += f"""
-(totalSpawnedEnemy_{rule_name}_{unit_id}_{i} >= maxSpawnEnemy_{rule_name}_{unit_id}_{i});
-"""
-        else :
-            mount_the_bool += f"""(totalSpawnedEnemy_{rule_name}_{unit_id}_{i} >= maxSpawnEnemy_{rule_name}_{unit_id}_{i}) &&"""
-    xs_script_wave += f"""
-        //This if disable the rule once all unit has been spawned 
-        bool check_disable_{rule_name} = {mount_the_bool}
-        if (check_disable_{rule_name} == true) {{
-            xsDisableSelf();
-            """
-    for i in range (len(unit)):
-        unit_id = unit[i]
-        xs_script_wave += f"""
-    //Rule must be re-usable so the total count is reset when we want to disable the rule
- totalSpawnedEnemy_{rule_name}_{unit_id}_{i} = 0;
-"""
-    xs_script_wave += f"""
-        return;
-    }}
-    
-    """
-    xs_script_wave += "}"
-    #Write inside the XS file
-    with open(xs_input_path, "a") as script_sister_land_pine:
-        script_sister_land_pine.write(xs_script_wave)
 def danger_rule_spawn (scenario,trigger_manager,configs,rule_name):
     xs_input_path = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\AoE2DE\\resources\\_common\\xs\\security_breach_in_ruin.xs"
     xs_script_danger_rule ="""
@@ -1075,3 +1008,730 @@ void dead_merc_count() {{
     with open(xs_input_path, "a") as script_sister_land_pine:
         script_sister_land_pine.write(xs_function)
     return xs_function
+
+def hamish_davelton_xs(scenario,trigger_manager):
+    xs_input_path = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\AoE2DE\\resources\\_common\\xs\\security_breach_in_ruin.xs"
+
+    xs_hamish = f"""
+int hamish_davelton = -1;
+int deer_statut = {BuildingInfo.ARMY_TENT_C.ID} ;
+int low_deer_value = 5;
+int quest_done = -1;
+int medium_deer_value = 10;
+int high_deer_value = 15;
+int very_high_deer_value = 25;
+int gold_mine_bonus = {HeroInfo.ATAULF.ID} ;
+int tree_res_bonus = {HeroInfo.ALGIRDAS.ID} ;
+int food_bonus = {HeroInfo.ARISTIDES.ID} ;
+int count_gold_mine_bonus = -1 ;
+int count_tree_res_bonus = -1 ;
+int count_food_bonus = -1 ;
+int Hamish_kill = -1;
+float villager_workrate = -1.0;
+
+void setup_hamish () {{
+    hamish_davelton = xsGetWorldPlayerId(5);
+    int permaAuraEffects = cAuraEffectBitMultiply ;
+    xsEffectAmount(cSetAttribute,food_bonus, cHitpoints, 1, hamish_davelton);
+    xsEffectAmount(cSetAttribute,tree_res_bonus, cHitpoints, 1, hamish_davelton);
+    xsEffectAmount(cSetAttribute,gold_mine_bonus, cHitpoints, 1, hamish_davelton);
+    
+    xsEffectAmount(cSetAttribute,deer_statut, {ObjectAttribute.STANDING_GRAPHIC}, 764, hamish_davelton);
+    xsEffectAmount(cSetAttribute,deer_statut, {ObjectAttribute.STANDING_GRAPHIC_2}, 763, hamish_davelton);
+    
+    xsEffectAmount(cSetAttribute,gold_mine_bonus, {ObjectAttribute.DEAD_UNIT_ID}, {OtherInfo.GOLD_MINE.ID}, {PlayerId.GAIA});
+    xsEffectAmount(cSetAttribute,tree_res_bonus, {ObjectAttribute.DEAD_UNIT_ID}, {OtherInfo.TREE_C.ID}, {PlayerId.GAIA});
+    xsEffectAmount(cSetAttribute,food_bonus, {ObjectAttribute.DEAD_UNIT_ID}, {OtherInfo.FORAGE_BUSH.ID}, {PlayerId.GAIA});
+    xsEffectAmount(cSetAttribute,gold_mine_bonus, {ObjectAttribute.DEAD_UNIT_ID}, {OtherInfo.GOLD_MINE.ID}, hamish_davelton);
+    xsEffectAmount(cSetAttribute,tree_res_bonus, {ObjectAttribute.DEAD_UNIT_ID}, {OtherInfo.TREE_C.ID}, hamish_davelton);
+    xsEffectAmount(cSetAttribute,food_bonus, {ObjectAttribute.DEAD_UNIT_ID}, {OtherInfo.GOLD_MINE.ID}, hamish_davelton);
+    bool hamish_villager_workrate_temple = xsAddAura(904, {BuildingInfo.SHRINE.ID}, hamish_davelton, {ObjectAttribute.WORK_RATE}, 1.4, 4, permaAuraEffects, cAuraDiplomacyGaiaYouAlly);    
+}}
+
+
+void count_deer_status() {{
+    xsDisableRule("inflation_deer_status");
+    int deer_statut_count = xsGetObjectCountTotal(hamish_davelton, deer_statut) ;
+    if (quest_done > 1) {{
+        low_deer_value = 5 * quest_done;
+        medium_deer_value = 10 * quest_done;
+        high_deer_value = 15 * quest_done;
+        very_high_deer_value = 25 * quest_done;
+    }} 
+    if (deer_statut_count >= very_high_deer_value) {{ 
+        villager_workrate =  deer_statut_count / 1.2  ;
+        count_gold_mine_bonus =  deer_statut_count / 4 ;
+        count_tree_res_bonus =  deer_statut_count / 1.5  ;
+        count_food_bonus = deer_statut_count / 1.2  ;
+        xsSendChat("<AQUA>Os ydych chi'n anrhydeddu natur, bydd yn arwain eich enaid, You have learned well Hamish", hamish_davelton, false) ;
+        
+    }} else if (deer_statut_count >= high_deer_value) {{
+            villager_workrate =  1.6 / deer_statut_count ;
+            count_gold_mine_bonus =  deer_statut_count / 5 ;
+            count_tree_res_bonus =  deer_statut_count / 2  ;
+            count_food_bonus = deer_statut_count / 1.5 ;
+    }} else if (deer_statut_count >= medium_deer_value) {{
+            villager_workrate = deer_statut_count / 2 ;
+            count_tree_res_bonus =   deer_statut_count /2  ;
+            count_food_bonus = deer_statut_count / 1.5  ;
+    }} else if (deer_statut_count >= low_deer_value) {{
+        villager_workrate = deer_statut_count / 2.2 ;
+        count_tree_res_bonus = deer_statut_count / 2.5  ;
+        count_food_bonus =    deer_statut_count / 2 ;
+    }} else if (deer_statut_count < low_deer_value) {{
+        villager_workrate = 3 / deer_statut_count ;
+        count_tree_res_bonus = 2.5 / deer_statut_count  ;
+        xsSendChat("<AQUA>...", hamish_davelton, false) ;
+    }}
+    xsEffectAmount(cModResource, cAttributeSpawnCap, cAttributeSet, count_gold_mine_bonus);
+    xsEffectAmount(cSpawnUnit, gold_mine_bonus, deer_statut, 1, hamish_davelton);
+    xsEffectAmount(cModResource, cAttributeSpawnCap, cAttributeSet, count_tree_res_bonus);
+    xsEffectAmount(cSpawnUnit, tree_res_bonus, deer_statut, 1, hamish_davelton);
+    xsEffectAmount(cModResource, cAttributeSpawnCap, cAttributeSet, count_food_bonus);
+    xsEffectAmount(cSpawnUnit, food_bonus, deer_statut, 1, hamish_davelton);
+    xsEffectAmount(cAddAttribute,904, cWorkRate, villager_workrate, hamish_davelton);
+    quest_done = quest_done + 1; 
+    
+}}
+
+int increase_limit = -1;
+int first_limit = 100;
+int second_limit = 200;
+int third_limit = 300;
+int fourth_limit= 450;
+int fifth_limit = 650;
+int atk_range = -1;
+int atk_melee = -1;
+void hamish_limit_calcul() {{
+    Hamish_kill = xsPlayerAttribute(hamish_davelton, kill_res);
+    increase_limit = 10 * quest_done;
+   if (quest_done < 1) {{
+        first_limit = Hamish_kill + 50;
+        second_limit = Hamish_kill + 80;
+        third_limit = Hamish_kill + 110;
+        fourth_limit= Hamish_kill + 140;
+        fifth_limit = Hamish_kill + 200;
+    }}
+    else {{
+        first_limit = Hamish_kill + 100 + increase_limit;
+        second_limit = Hamish_kill + 100 + increase_limit  ;
+        third_limit = Hamish_kill + 180 + increase_limit ;
+        fourth_limit= Hamish_kill + 220 + increase_limit ;
+        fifth_limit = Hamish_kill + 260 + increase_limit;
+    }}
+}}
+void kill_count_hamish () {{
+    Hamish_kill = xsPlayerAttribute(hamish_davelton, kill_res);
+    if (Hamish_kill >= fifth_limit) {{ 
+        atk_range = 256 * 3 + 7;
+        atk_melee = 256 * 4 + 7;
+        xsSendChat("<AQUA>From my forge to you ! Your ancestor would be proud of the warrior you become !", hamish_davelton, false) ;
+    }} else if (Hamish_kill >= fourth_limit) {{
+        atk_range = 256 * 3 + 6;
+        atk_melee = 256 * 4 + 6;
+}} else if (Hamish_kill >= third_limit) {{
+        atk_range = 256 * 3 + 4;
+        atk_melee = 256 * 4 + 4;
+}}  else if (Hamish_kill >= second_limit) {{
+        atk_range = 256 * 3 + 3;
+        atk_melee = 256 * 4 + 3;
+}}  else if (Hamish_kill >= first_limit) {{
+        atk_range = 256 * 3 + 1;
+        atk_melee = 256 * 4 + 1;
+}} else {{
+    atk_range = 256 * 3 + 0;
+    atk_melee = 256 * 4 + 0;
+    xsSendChat("<AQUA>You are not worthy of my fire yet...", hamish_davelton, false) ;
+}}
+    xsEffectAmount(cAddAttribute,900, cAttack, atk_range, hamish_davelton);
+    xsEffectAmount(cAddAttribute,936, cAttack, atk_range, hamish_davelton);
+    xsEffectAmount(cAddAttribute,944, cAttack, atk_range, hamish_davelton);
+    xsEffectAmount(cAddAttribute,923, cAttack, atk_range, hamish_davelton);
+    
+    xsEffectAmount(cAddAttribute,906, cAttack, atk_melee, hamish_davelton);
+    xsEffectAmount(cAddAttribute,912, cAttack, atk_melee, hamish_davelton);
+}}
+int deer_statut_count_rule = -1;
+int price_increase = 5;
+rule inflation_deer_status
+inactive
+minInterval 1
+maxInterval 1
+{{
+    deer_statut_count_rule = xsGetObjectCountTotal(hamish_davelton, deer_statut) ;
+    if (deer_statut_count_rule >= price_increase) {{ 
+        xsEffectAmount(cMulAttribute,{BuildingInfo.ARMY_TENT_C.ID},{ObjectAttribute.WOOD_COSTS} , 1.20, hamish_davelton);
+        price_increase = price_increase + 3;
+    }}
+
+}}
+
+int second_count = -1;
+rule ceremonie_bridgid
+inactive
+minInterval 1
+maxInterval 1
+{{
+    second_count = second_count + 1;
+}}
+void ceremonie_reward() {{
+    xsDisableRule("ceremonie_bridgid");
+    if (second_count <= 120)
+    {{
+        quest_done = 0;
+        P5_level = P5_level + 1;
+        XP_value_P5 = XP_value_P5 + 0.5;
+        xsSendChat("<AQUA> Your ceremony honors me Hamish, use those wisely", hamish_davelton, false) ;
+        xsEffectAmount(cModResource, cAttributeSpawnCap, cAttributeSet, 1);
+        xsEffectAmount(cSpawnUnit, {HeroInfo.AETHELFRITH.ID}, {BuildingInfo.SHRINE.ID}, 5, hamish_davelton);
+        xsEffectAmount(cSpawnUnit, {OtherInfo.RELIC.ID}, {BuildingInfo.SHRINE.ID}, 1, hamish_davelton);
+
+    }}
+    else if (second_count <= 300) {{
+        if (quest_done > 1){{
+            quest_done = quest_done - 2;
+        }}
+        XP_value_P5 = XP_value_P5 + 0.2;
+        xsEffectAmount(cModResource, cAttributeSpawnCap, cAttributeSet, 1);
+        xsEffectAmount(cSpawnUnit, {OtherInfo.RELIC.ID}, {BuildingInfo.SHRINE.ID}, 1, hamish_davelton);
+    }}
+    else if (second_count <= 480) {{
+        XP_value_P5 = XP_value_P5 + 0.1;
+    }}
+    else {{
+        xsSendChat("<AQUA>This thing you call a ceremony in my honor is a disgrace !", hamish_davelton, false) ;
+    }}
+
+}}
+void activate_ceremony() {{
+    xsEnableRule("ceremonie_bridgid");
+}}
+void activate_deer_count() {{
+     xsEnableRule("inflation_deer_status");
+}}
+
+"""
+    with open(xs_input_path, "a") as script_sister_land_pine:
+        script_sister_land_pine.write(xs_hamish)
+    return xs_function
+
+def warmer_stephano_xs(scenario, trigger_manager):
+    xs_input_path = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\AoE2DE\\resources\\_common\\xs\\security_breach_in_ruin.xs"
+
+    list_unit = [(HeroInfo.AETHELFRITH.ID,HeroInfo.ARCHER_OF_THE_EYES.ID),(HeroInfo.ARISTIDES.ID,HeroInfo.ROBIN_HOOD.ID)
+    ,(HeroInfo.ATAULF.ID,HeroInfo.PACAL_II.ID),(HeroInfo.ALEXANDER_NEVSKI.ID,HeroInfo.SU_DINGFANG.ID),
+                 (HeroInfo.ARTAPHERNES.ID,HeroInfo.ATTILA_THE_HUN.ID),(HeroInfo.ALEXANDER_DISMOUNTED.ID,HeroInfo.ARCHBISHOP.ID)
+                 ,(HeroInfo.AMOGHAVARSHA.ID,HeroInfo.ARARIBOIA.ID)]
+    list_stat = []
+    xs_warmer = f"""
+int warmer_stephano = -1;
+const int fireTower = {BuildingInfo.FIRE_TOWER.ID};
+
+const int stingerAbility = 128;
+const float bleedValue = -45.0;
+const float duration = 3.0;
+const int affectTarget = 1;
+void setup_warmer(){{
+warmer_stephano = xsGetWorldPlayerId(6); 
+int permaAuraEffects = cAuraEffectBitMultiply ;
+int regen_rate = 45;
+int atk_tower = 2;
+int repair_size = 15;
+int atk_size = 20 ;
+"""
+    XS_general_ID = [900, 936, 944, 912, 947, 923, 906, 912, 947]
+    melee_general_ID = [906, 912, 947]
+    size = len(XS_general_ID)
+    xs_warmer += f"""int class_id_units_warmer = xsArrayCreateInt({size}, 0, "warmer_array_bleed");\n"""
+    for i in range(len(XS_general_ID)):
+        class_id = XS_general_ID[i]
+        xs_warmer += f"xsArraySetInt(class_id_units_warmer, {i},{class_id});\n"
+    for i in range (len(list_unit)):
+        tower_body, tower = list_unit[i]
+        xs_warmer +=f"""
+xsEffectAmount(cSetAttribute,{tower_body}, {ObjectAttribute.UNIT_TRAIT}, 8, warmer_stephano);
+xsEffectAmount(cSetAttribute,{tower_body}, {ObjectAttribute.TRAIT_PIECE}, {tower}, warmer_stephano);
+xsEffectAmount(cSetAttribute,{tower_body}, {ObjectAttribute.STANDING_GRAPHIC},2281, warmer_stephano);
+xsEffectAmount(cSetAttribute,{tower_body}, {ObjectAttribute.STANDING_GRAPHIC_2}, 2281, warmer_stephano);
+xsEffectAmount(cSetAttribute,{tower_body}, {ObjectAttribute.WALKING_GRAPHIC}, 2281, warmer_stephano);
+xsEffectAmount(cSetAttribute,{tower_body}, {ObjectAttribute.RUNNING_GRAPHIC}, 2281, warmer_stephano);
+xsEffectAmount(cSetAttribute,{tower_body}, {ObjectAttribute.DYING_GRAPHIC}, 5434, warmer_stephano);
+xsEffectAmount(cSetAttribute,{tower_body}, {ObjectAttribute.UNDEAD_GRAPHIC}, 5434, warmer_stephano);
+xsEffectAmount(cSetAttribute,{tower_body}, {ObjectAttribute.UNIT_SIZE_X}, 0.5, warmer_stephano);
+xsEffectAmount(cSetAttribute,{tower_body}, {ObjectAttribute.UNIT_SIZE_Z}, 0.5, warmer_stephano);
+"""
+    xs_warmer += f"""
+xsEffectAmount(cSetAttribute,{BuildingInfo.FORTIFIED_OUTPOST.ID}, {ObjectAttribute.MOVEMENT_SPEED}, 0, warmer_stephano);
+xsEffectAmount(cSetAttribute,{BuildingInfo.FORTIFIED_OUTPOST.ID}, {ObjectAttribute.HIT_POINTS}, 1050, warmer_stephano);
+xsEffectAmount(cSetAttribute,{BuildingInfo.FORTIFIED_OUTPOST.ID}, {ObjectAttribute.ATTACK_RELOAD_TIME}, 3, warmer_stephano);
+xsEffectAmount(cSetAttribute,{BuildingInfo.FORTIFIED_OUTPOST.ID}, {ObjectAttribute.PROJECTILE_UNIT}, 367, warmer_stephano);
+xsEffectAmount(cSetAttribute,{BuildingInfo.FORTIFIED_OUTPOST.ID}, {ObjectAttribute.UNIT_SIZE_X}, 0.5, warmer_stephano);
+xsEffectAmount(cSetAttribute,{BuildingInfo.FORTIFIED_OUTPOST.ID}, {ObjectAttribute.UNIT_SIZE_Y}, 0.5, warmer_stephano); 
+xsEffectAmount(cSetAttribute,{BuildingInfo.FORTIFIED_OUTPOST.ID}, {ObjectAttribute.TRAIN_TIME}, 0, warmer_stephano); 
+//---------------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------
+xsEffectAmount(cSetAttribute,{BuildingInfo.FORTIFIED_TOWER.ID}, {ObjectAttribute.MOVEMENT_SPEED}, 0, warmer_stephano);
+xsEffectAmount(cSetAttribute,{BuildingInfo.FORTIFIED_TOWER.ID}, {ObjectAttribute.HIT_POINTS}, 750, warmer_stephano);
+xsEffectAmount(cSetAttribute,{BuildingInfo.FORTIFIED_TOWER.ID}, {ObjectAttribute.ATTACK_RELOAD_TIME}, 35, warmer_stephano);
+xsEffectAmount(cSetAttribute,{BuildingInfo.FORTIFIED_TOWER.ID}, {ObjectAttribute.PROJECTILE_UNIT}, 367, warmer_stephano);
+xsEffectAmount(cSetAttribute,{BuildingInfo.FORTIFIED_TOWER.ID}, {ObjectAttribute.ATTACK}, 256 * 3 + 25, warmer_stephano);
+xsEffectAmount(cSetAttribute,{BuildingInfo.FORTIFIED_TOWER.ID}, {ObjectAttribute.SHOWN_ATTACK}, 25, warmer_stephano);
+xsEffectAmount(cSetAttribute,{BuildingInfo.FORTIFIED_TOWER.ID}, {ObjectAttribute.MAXIMUM_RANGE}, 16, warmer_stephano);
+xsEffectAmount(cSetAttribute,{BuildingInfo.FORTIFIED_TOWER.ID}, {ObjectAttribute.PROJECTILE_ARC}, 0, warmer_stephano);
+xsEffectAmount(cSetAttribute,{BuildingInfo.FORTIFIED_TOWER.ID}, {ObjectAttribute.TRAIN_TIME}, 0, warmer_stephano); 
+//---------------------------------------------------------------------------------------------------------------
+xsEffectAmount(cSetAttribute,{BuildingInfo.FIRE_TOWER.ID}, {ObjectAttribute.TRAIN_TIME}, 0, warmer_stephano); 
+xsEffectAmount(cSetAttribute, {BuildingInfo.FIRE_TOWER.ID}, {ObjectAttribute.COMBAT_ABILITY}, 128, warmer_stephano);
+//---------------------------------------------------------------------------------------------------------------
+xsEffectAmount(cSetAttribute,{BuildingInfo.SEA_TOWER.ID}, {ObjectAttribute.TERRAIN_RESTRICTION_ID}, 4, warmer_stephano);
+xsEffectAmount(cSetAttribute,{BuildingInfo.SEA_TOWER.ID}, {ObjectAttribute.HIT_POINTS}, 750, warmer_stephano);
+xsEffectAmount(cSetAttribute,{BuildingInfo.SEA_TOWER.ID}, {ObjectAttribute.ATTACK_RELOAD_TIME}, 2, warmer_stephano);
+xsEffectAmount(cSetAttribute,{BuildingInfo.SEA_TOWER.ID}, {ObjectAttribute.PROJECTILE_UNIT}, 1913, warmer_stephano);
+xsEffectAmount(cSetAttribute,{BuildingInfo.SEA_TOWER.ID}, {ObjectAttribute.ATTACK}, 256 * 3 + 5, warmer_stephano);
+xsEffectAmount(cSetAttribute,{BuildingInfo.SEA_TOWER.ID}, {ObjectAttribute.BLAST_WIDTH}, 3, warmer_stephano);
+xsEffectAmount(cSetAttribute,{BuildingInfo.SEA_TOWER.ID}, {ObjectAttribute.SHOWN_ATTACK}, 5, warmer_stephano);
+xsEffectAmount(cSetAttribute,{BuildingInfo.SEA_TOWER.ID}, {ObjectAttribute.MAXIMUM_RANGE}, 8, warmer_stephano);
+xsEffectAmount(cSetAttribute,{BuildingInfo.SEA_TOWER.ID}, {ObjectAttribute.TRAIN_TIME}, 0, warmer_stephano);
+xsEffectAmount(cSetAttribute,{BuildingInfo.SEA_TOWER.ID}, {ObjectAttribute.BLAST_ATTACK_LEVEL}, 3, warmer_stephano);
+//---------------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------
+xsEffectAmount(cSetAttribute,{BuildingInfo.THE_TOWER_OF_FLIES.ID}, {ObjectAttribute.HIT_POINTS}, 1250, warmer_stephano);
+xsEffectAmount(cSetAttribute,{BuildingInfo.THE_TOWER_OF_FLIES.ID}, {ObjectAttribute.ATTACK_RELOAD_TIME}, 4, warmer_stephano);
+xsEffectAmount(cSetAttribute,{BuildingInfo.THE_TOWER_OF_FLIES.ID}, {ObjectAttribute.PROJECTILE_UNIT}, 367, warmer_stephano);
+xsEffectAmount(cSetAttribute,{BuildingInfo.THE_TOWER_OF_FLIES.ID}, {ObjectAttribute.ATTACK}, 256 * 3 + 15, warmer_stephano);
+xsEffectAmount(cSetAttribute,{BuildingInfo.THE_TOWER_OF_FLIES.ID}, {ObjectAttribute.COMBAT_ABILITY}, 1, warmer_stephano);
+xsEffectAmount(cSetAttribute,{BuildingInfo.THE_TOWER_OF_FLIES.ID}, {ObjectAttribute.SHOWN_ATTACK}, 15, warmer_stephano);
+xsEffectAmount(cSetAttribute,{BuildingInfo.THE_TOWER_OF_FLIES.ID}, {ObjectAttribute.MAXIMUM_RANGE}, 10, warmer_stephano);
+xsEffectAmount(cSetAttribute,{BuildingInfo.THE_TOWER_OF_FLIES.ID}, {ObjectAttribute.TRAIN_TIME}, 0, warmer_stephano); 
+//---------------------------------------------------------------------------------------------------------------
+bool maintenance_tower_for_tower = xsAddAura({BuildingInfo.OUTPOST.ID}, 952, warmer_stephano, {ObjectAttribute.REGENERATION_RATE}, regen_rate, repair_size, permaAuraEffects, cAuraDiplomacyGaiaYouAlly);  
+bool maintenance_tower_for_wall = xsAddAura({BuildingInfo.OUTPOST.ID}, 952, warmer_stephano, {ObjectAttribute.REGENERATION_RATE}, regen_rate, repair_size, permaAuraEffects, cAuraDiplomacyGaiaYouAlly);  
+xsEffectAmount(cSetAttribute,{BuildingInfo.OUTPOST.ID}, {ObjectAttribute.TRAIN_TIME}, 0, warmer_stephano);
+xsEffectAmount(cSetAttribute,{BuildingInfo.OUTPOST.ID}, {ObjectAttribute.COMBAT_ABILITY},  32, warmer_stephano); 
+//--------------------------------------------------------------------------------------------------------------------
+xsEffectAmount(cSetAttribute,{BuildingInfo.ARMY_TENT_E.ID}, {ObjectAttribute.HIT_POINTS}, 1250, warmer_stephano);
+xsEffectAmount(cSetAttribute,{BuildingInfo.ARMY_TENT_E.ID}, {ObjectAttribute.STANDING_GRAPHIC}, 621, warmer_stephano);
+xsEffectAmount(cSetAttribute,{BuildingInfo.ARMY_TENT_E.ID}, {ObjectAttribute.STANDING_GRAPHIC_2}, 621, warmer_stephano);
+xsEffectAmount(cSetAttribute,{BuildingInfo.ARMY_TENT_E.ID}, {ObjectAttribute.ATTACK_GRAPHIC}, 621, warmer_stephano);
+xsEffectAmount(cSetAttribute,{BuildingInfo.ARMY_TENT_E.ID}, {ObjectAttribute.DYING_GRAPHIC}, 621, warmer_stephano);
+xsEffectAmount(cSetAttribute,{BuildingInfo.ARMY_TENT_E.ID}, {ObjectAttribute.UNDEAD_GRAPHIC}, 621, warmer_stephano);
+bool supervision_tower = xsAddAura({BuildingInfo.ARMY_TENT_E.ID}, 952, warmer_stephano, {ObjectAttribute.ATTACK}, atk_tower, atk_size, permaAuraEffects, cAuraDiplomacyGaiaYouAlly);  
+xsEffectAmount(cSetAttribute,{BuildingInfo.ARMY_TENT_E.ID}, {ObjectAttribute.COMBAT_ABILITY},  32, warmer_stephano); 
+xsEffectAmount(cSetAttribute,{BuildingInfo.ARMY_TENT_E.ID}, {ObjectAttribute.TRAIN_TIME}, 0, warmer_stephano);
+    
+
+
+xsResetTaskAmount();
+
+xsTaskAmount(cTaskAttrWorkValue1, bleedValue);
+xsTaskAmount(cTaskAttrWorkValue2, duration);
+xsTaskAmount(cTaskAttrWorkRange, affectTarget);
+xsTaskAmount(cTaskAttrSearchWaitTime, 109);
+xsTaskAmount(cTaskAttrTaskType, cTaskTypeStinger);
+
+xsModifyObjectTasks(fireTower, warmer_stephano);      
+
+
+    """
+    xs_warmer += f"""
+    for (i = 0; < xsArrayGetSize(class_id_units)) {{
+        int class_id = xsArrayGetInt(class_id_units_warmer, i);
+        xsTaskAmount(cTaskAttrObjectClass, class_id);
+        xsModifyObjectTasks(fireTower, warmer_stephano);
+        }}
+"""
+
+    xs_warmer +="}"
+
+    with open(xs_input_path, "a") as script_sister_land_pine:
+        script_sister_land_pine.write(xs_warmer)
+    return xs_warmer
+
+def harris_galvas_xs(scenario, trigger_manager):
+    XS_general_ID = [900, 936, 944, 912, 947, 923, 906, 912, 947]
+    melee_general_ID = [906, 912, 947]
+    size = len(XS_general_ID)
+    xs_input_path = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\AoE2DE\\resources\\_common\\xs\\security_breach_in_ruin.xs"
+    xs_harris = f"""
+int harrish_timer = -1;
+int harris_kill = -1;
+int harris_old_kill = -1;
+int rage_point = -1;
+int reward_rage = -1;
+int rage_check = 10;
+float rage_token = 0.0;
+float rage_gain = 0.0;
+float gain = 1.0;
+float temp_gain = 0.0;
+int anger_issue_event = 1;
+rule combo_kill
+active
+minInterval 1
+maxInterval 1
+{{
+    int harris_galvas = xsGetWorldPlayerId(7);
+    harris_kill = xsPlayerAttribute(harris_galvas, kill_res);
+    harrish_timer = harrish_timer + 1;
+    bool check_combo = (harris_kill <= harris_old_kill) && (harrish_timer == 10) ;
+    if (harris_kill > harris_old_kill){{
+        harris_old_kill = harris_kill;
+        harrish_timer = 0;
+        rage_point = rage_point + 1;
+    }}
+    else if (check_combo == true) {{
+        rage_point = 0;
+        harrish_timer = 0;
+        rage_check = 10;
+    }}
+    if (rage_point >= rage_check) {{
+        rage_point = 0;
+        rage_check = rage_check + 10;
+        rage_token = xsPlayerAttribute(harris_galvas, 498); 
+        rage_gain = rage_token + gain + temp_gain ;
+        xsSetPlayerAttribute(harris_galvas, 498, rage_gain) ;
+        xsEffectAmount(cAddAttribute,{HeroInfo.ZAKARE.ID},{ObjectAttribute.STONE_COSTS} , rage_gain, harris_galvas);
+        bool boiling_rage = (anger_issue_event == 1) && (rage_check >= 410);
+        if (rage_check % 2 == 0) {{
+            temp_gain = temp_gain + 1.0;
+        }}
+    }}
+    if (boiling_rage == true) {{
+        xsDisplayInstructions("<GREY>Haris: RAAAAAAAAAA !!! I'M GONNA PUT MY FIST UP YOUR JAWS YOU DIRT ZOMBIFIED SOLDIER BASTARD !!!", 45, harris_galvas, {UnitInfo.HUSKARL.ID}, 0, false, true, "peak_anger_management", harris_galvas);
+        gain = gain + 10;
+    }}
+    
+}}
+"""
+    xs_harris +=f"""
+int class_id_units_harris_galvas = -1;
+void setup_harris(){{
+int harris_galvas = xsGetWorldPlayerId(7);
+xsResetTaskAmount();
+xsTaskAmount(cTaskAttrWorkValue1, -400);
+xsTaskAmount(cTaskAttrWorkValue2, 180);
+xsTaskAmount(cTaskAttrWorkRange, 0);
+xsTaskAmount(cTaskAttrSearchWaitTime, {ObjectAttribute.REGENERATION_RATE});
+xsTaskAmount(cTaskAttrCombatLevelFlag, 1+2);
+xsTaskAmount(cTaskAttrOwnerType, 2);
+xsTaskAmount(cTaskAttrTaskType, cTaskTypeStinger);   
+xsModifyObjectTasks({HeroInfo.HROLF_THE_GANGER.ID}, harris_galvas);     
+xsEffectAmount(cSetAttribute,{HeroInfo.HROLF_THE_GANGER.ID}, {ObjectAttribute.HIT_POINTS}, 300, harris_galvas);
+xsEffectAmount(cSetAttribute,{HeroInfo.HROLF_THE_GANGER.ID}, {ObjectAttribute.ATTACK}, 256*4 + 6, harris_galvas);
+xsEffectAmount(cSetAttribute,{HeroInfo.HROLF_THE_GANGER.ID}, {ObjectAttribute.ARMOR}, 256*4 + 1, harris_galvas);
+xsEffectAmount(cSetAttribute,{HeroInfo.HROLF_THE_GANGER.ID}, {ObjectAttribute.ARMOR}, 256*3 + 1, harris_galvas);
+xsEffectAmount(cSetAttribute,{HeroInfo.HROLF_THE_GANGER.ID}, {ObjectAttribute.ATTACK_RELOAD_TIME}, 0.3, harris_galvas);
+xsEffectAmount(cSetAttribute,{HeroInfo.HROLF_THE_GANGER.ID}, {ObjectAttribute.COMBAT_ABILITY}, 132, harris_galvas);
+    """
+    xs_harris += f"""class_id_units_harris_galvas = xsArrayCreateInt({size}, 0, "harris_galvas_array");\n"""
+    for i in range(len(XS_general_ID)):
+        class_id = XS_general_ID[i]
+        xs_harris += f"xsArraySetInt(class_id_units_harris_galvas, {i},{class_id});\n"
+    xs_harris += "}"
+    xs_harris += f"""
+void bone_breaking_anger(){{
+int harris_galvas = xsGetWorldPlayerId(7);
+xsEffectAmount(cAddAttribute,{HeroInfo.ZAKARE.ID},{ObjectAttribute.STONE_COSTS} , -15, harris_galvas);
+xsResetTaskAmount();
+xsTaskAmount(cTaskAttrWorkValue1, -0.8);
+xsTaskAmount(cTaskAttrWorkValue2, 2);
+xsTaskAmount(cTaskAttrWorkRange, 1);
+xsTaskAmount(cTaskAttrSearchWaitTime, {ObjectAttribute.MOVEMENT_SPEED});
+xsTaskAmount(cTaskAttrCombatLevelFlag, 1+2);
+xsTaskAmount(cTaskAttrTaskType, cTaskTypeStinger);
+xsModifyObjectTasks(906, harris_galvas);
+
+xsResetTaskAmount();
+xsTaskAmount(cTaskAttrWorkValue1, -0.8);
+xsTaskAmount(cTaskAttrWorkValue2, 2);
+xsTaskAmount(cTaskAttrWorkRange, 1);
+xsTaskAmount(cTaskAttrSearchWaitTime, {ObjectAttribute.MOVEMENT_SPEED});
+xsTaskAmount(cTaskAttrTaskType, cTaskTypeStinger);
+xsTaskAmount(cTaskAttrCombatLevelFlag, 1+2);
+xsModifyObjectTasks(912, harris_galvas);
+xsEffectAmount(cSetAttribute,912, {ObjectAttribute.COMBAT_ABILITY}, 128, harris_galvas);
+xsEffectAmount(cSetAttribute,906, {ObjectAttribute.COMBAT_ABILITY}, 128, harris_galvas);  
+
+    """
+    xs_harris += f"""
+    for (i = 0; < xsArrayGetSize(class_id_units_harris_galvas)) {{
+        int class_id = xsArrayGetInt(class_id_units_harris_galvas, i);
+        xsTaskAmount(cTaskAttrObjectClass, class_id);
+        xsModifyObjectTasks(906, harris_galvas);
+        xsTaskAmount(cTaskAttrObjectClass, class_id);
+        xsModifyObjectTasks(912, harris_galvas);
+        }}
+}}
+
+void angry_arrows(){{
+int harris_galvas = xsGetWorldPlayerId(7);
+xsEffectAmount(cSetAttribute,900, {ObjectAttribute.PROJECTILE_UNIT}, 367, harris_galvas);
+xsEffectAmount(cSetAttribute,900, {ObjectAttribute.PROJECTILE_ARC}, 0, harris_galvas);
+xsEffectAmount(cAddAttribute,{HeroInfo.ZAKARE.ID},{ObjectAttribute.STONE_COSTS} , -45, morrange);
+}}
+void angry_arrows_chemistry(){{
+int harris_galvas = xsGetWorldPlayerId(7);
+xsEffectAmount(cSetAttribute,900, {ObjectAttribute.PROJECTILE_UNIT}, 378, harris_galvas);
+}}
+void unraged_spirit(){{
+int harris_galvas = xsGetWorldPlayerId(7);
+xsEffectAmount(cSetAttribute,906, {ObjectAttribute.DEAD_UNIT_ID}, {HeroInfo.HROLF_THE_GANGER.ID}, harris_galvas);
+xsEffectAmount(cAddAttribute,{HeroInfo.ZAKARE.ID},{ObjectAttribute.STONE_COSTS} , -55, harris_galvas);
+xsEffectAmount(cSetAttribute,{HeroInfo.HROLF_THE_GANGER.ID}, {ObjectAttribute.DEAD_UNIT_ID}, 693, harris_galvas);
+}}
+void CRITICAL_RAGE(){{
+int harris_galvas = xsGetWorldPlayerId(7);
+xsEffectAmount(cSetAttribute, 912, {ObjectAttribute.MAXIMUM_CHARGE}, 160, harris_galvas);
+xsEffectAmount(cSetAttribute, 912, {ObjectAttribute.RECHARGE_RATE}, 15, harris_galvas);
+xsEffectAmount(cSetAttribute, 912, {ObjectAttribute.CHARGE_EVENT}, 1);
+xsEffectAmount(cSetAttribute, 912, {ObjectAttribute.CHARGE_TYPE}, 1, harris_galvas);
+xsEffectAmount(cAddAttribute,{HeroInfo.ZAKARE.ID},{ObjectAttribute.STONE_COSTS} , -45, harris_galvas);
+}}
+void seething() {{
+int harris_galvas = xsGetWorldPlayerId(7);
+xsEffectAmount(cAddAttribute,{HeroInfo.ZAKARE.ID},{ObjectAttribute.STONE_COSTS} , -15, harris_galvas);
+"""
+    for i in range(len(XS_general_ID)):
+        class_id = XS_general_ID[i]
+        if class_id in melee_general_ID:
+            xs_harris += f"xsEffectAmount(cAddAttribute, {class_id}, {ObjectAttribute.ATTACK}, 256*4 + 1, harris_galvas);\n"
+        else:
+            xs_harris += f"xsEffectAmount(cAddAttribute, {class_id}, {ObjectAttribute.ATTACK}, 256*3 + 1, harris_galvas);\n"
+    xs_harris +="}"
+    xs_harris +=f"""
+void bullheaded() {{
+int harris_galvas = xsGetWorldPlayerId(7);
+xsEffectAmount(cAddAttribute,{HeroInfo.ZAKARE.ID},{ObjectAttribute.STONE_COSTS} , -15, harris_galvas);
+    """
+    for i in range(len(XS_general_ID)):
+        class_id = XS_general_ID[i]
+        xs_harris += f"xsEffectAmount(cAddAttribute, {class_id}, {ObjectAttribute.HIT_POINTS}, 10, harris_galvas);\n"
+    xs_harris += "}"
+
+    with open(xs_input_path, "a") as script_sister_land_pine:
+        script_sister_land_pine.write(xs_harris)
+    return xs_harris
+
+
+def area_open (scenario, trigger_manager):
+    xs_input_path = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\AoE2DE\\resources\\_common\\xs\\security_breach_in_ruin.xs"
+    xs_area = """
+bool value = false;
+    """
+    with open(xs_input_path, "a") as script_sister_land_pine:
+        script_sister_land_pine.write(xs_area)
+    return xs_area
+def wave_function(scenario, trigger_manager, vector, unit, danger_level, quantity, spawn_rate, rule_name,
+                  second_area_vector):
+    xs_input_path = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\AoE2DE\\resources\\_common\\xs\\security_breach_in_ruin.xs"
+    # Define the rule and the player
+    # In XS  a comment start with //
+
+    # For this ONE I'd like to start with an empty space to separate it form the rest
+    xs_script_wave = f"""
+"""
+    # check if every variable is in order and unpack
+    if len(unit) != len(quantity) or len(unit) != len(spawn_rate):
+        raise f"Error : quantity, unit and spawn_rate must have the same lenght if it's not the case the XS code will not work check\n Unit dictionary : {unit} \n quantity : {quantity} \n spawn rate : {spawn_rate} "
+    else:
+        for i in range(len(unit)):
+            unit_id = unit[i]
+            quantity_value = quantity[i]
+            spawn_rate_value = spawn_rate[i]
+            xs_script_wave += f"""
+//Count the total unit spawned
+int totalSpawnedEnemy_{rule_name}_{unit_id}_{i} = 0;
+//Is the max unit that can spawn when the rule start
+int maxSpawnEnemy_{rule_name}_{unit_id}_{i} = {quantity_value};
+//Spawn_rate of the unit
+int SpawnRateEnemy_{rule_name}_{unit_id}_{i} = {spawn_rate_value};
+    """
+        # check the length because if not then it will break stuff, although the scenario is rewritten every time so it's just more a way to point it out before entering it
+
+        xs_script_wave += f"""
+// Rule name, spawn interval XS required each rule to have a different name
+rule {rule_name} 
+//Minimum time between the execution of the rule
+minInterval 15
+maxInterval 15
+//Status of the rule when the game start, rule is activated in the danger rule function
+inactive
+
+{{ 
+// Get player 8 real ID, lobby order mess ID 
+int PlayerID = xsGetWorldPlayerId(8);
+"""
+        if len(unit) != len(vector):
+            raise f"Error : Unit and vector must be the same lenght, one vector per unit, to define a vector make list with tuple [(x_coord,y_coord,x_increment,y_increment, limit_x, limit_y), and so on and so on] "
+        else:
+            for i in range(len(vector)):
+                if isinstance(second_area_vector, list):
+                    # In case of the second area, we unpack it's value for XS too
+                    unit_id = unit[i]
+                    second_area_x, second_area_y, x_incrementation_second_area, y_incrementation_second_area, limit_x_sec_area, limit_y_sec_area, open_variable = \
+                        second_area_vector[i][0]
+                    xs_script_wave += f"""
+    //Varible for spawning and coordinate define inside the rule, so it's reset at every interaction with the rule
+    float x_spawn_sec_area_{rule_name}_{unit_id}_{i} = {second_area_x};
+    float y_spawn_sec_area_{rule_name}_{unit_id}_{i} = {second_area_y};
+
+    float base_x_spawn_sec_area_{rule_name}_{unit_id}_{i} = {second_area_x};
+    float base_y_spawn_sec_area_{rule_name}_{unit_id}_{i} = {second_area_y};
+
+    float x_incrementation_sec_area_{rule_name}_{unit_id}_{i} = {x_incrementation_second_area};
+    float y_incrementation_sec_area_{rule_name}_{unit_id}_{i} = {y_incrementation_second_area};
+
+    float limit_x_sec_area_{rule_name}_{unit_id}_{i} = {limit_x_sec_area};
+    float limit_y_sec_area_{rule_name}_{unit_id}_{i} = {limit_y_sec_area};
+    """
+
+                unit_id = unit[i]
+                x_spawn, y_spawn, x_incrementation, y_incrementation, limit_x, limit_y = vector[i][0]
+                xs_script_wave += f"""
+    //Coordinate for the normal spawn, those are always define no matter the choice
+    float x_spawn_{rule_name}_{unit_id}_{i} = {x_spawn};
+    float y_spawn_{rule_name}_{unit_id}_{i} = {y_spawn};
+
+    float base_x_spawn_{rule_name}_{unit_id}_{i} = {x_spawn};
+    float base_y_spawn_{rule_name}_{unit_id}_{i} = {y_spawn};
+
+    float x_incrementation_{rule_name}_{unit_id}_{i} = {x_incrementation};
+    float y_incrementation_{rule_name}_{unit_id}_{i} = {y_incrementation};
+
+    float limit_x_{rule_name}_{unit_id}_{i} = {limit_x};
+    float limit_y_{rule_name}_{unit_id}_{i} = {limit_y};
+            """
+    for i in range(len(unit)):
+        unit_id = unit[i]
+        # create the vectors depending if the secondary area is a case or not
+        if not isinstance(second_area_vector, list):
+            second_area_vector = None
+            vector_line = f"vector spawnPos_{rule_name}_{unit_id}_{i} = xsVectorSet(x_spawn_{rule_name}_{unit_id}_{i}, y_spawn_{rule_name}_{unit_id}_{i}, 0);"
+            vector_second = None
+        else:
+            vector_line = f"vector spawnPos_{rule_name}_{unit_id}_{i} = xsVectorSet(x_spawn_{rule_name}_{unit_id}_{i}, y_spawn_{rule_name}_{unit_id}_{i}, 0);"
+            vector_second = f"vector spawnPos_sec_area{rule_name}_{unit_id}_{i} = xsVectorSet(x_spawn_sec_area_{rule_name}_{unit_id}_{i}, y_spawn_sec_area_{rule_name}_{unit_id}_{i}, 0);"
+
+        xs_script_wave += f"""
+    // ----------------------------------------
+
+
+        for (qty_{rule_name}_{unit_id}_{i} = 0; < SpawnRateEnemy_{rule_name}_{unit_id}_{i}) {{
+
+"""
+        if not isinstance(second_area_vector, list):
+            # if the second area isn't define we do a normal rule
+            xs_script_wave += f"""
+{vector_line}
+int newUnit_{rule_name}_{unit_id}_{i} = xsCreateUnit({unit_id}, PlayerID, spawnPos_{rule_name}_{unit_id}_{i}, false, true, false);
+totalSpawnedEnemy_{rule_name}_{unit_id}_{i} = totalSpawnedEnemy_{rule_name}_{unit_id}_{i} + 1;
+if (x_spawn_{rule_name}_{unit_id}_{i}>= limit_x_{rule_name}_{unit_id}_{i}) {{
+    y_spawn_{rule_name}_{unit_id}_{i} = y_incrementation_{rule_name}_{unit_id}_{i} + y_spawn_{rule_name}_{unit_id}_{i};
+    x_spawn_{rule_name}_{unit_id}_{i} = base_x_spawn_{rule_name}_{unit_id}_{i};
+}} else {{
+    x_spawn_{rule_name}_{unit_id}_{i} = x_incrementation_{rule_name}_{unit_id}_{i} + x_spawn_{rule_name}_{unit_id}_{i};
+}}
+
+        }}
+"""
+        else:
+            # if the second area is define we do a rule that check if that area has been reached the boolean, if not then we do normal spawn, but the number of unit count is double to reduce the amount of spawn
+
+            xs_script_wave += f"""
+            // if that check is the area is reached
+             if ({open_variable}) {{
+                {vector_second}
+                // it's better to have the spawn function returning is ID to avoid desync
+                int newUnitSEC_{rule_name}_{unit_id}_{i} = xsCreateUnit({unit_id}, PlayerID, spawnPos_sec_area{rule_name}_{unit_id}_{i}, false, true, false);
+                //Total enemy count, rule disable itself when the count reached it's maximum
+                totalSpawnedEnemy_{rule_name}_{unit_id}_{i} = totalSpawnedEnemy_{rule_name}_{unit_id}_{i} + 1;
+                // Once X has reached is limit, it goes back to it's value and Y get an increase
+                if (x_spawn_sec_area_{rule_name}_{unit_id}_{i}>= limit_x_sec_area_{rule_name}_{unit_id}_{i}) 
+                {{
+                    //ADD the incrementation to Y
+                    y_spawn_sec_area_{rule_name}_{unit_id}_{i} = y_incrementation_sec_area_{rule_name}_{unit_id}_{i} + y_spawn_sec_area_{rule_name}_{unit_id}_{i};
+                    //RESET X
+                    x_spawn_sec_area_{rule_name}_{unit_id}_{i} = base_x_spawn_sec_area_{rule_name}_{unit_id}_{i};
+                }} 
+                else 
+                {{
+                // Well if X hasn't reached is value it get increase
+                    x_spawn_{rule_name}_{unit_id}_{i} = x_incrementation_{rule_name}_{unit_id}_{i} + y_spawn_sec_area_{rule_name}_{unit_id}_{i};
+                }}
+             }}
+            else {{
+                {vector_line}
+                int newUnit_{rule_name}_{unit_id}_{i} = xsCreateUnit({unit_id}, PlayerID, spawnPos_{rule_name}_{unit_id}_{i}, false, true, false);
+                totalSpawnedEnemy_{rule_name}_{unit_id}_{i} = totalSpawnedEnemy_{rule_name}_{unit_id}_{i} + 2;
+                // Once X has reached is limit, it goes back to it's value and Y get an increase
+                if (x_spawn_{rule_name}_{unit_id}_{i}>= limit_x_{rule_name}_{unit_id}_{i}) {{
+                    y_spawn_{rule_name}_{unit_id}_{i} = y_incrementation_{rule_name}_{unit_id}_{i} +  y_spawn_{rule_name}_{unit_id}_{i};
+                    x_spawn_{rule_name}_{unit_id}_{i} = base_x_spawn_{rule_name}_{unit_id}_{i};
+                }} else {{
+                    // Well if X hasn't reached is value it get increase
+                    x_spawn_{rule_name}_{unit_id}_{i} = x_incrementation_{rule_name}_{unit_id}_{i} + x_spawn_{rule_name}_{unit_id}_{i};
+                }}
+
+            }}                 
+        }}
+            """
+    mount_the_bool = """"""
+    for i in range(len(unit)):
+        unit_id = unit[i]
+        if i == len(unit) - 1:
+
+            mount_the_bool += f"""
+(totalSpawnedEnemy_{rule_name}_{unit_id}_{i} >= maxSpawnEnemy_{rule_name}_{unit_id}_{i});
+"""
+        else:
+            mount_the_bool += f"""(totalSpawnedEnemy_{rule_name}_{unit_id}_{i} >= maxSpawnEnemy_{rule_name}_{unit_id}_{i}) &&"""
+    xs_script_wave += f"""
+        //This if disable the rule once all unit has been spawned 
+        bool check_disable_{rule_name} = {mount_the_bool}
+        if (check_disable_{rule_name} == true) {{
+            xsDisableSelf();
+            """
+    for i in range(len(unit)):
+        unit_id = unit[i]
+        xs_script_wave += f"""
+    //Rule must be re-usable so the total count is reset when we want to disable the rule
+ totalSpawnedEnemy_{rule_name}_{unit_id}_{i} = 0;
+"""
+    xs_script_wave += f"""
+        return;
+    }}
+
+    """
+    xs_script_wave += "}"
+    # Write inside the XS file
+    with open(xs_input_path, "a") as script_sister_land_pine:
+        script_sister_land_pine.write(xs_script_wave)
+
+def xs_variable (scenario,list_xs):
+    xs_input_path = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\AoE2DE\\resources\\_common\\xs\\security_breach_in_ruin.xs"
+    xs_area = ""
+    for i in range (len(list_xs)):
+
+        xs_var = list_xs[i]
+        xs_variable=f"{xs_var}_variable"
+
+        xs_area += f"""
+bool {xs_variable} = false;
+            """
+    with open(xs_input_path, "a") as script_sister_land_pine:
+        script_sister_land_pine.write(xs_area)
+
+def xs_function(scenario,list_xs):
+    xs_input_path = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\AoE2DE\\resources\\_common\\xs\\security_breach_in_ruin.xs"
+    xs_area = ""
+    for i in range(len(list_xs)):
+        xs_var = list_xs[i]
+        xs_variable = f"{xs_var}_variable"
+        xs_area +=f"""
+void {xs_var}_function () {{
+
+{xs_variable} = true ;
+}}
+"""
+        with open(xs_input_path, "a") as script_sister_land_pine:
+            script_sister_land_pine.write(xs_area)
+

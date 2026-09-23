@@ -50,16 +50,17 @@ from AoE2ScenarioParser.objects.managers.option_manager import OptionManager
 
 from AoE2ScenarioParser.datasets.support.info_dataset_base import InfoDatasetBase
 from AoE2ScenarioParser.scenarios.aoe2_de_scenario import AoE2DEScenario
-from XS import xs_function,danger_level, wave_function, danger_rule_spawn, Gary_buerg_xs
+from XS import xs_function,danger_level, wave_function, danger_rule_spawn, Gary_buerg_xs, Markus_skioliose_XS, Morange_legellan_xs,hamish_davelton_xs, warmer_stephano_xs, harris_galvas_xs, area_open
 from level_display import level_display
 from wave_composition import spawn_data_wave
-from Class_function import John_Galverb, Gary_buerg
+from Class_function import John_Galverb, Gary_buerg,Markus_skoliose, Morange_legellan, Hamish_davelton, Warmer_stephano, Haris_galvas
+from special_area import special_area_function
 from unicodedata import category
 # Dictionnaire pour le script
 from AoE2ScenarioParser.objects.support.area import Area
 
-input_path = "C:\\Users\\USER\\Games\\Age of Empires 2 DE\\[ID]\\resources\\_common\\scenario\\7V1 security breach in the ruins.aoe2scenario"
-output_path = "C:\\Users\\USER\\Games\\Age of Empires 2 DE\\[ID]\\resources\\_common\\scenario\\7V1 security breach in the ruins v0-1.aoe2scenario"
+input_path = "C:\\Users\\USER\\Games\\Age of Empires 2 DE\\ID_AOE2\\resources\\_common\\scenario\\7V1 security breach in the ruins.aoe2scenario"
+output_path = "C:\\Users\\USER\\Games\\Age of Empires 2 DE\\ID_AOE2\\resources\\_common\\scenario\\7V1 security breach in the ruins v0-1.aoe2scenario"
 
 scenario = AoE2DEScenario.from_file(input_path)
 scenario_uuid = scenario.uuid
@@ -129,6 +130,7 @@ def AREA_maker(scenario,flag,x_calculus,y_calculus,name,xs_name):
         simple_area.new_effect.script_call(
             message=xs_name,
         )
+        special_area_function(scenario, trigger_manager, x_coordinate, y_coordinate, simple_area)
         if flag == OtherInfo.FLAG_K.ID:
             for p in range (1,8):
                 simple_area.new_effect.play_sound(
@@ -143,6 +145,7 @@ def AREA_maker(scenario,flag,x_calculus,y_calculus,name,xs_name):
                 source_player=PlayerId.EIGHT,
                 object_list_unit_id=BuildingInfo.PALISADE_WALL.ID,
             )
+
 print(list_flag_A)
 Gaia_change = trigger_manager.add_trigger(
         name=f"Everything become GAIA",
@@ -201,10 +204,34 @@ for m in range (len(flag_list)):
         xs_name=XS,
     )
 
-
 xs_function(scenario,trigger_manager)
-level_display(scenario,trigger_manager)
 danger_level(scenario,trigger_manager)
+#------------------------------------ CLASS SETUP -------------------------------
+
+John_Galverb(scenario,trigger_manager)
+Gary_buerg(scenario,trigger_manager)
+Gary_buerg_xs(scenario,trigger_manager)
+Markus_skioliose_XS(scenario,trigger_manager)
+Markus_skoliose(scenario,trigger_manager)
+Morange_legellan_xs(scenario,trigger_manager)
+Morange_legellan(scenario,trigger_manager)
+hamish_davelton_xs(scenario,trigger_manager)
+Hamish_davelton(scenario,trigger_manager)
+warmer_stephano_xs(scenario, trigger_manager)
+Warmer_stephano(scenario,trigger_manager)
+harris_galvas_xs(scenario,trigger_manager)
+Haris_galvas(scenario,trigger_manager)
+
+
+#------------------------------------ Area spawn setup -------------------------------
+
+area_open(scenario,trigger_manager)
+
+
+
+level_display(scenario,trigger_manager)
+
+
 for cfg in spawn_data_wave:
     wave_function(
         scenario,
@@ -223,8 +250,29 @@ danger_rule_spawn(
     configs=spawn_data_wave,   # on passe toute la liste
     rule_name=cfg.rule_name,
 )
-#------------------------------------ CLASS SETUP -------------------------------
-John_Galverb(scenario,trigger_manager)
-Gary_buerg(scenario,trigger_manager)
-Gary_buerg_xs(scenario,trigger_manager)
+
+
+for p in range (1,8):
+    age_tech = [TechInfo.FEUDAL_AGE.ID,TechInfo.CASTLE_AGE.ID,TechInfo.IMPERIAL_AGE.ID]
+    xs_call = ["feudal_age_reached","castle_age_reached","imperial_age_reached"]
+    for i in range (len(age_tech)):
+        xs = xs_call[i]
+        tech_id = age_tech[i]
+        age_check = trigger_manager.add_trigger(
+            name=xs,
+            enabled=True,
+            looping=False,
+            execute_on_load=True,
+        )
+        age_check.new_condition.research_technology(
+            source_player=p,
+            technology=tech_id,
+        )
+        age_check.new_effect.script_call(
+            message=xs,
+        )
+        age_check.new_effect.deactivate_trigger(
+            trigger_id=age_check.trigger_id,
+        )
+
 scenario.write_to_file(output_path)

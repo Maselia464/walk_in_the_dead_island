@@ -1,4 +1,6 @@
 from dataclasses import dataclass
+from email.headerregistry import UniqueUnstructuredHeader
+from importlib.metadata import requires
 
 from AoE2ScenarioParser.datasets.effects import attributes
 from AoE2ScenarioParser.objects.support import area
@@ -717,3 +719,817 @@ def Morange_legellan(scenario,trigger_manager):
         max_units_affected=1,
         **area.select_entire_map().to_dict(),
     )
+
+def Hamish_davelton(scenario,trigger_manager):
+    quest_duration_deer = 60*2
+    quest_duration_kill = 60*2
+    player = PlayerId.FIVE
+    shared_trigger = None
+    scenario_uuid = scenario.uuid
+    area = Area.from_uuid(scenario_uuid)
+    set_up_aqua_tech = [
+        technology_setup(
+            name="The call of La Morrígan ",
+            description="The call of La Morrígan <cost> : For the next 30 minutes kill as many enemy units has you can ! Depending on your performance you army ge buffed",
+            tech_id=TechInfo.BLANK_TECHNOLOGY_0.ID,
+            location=BuildingInfo.SHRINE.ID,
+            button=1,
+            enabled=True,
+            player=player,
+            research_time=5,
+            cost_type=(Attribute.GOLD_STORAGE, Attribute.UNUSED_RESOURCE_498),
+            cost_quantity=(3500, 1),
+            icon_id=64,
+        ),
+        technology_setup(
+            name="The request of Cernunnos",
+            description="The request of Cernunnos <cost> : the deer statut become available your villagers to build, build 20 deers statut has fast as possible, depending on your performance, your villager will get buffed and the deer status will become resource",
+            tech_id=TechInfo.BLANK_TECHNOLOGY_1.ID,
+            location=BuildingInfo.SHRINE.ID,
+            button=2,
+            enabled=True,
+            player=player,
+            research_time=5,
+            cost_type=(Attribute.GOLD_STORAGE, Attribute.UNUSED_RESOURCE_498),
+            cost_quantity=(3500, 1),
+            icon_id=17,
+        ),
+        technology_setup(
+            name="Ceremony for brigid",
+            description="Ceremony for brigid : You start a ceremony for brigid, gather your villager and shaman arround your shrine to praise the goddess of the blacksmith and accelerate the ceremony, the faster it's searched the better the bonuses",
+            tech_id=TechInfo.BLANK_TECHNOLOGY_2.ID,
+            location=BuildingInfo.SHRINE.ID,
+            button=3,
+            enabled=True,
+            player=player,
+            research_time=600,
+            cost_type=(Attribute.GOLD_STORAGE, Attribute.UNUSED_RESOURCE_498),
+            cost_quantity=(1, 1),
+            icon_id=59,
+        ),
+
+        ]
+    set_up_aqua_object = [
+        object_setup(
+            object=BuildingInfo.SHRINE.ID,
+            name="Expedition tent",
+            description="Build the expedition shrine <cost> : Hamish expedition shrine, allow you to answer the call of the celtic gods and make your army more powerfull, also your villagers work faster arround it",
+            building=UnitInfo.VILLAGER_MALE.ID,
+            button=7,
+            enabled_object=True,
+            player=player,
+            cost_type=(Attribute.WOOD_STORAGE, Attribute.STONE_STORAGE),
+            cost_quantity=(400, 175),
+        ),
+        object_setup(
+            object=BuildingInfo.ARMY_TENT_C.ID,
+            name="Deer status",
+            description="Build the deer status : Satisfy the quest of Cernunnos by building those deer status everywhere, the cost increase as you build more",
+            building=UnitInfo.VILLAGER_MALE.ID,
+            button=9,
+            enabled_object=False,
+            player=player,
+            cost_type=(Attribute.WOOD_STORAGE, None),
+            cost_quantity=(200, None),
+        ),
+
+    ]
+    for cfg in set_up_aqua_tech:
+        shared_trigger = tech_define(
+            scenario,
+            trigger_manager,
+            name=cfg.name,
+            description=cfg.description,
+            tech_id=cfg.tech_id,
+            player=cfg.player,
+            location=cfg.location,
+            button=cfg.button,
+            enabled=cfg.enabled,
+            research_time=cfg.research_time,
+            cost_quantity=cfg.cost_quantity,
+            cost_type=cfg.cost_type,
+            trigger=shared_trigger,
+            icon_id=cfg.icon_id,
+        )
+    for cfg in set_up_aqua_object:
+        shared_trigger = object_define(
+            scenario,
+            trigger_manager,
+            name=cfg.name,
+            description=cfg.description,
+            object=cfg.object,
+            player=cfg.player,
+            building=cfg.building,
+            button=cfg.button,
+            enabled_object=cfg.enabled_object,
+            cost_quantity=cfg.cost_quantity,
+            cost_type=cfg.cost_type,
+            trigger=shared_trigger,
+        )
+    shared_trigger.new_effect.script_call(
+        message="setup_hamish();"
+    )
+    shared_trigger.new_effect.modify_resource(
+        source_player=player,
+        tribute_list=Attribute.UNUSED_RESOURCE_498,
+        quantity=1,
+        operation=Operation.SET,
+    )
+
+    list_unit_transform = [HeroInfo.ATAULF.ID,HeroInfo.ALGIRDAS.ID,HeroInfo.ARISTIDES.ID]
+    deer_status_start = trigger_manager.add_trigger(
+        name="Hamish start the cerberos quest",
+        enabled=True,
+        looping=True,
+        execute_on_load=True,
+    )
+    deer_status_end = trigger_manager.add_trigger(
+        name="Hamish end the cerberos quest",
+        enabled=False,
+        looping=True,
+        execute_on_load=True,
+    )
+    transform = trigger_manager.add_trigger(
+        name="Hamish end the cerberos quest",
+        enabled=False,
+        looping=True,
+        execute_on_load=True,
+    )
+# ------------------------------------------------------------------------- START !
+    deer_status_start.new_condition.research_technology(
+        source_player=player,
+        technology=TechInfo.BLANK_TECHNOLOGY_1.ID,
+    )
+    deer_status_start.new_effect.enable_disable_object(
+        source_player=player,
+        object_list_unit_id=BuildingInfo.ARMY_TENT_C.ID,
+        enabled=True,
+    )
+    deer_status_start.new_effect.display_timer(
+        message="Build has many deer status has you can before, you have : %d",
+        timer=1,
+        time_unit=TimeUnit.MINUTES_AND_SECONDS,
+        display_time=quest_duration_deer,
+
+    )
+    deer_status_start.new_effect.change_object_cost(
+        source_player=player,
+        object_list_unit_id=BuildingInfo.ARMY_TENT_C.ID,
+
+    )
+    deer_status_start.new_effect.activate_trigger(
+        trigger_id=deer_status_end.trigger_id,
+    )
+    deer_status_start.new_effect.deactivate_trigger(
+        trigger_id=deer_status_start.trigger_id,
+    )
+#------------------------------------------------------------------------- DEER END
+    deer_status_end.new_condition.timer(
+        timer=quest_duration_deer,
+    )
+    deer_status_end.new_effect.enable_disable_object(
+        source_player=player,
+        object_list_unit_id=BuildingInfo.ARMY_TENT_C.ID,
+        enabled=False,
+    )
+    deer_status_end.new_effect.remove_object(
+        source_player=player,
+        object_list_unit_id=BuildingInfo.ARMY_TENT_C.ID,
+        object_state=ObjectState.FOUNDATION,
+    )
+    deer_status_end.new_effect.script_call(
+        message="count_deer_status();"
+    )
+
+    deer_status_end.new_effect.activate_trigger(
+        trigger_id=transform.trigger_id,
+    )
+    deer_status_end.new_effect.deactivate_trigger(
+        trigger_id=deer_status_end.trigger_id,
+    )
+
+# ------------------------------------------------------------------------- TRANSFORM
+    transform.new_effect.enable_disable_technology(
+        technology=TechInfo.BLANK_TECHNOLOGY_1.ID,
+        source_player=player,
+        enabled=False,
+    )
+    transform.new_effect.enable_disable_technology(
+        technology=TechInfo.BLANK_TECHNOLOGY_1.ID,
+        source_player=player,
+        enabled=True,
+    )
+    transform.new_effect.modify_resource(
+        source_player=player,
+        tribute_list=Attribute.UNUSED_RESOURCE_498,
+        quantity=1,
+        operation=Operation.SET,
+    )
+    for i in range (len(list_unit_transform)):
+        transform.new_effect.replace_object(
+            source_player=player,
+            target_player=PlayerId.GAIA,
+            object_list_unit_id=list_unit_transform[i],
+            object_list_unit_id_2=list_unit_transform[i],
+            **area.select_entire_map().to_dict(),
+        )
+        transform.new_effect.kill_object(
+            source_player=PlayerId.GAIA,
+            object_list_unit_id=list_unit_transform[i],
+            **area.select_entire_map().to_dict(),
+        )
+    deer_status_end.new_effect.remove_object(
+        source_player=player,
+        object_list_unit_id=BuildingInfo.ARMY_TENT_C.ID,
+        object_state=ObjectState.ALIVE,
+    )
+
+    Kill_function_hamish_start = trigger_manager.add_trigger(
+        name="Hamish start la morigan",
+        enabled=True,
+        looping=True,
+        execute_on_load=True,
+    )
+    Kill_function_hamish_end = trigger_manager.add_trigger(
+        name="Hamish end start la morigan",
+        enabled=False,
+        looping=True,
+        execute_on_load=True,
+    )
+
+    Kill_function_hamish_start.new_condition.research_technology(
+        source_player=player,
+        technology=TechInfo.BLANK_TECHNOLOGY_0.ID,
+    )
+    Kill_function_hamish_start.new_effect.script_call(
+        message="hamish_limit_calcul();"
+    )
+    Kill_function_hamish_start.new_effect.display_timer(
+        message="Kill has many enemy has you can before the timer run out: %d",
+        timer=1,
+        time_unit=TimeUnit.MINUTES_AND_SECONDS,
+        display_time=quest_duration_kill,
+
+    )
+    Kill_function_hamish_start.new_effect.activate_trigger(
+        trigger_id=Kill_function_hamish_end.trigger_id,
+    )
+    Kill_function_hamish_start.new_effect.deactivate_trigger(
+        trigger_id=Kill_function_hamish_start.trigger_id,
+    )
+    Kill_function_hamish_end.new_condition.timer(
+        timer = quest_duration_kill,
+    )
+    Kill_function_hamish_end.new_effect.script_call(
+        message = "kill_count_hamish();",
+    )
+    Kill_function_hamish_end.new_effect.modify_resource(
+        source_player=player,
+        tribute_list=Attribute.UNUSED_RESOURCE_498,
+        quantity=1,
+        operation=Operation.SET,
+    )
+    Kill_function_hamish_end.new_effect.activate_trigger(
+        trigger_id=Kill_function_hamish_start.trigger_id,
+    )
+    Kill_function_hamish_end.new_effect.deactivate_trigger(
+        trigger_id=Kill_function_hamish_end.trigger_id,
+    )
+    transform.new_effect.enable_disable_technology(
+        technology=TechInfo.BLANK_TECHNOLOGY_0.ID,
+        source_player=player,
+        enabled=False,
+    )
+    transform.new_effect.enable_disable_technology(
+        technology=TechInfo.BLANK_TECHNOLOGY_0.ID,
+        source_player=player,
+        enabled=True,
+    )
+    ceremony_start = trigger_manager.add_trigger(
+        name="Hamish start the ceremony",
+        enabled=True,
+        looping=True,
+        execute_on_load=True,
+    )
+    ceremony_end = trigger_manager.add_trigger(
+        name="Hamish end start la morigan",
+        enabled=False,
+        looping=True,
+        execute_on_load=True,
+    )
+    ceremony_start.new_condition.technology_state(
+        source_player=player,
+        technology=TechInfo.BLANK_TECHNOLOGY_2.ID,
+        quantity=TechnologyState.RESEARCHING,
+    )
+    ceremony_start.new_effect.script_call(
+        message="activate_ceremony();"
+    )
+    ceremony_start.new_effect.activate_trigger(
+        trigger_id=ceremony_end.trigger_id,
+    )
+    ceremony_start.new_effect.deactivate_trigger(
+        trigger_id=ceremony_start.trigger_id,
+    )
+    ceremony_end.new_condition.research_technology(
+        source_player=player,
+        technology=TechInfo.BLANK_TECHNOLOGY_2.ID,
+    )
+    ceremony_end.new_effect.script_call(
+        message="ceremonie_reward();"
+    )
+    ceremony_end.new_effect.activate_trigger(
+        trigger_id=ceremony_start.trigger_id,
+    )
+    ceremony_end.new_effect.deactivate_trigger(
+        trigger_id=ceremony_end.trigger_id,
+    )
+
+def Warmer_stephano(scenario,trigger_manager):
+    player = PlayerId.SIX
+    shared_trigger = None
+    scenario_uuid = scenario.uuid
+    list_unit = [
+        HeroInfo.AETHELFRITH.ID,
+        HeroInfo.ARISTIDES.ID,
+        HeroInfo.ATAULF.ID,
+        HeroInfo.ALEXANDER_NEVSKI.ID,
+        HeroInfo.ARTAPHERNES.ID,
+        HeroInfo.ALEXANDER_DISMOUNTED.ID,
+        HeroInfo.AMOGHAVARSHA.ID,
+    ]
+    list_tower_dummy =[(BuildingInfo.FORTIFIED_OUTPOST.ID,HeroInfo.ARCHER_OF_THE_EYES.ID),(BuildingInfo.FORTIFIED_TOWER.ID,HeroInfo.ROBIN_HOOD.ID)
+    ,(BuildingInfo.THE_TOWER_OF_FLIES.ID,HeroInfo.PACAL_II.ID),(BuildingInfo.FIRE_TOWER.ID,HeroInfo.SU_DINGFANG.ID),
+                 (BuildingInfo.SEA_TOWER.ID,HeroInfo.ATTILA_THE_HUN.ID),(BuildingInfo.OUTPOST.ID,HeroInfo.ARCHBISHOP.ID)
+                 ,(BuildingInfo.ARMY_TENT_E.ID,HeroInfo.ARARIBOIA.ID)]
+    area = Area.from_uuid(scenario_uuid)
+    set_up_purple_tech = [
+        technology_setup(
+            name="Balista tower",
+            description="Unlock balista tower : Unlock the balista tower equiped with a bolt that pierce thought enemy units",
+            tech_id=TechInfo.BLANK_TECHNOLOGY_0.ID,
+            location=BuildingInfo.TENT_C.ID,
+            button=1,
+            enabled=True,
+            player=player,
+            research_time=5,
+            cost_type=(Attribute.UNUSED_RESOURCE_498, None),
+            cost_quantity=(1, None),
+            icon_id=38,
+        ),
+        technology_setup(
+            name="Unlock longbow tower",
+            description="Unlock longbow tower : Unlock the longbow tower, has a huge range and deal a lot of damage but shoot very slow",
+            tech_id=TechInfo.BLANK_TECHNOLOGY_1.ID,
+            location=BuildingInfo.TENT_C.ID,
+            button=2,
+            enabled=True,
+            player=player,
+            research_time=5,
+            cost_type=(Attribute.UNUSED_RESOURCE_498, None),
+            cost_quantity=(1, None),
+            icon_id=179,
+        ),
+        technology_setup(
+            name="Unlock gun tower",
+            description="Unlock gun tower : Unlock the gun tower, decent range and damage this tower shoot bullets that break enemy armor",
+            tech_id=TechInfo.BLANK_TECHNOLOGY_2.ID,
+            location=BuildingInfo.TENT_C.ID,
+            button=3,
+            enabled=True,
+            player=player,
+            research_time=5,
+            cost_type=(Attribute.UNUSED_RESOURCE_498, None),
+            cost_quantity=(1, None),
+            icon_id=25,
+        ),
+        technology_setup(
+            name="Unlock fire tower",
+            description="Unlock fire tower: Unlock the fire tower, low range tower that shoot fast and burn enemy units",
+            tech_id=TechInfo.BLANK_TECHNOLOGY_3.ID,
+            location=BuildingInfo.TENT_C.ID,
+            button=4,
+            enabled=True,
+            player=player,
+            research_time=5,
+            cost_type=(Attribute.UNUSED_RESOURCE_498, None),
+            cost_quantity=(1, None),
+            icon_id=12,
+        ),
+        technology_setup(
+            name="Unlock bomb tower",
+            description="Unlock bomb tower: Unlock the bomb tower, has low damage and high AOE, very good at clearing ligh troops",
+            tech_id=TechInfo.BLANK_TECHNOLOGY_4.ID,
+            location=BuildingInfo.TENT_C.ID,
+            button=6,
+            enabled=True,
+            player=player,
+            research_time=5,
+            cost_type=(Attribute.UNUSED_RESOURCE_498, None),
+            cost_quantity=(1, None),
+            icon_id=39,
+        ),
+        technology_setup(
+            name="Unlock maintenance tower",
+            description="Unlock maintenance tower: doesn't attack but repair walls and towers arround it",
+            tech_id=TechInfo.BLANK_TECHNOLOGY_5.ID,
+            location=BuildingInfo.TENT_C.ID,
+            button=7,
+            enabled=True,
+            player=player,
+            research_time=5,
+            cost_type=(Attribute.UNUSED_RESOURCE_498, None),
+            cost_quantity=(1, None),
+            icon_id=60,
+        ),
+        technology_setup(
+            name="Unlock supervision tower",
+            description="Unlock supervision tower: doesn't attack give extra attack to all towers arround it",
+            tech_id=TechInfo.BLANK_TECHNOLOGY_6.ID,
+            location=BuildingInfo.TENT_C.ID,
+            button=8,
+            enabled=True,
+            player=player,
+            research_time=5,
+            cost_type=(Attribute.UNUSED_RESOURCE_498, None),
+            cost_quantity=(1, None),
+            icon_id=103,
+        ),
+
+    ]
+    set_up_purple_object = [
+        object_setup(
+            object=BuildingInfo.TENT_C.ID,
+            name="Expedition tent",
+            description="Build the expedition shrine <cost> : Warmer expedition tent, allow you to unlock tower for your defence workshop",
+            building=UnitInfo.VILLAGER_MALE.ID,
+            button=7,
+            enabled_object=True,
+            player=player,
+            cost_type=(Attribute.WOOD_STORAGE, Attribute.STONE_STORAGE),
+            cost_quantity=(200, 175),
+        ),
+        object_setup(
+            object=BuildingInfo.WOODEN_FORT.ID,
+            name="defence workshop",
+            description="Build the defence workshop <cost> : Defensive building that allow you to build unpacked tower to deploy anywhere for your defences, a wise man said : has an engineer you must think outside the box",
+            building=UnitInfo.VILLAGER_MALE.ID,
+            button=9,
+            enabled_object=True,
+            player=player,
+            cost_type=(Attribute.WOOD_STORAGE, None),
+            cost_quantity=(650, None),
+        ),
+        object_setup(
+            object=HeroInfo.AETHELFRITH.ID,
+            name="unpacked balista tower",
+            description="Build the unpack balista tower <cost> : Special tower that fire bolt that pierce enemy, very good against grouped of enemy",
+            building=BuildingInfo.WOODEN_FORT.ID,
+            button=1,
+            enabled_object=False,
+            player=player,
+            cost_type=(Attribute.WOOD_STORAGE, Attribute.STONE_STORAGE),
+            cost_quantity=(450, 150),
+        ),
+        object_setup(
+            object=HeroInfo.ARISTIDES.ID,
+            name="unpacked longbow tower",
+            description="Build the unpack longbow tower <cost> : Special tower that has a huge range and deal a lot of damage, however take a long time to reload ",
+            building=BuildingInfo.WOODEN_FORT.ID,
+            button=2,
+            enabled_object=False,
+            player=player,
+            cost_type=(Attribute.STONE_STORAGE, Attribute.WOOD_STORAGE),
+            cost_quantity=(450, 100),
+        ),
+        object_setup(
+            object=HeroInfo.ATAULF.ID,
+            name="unpacked gun tower",
+            description="Build the unpacked gun tower <cost> : tower equiped with a riffleman that shot your enemy and break their armor, has a decent range and damage a bit slow to fire, yes the riffleman is unpacked with the tower ",
+            building=BuildingInfo.WOODEN_FORT.ID,
+            button=3,
+            enabled_object=False,
+            player=player,
+            cost_type=(Attribute.STONE_STORAGE, Attribute.WOOD_STORAGE),
+            cost_quantity=(450, 100),
+        ),
+        object_setup(
+            object=HeroInfo.ALEXANDER_NEVSKI.ID,
+            name="unpacked fire tower",
+            description="Build the unpacked fire tower <cost> : Fire tower that has a low range, attack fast and barbecue your enemy ",
+            building=BuildingInfo.WOODEN_FORT.ID,
+            button=4,
+            enabled_object=False,
+            player=player,
+            cost_type=(Attribute.STONE_STORAGE, Attribute.WOOD_STORAGE),
+            cost_quantity=(350, 250),
+        ),
+        object_setup(
+            object=HeroInfo.ARTAPHERNES.ID,
+            name="unpacked bomb tower",
+            description="Build the unpacked bomb tower <cost> : Tower that bombs to the enemy, has a high aoe a low range and low damage, very good to clear light enemy ",
+            building=BuildingInfo.WOODEN_FORT.ID,
+            button=6,
+            enabled_object=False,
+            player=player,
+            cost_type=(Attribute.STONE_STORAGE, Attribute.WOOD_STORAGE),
+            cost_quantity=(300, 200),
+        ),
+        object_setup(
+            name="unpacked maintenance tower",
+            description="Build the unpacked maintenance tower <cost> : Tower that repair walls and towers arround it ",
+            object=HeroInfo.ALEXANDER_DISMOUNTED.ID,
+            building=BuildingInfo.WOODEN_FORT.ID,
+            button=7,
+            enabled_object=False,
+            player=player,
+            cost_type=(Attribute.STONE_STORAGE, Attribute.WOOD_STORAGE),
+            cost_quantity=(200, 200),
+        ),
+        object_setup(
+            object=HeroInfo.AMOGHAVARSHA.ID,
+            name="unpacked superivision tower",
+            description="Build the unpacked supervision tower <cost> : Special tower that boost your tower by giving it +2 attacks",
+            building=BuildingInfo.WOODEN_FORT.ID,
+            button=8,
+            enabled_object=False,
+            player=player,
+            cost_type=(Attribute.STONE_STORAGE, Attribute.GOLD_STORAGE),
+            cost_quantity=(350, 200),
+        ),
+        object_setup(
+            object=HeroInfo.ZAKARE.ID,
+            name="Warmer handbook",
+            description="The defence workshop allow you to build different type of tower to add for your defence, once the tower is built you have to move it and use the change weapon, carefull you can't move the tower after, unlock your special tower from the expedition tent",
+            building=BuildingInfo.WOODEN_FORT.ID,
+            button=15,
+            enabled_object=False,
+            player=player,
+            cost_type=(Attribute.UNUSED_RESOURCE_200, None),
+            cost_quantity=(9999, None),
+
+        ),
+
+    ]
+    for cfg in set_up_purple_tech:
+        shared_trigger = tech_define(
+            scenario,
+            trigger_manager,
+            name=cfg.name,
+            description=cfg.description,
+            tech_id=cfg.tech_id,
+            player=cfg.player,
+            location=cfg.location,
+            button=cfg.button,
+            enabled=cfg.enabled,
+            research_time=cfg.research_time,
+            cost_quantity=cfg.cost_quantity,
+            cost_type=cfg.cost_type,
+            trigger=shared_trigger,
+            icon_id=cfg.icon_id,
+        )
+    for cfg in set_up_purple_object:
+        shared_trigger = object_define(
+            scenario,
+            trigger_manager,
+            name=cfg.name,
+            description=cfg.description,
+            object=cfg.object,
+            player=cfg.player,
+            building=cfg.building,
+            button=cfg.button,
+            enabled_object=cfg.enabled_object,
+            cost_quantity=cfg.cost_quantity,
+            cost_type=cfg.cost_type,
+            trigger=shared_trigger,
+        )
+    shared_trigger.new_effect.script_call(
+        message="setup_warmer();"
+    )
+    shared_trigger.new_effect.modify_resource(
+        source_player=player,
+        tribute_list=Attribute.UNUSED_RESOURCE_498,
+        quantity=1,
+        operation=Operation.SET,
+    )
+    tower_transform = trigger_manager.add_trigger(
+        name="Transform tower",
+        enabled=True,
+        looping=True,
+        execute_on_load=True,
+    )
+    for i in range (len(list_tower_dummy)):
+        tower, tower_dummy = list_tower_dummy[i]
+        tower_transform.new_condition.objects_in_area(
+            source_player=player,
+            object_list=tower_dummy,
+            object_state=ObjectState.ALIVE,
+            **area.select_entire_map().to_dict(),
+            quantity=1,
+        )
+        if tower_dummy != BuildingInfo.ARMY_TENT_E.ID:
+            tower_transform.new_condition.or_()
+        tower_transform.new_effect.replace_object(
+            source_player=player,
+            target_player=player,
+            object_list_unit_id=tower_dummy,
+            object_list_unit_id_2=tower,
+            **area.select_entire_map().to_dict(),
+        )
+    for i in range (len(set_up_purple_tech)):
+        technology = set_up_purple_tech[i]
+        unit_unlock = list_unit[i]
+        tech_id = technology.tech_id
+        tech_name = technology.name
+        tower_transform = trigger_manager.add_trigger(
+            name=f"Unlocked tower {tech_name}",
+            enabled=True,
+            looping=False,
+            execute_on_load=True,
+        )
+        tower_transform.new_condition.research_technology(
+            source_player=player,
+            technology=tech_id,
+        )
+        tower_transform.new_effect.enable_disable_object(
+            source_player=player,
+            object_list_unit_id=unit_unlock,
+        )
+
+def Haris_galvas(scenario,trigger_manager):
+    player = PlayerId.SEVEN
+    shared_trigger = None
+    tech_list = [(TechInfo.BLANK_TECHNOLOGY_1.ID,"bone_breaking_anger();"),(TechInfo.BLANK_TECHNOLOGY_2.ID,"angry_arrows();"),
+                 (TechInfo.BLANK_TECHNOLOGY_3.ID,"unraged_spirit();"),(TechInfo.BLANK_TECHNOLOGY_4.ID,"CRITICAL_RAGE();"),
+                 (TechInfo.BLANK_TECHNOLOGY_5.ID,"seething();"),(TechInfo.BLANK_TECHNOLOGY_6.ID,"bullheaded();")]
+    set_up_grey_tech = [
+        technology_setup(
+            name="Bone breaking anger",
+            description="cost 15 rage point : Infantry and cavalry make enemy slower when they hit then",
+            tech_id=TechInfo.BLANK_TECHNOLOGY_1.ID,
+            location=BuildingInfo.TENT_C.ID,
+            button=1,
+            enabled=True,
+            player=player,
+            research_time=5,
+            cost_type=(Attribute.UNUSED_RESOURCE_498, None),
+            cost_quantity=(1, None),
+            icon_id=179,
+        ),
+        technology_setup(
+            name="Angry arrows",
+            description="cost 25 rage point : Archer line arrow now pierce enemy unit",
+            tech_id=TechInfo.BLANK_TECHNOLOGY_2.ID,
+            location=BuildingInfo.TENT_C.ID,
+            button=2,
+            enabled=True,
+            player=player,
+            research_time=5,
+            cost_type=(Attribute.UNUSED_RESOURCE_498, None),
+            cost_quantity=(1, None),
+            icon_id=25,
+        ),
+        technology_setup(
+            name="Too angry to die",
+            description="cost 45 rage point : At death infantry units become Unraged spirit, the unraged spirit decay over time, hits very fast and break armor",
+            tech_id=TechInfo.BLANK_TECHNOLOGY_3.ID,
+            location=BuildingInfo.TENT_C.ID,
+            button=3,
+            enabled=True,
+            player=player,
+            research_time=5,
+            cost_type=(Attribute.UNUSED_RESOURCE_498, None),
+            cost_quantity=(1, None),
+            icon_id=12,
+        ),
+        technology_setup(
+            name="CRITICAL RAGE",
+            description="cost 45 rage point : your calvary units gain a charge attack that deal 160 damages, takes a long time to reload ",
+            tech_id=TechInfo.BLANK_TECHNOLOGY_4.ID,
+            location=BuildingInfo.TENT_C.ID,
+            button=4,
+            enabled=True,
+            player=player,
+            research_time=5,
+            cost_type=(Attribute.UNUSED_RESOURCE_498, None),
+            cost_quantity=(1, None),
+            icon_id=39,
+        ),
+        technology_setup(
+            name="Seething",
+            description="cost 15 rage point : All units gain +1 attacks, this tech is infinite",
+            tech_id=TechInfo.BLANK_TECHNOLOGY_5.ID,
+            location=BuildingInfo.TENT_C.ID,
+            button=6,
+            enabled=True,
+            player=player,
+            research_time=5,
+            cost_type=(Attribute.UNUSED_RESOURCE_498, None),
+            cost_quantity=(1, None),
+            icon_id=60,
+        ),
+        technology_setup(
+            name="Bullheaded",
+            description="cost 25 rage point : All units gain +10 hp, this tech is infinite",
+            tech_id=TechInfo.BLANK_TECHNOLOGY_6.ID,
+            location=BuildingInfo.TENT_C.ID,
+            button=7,
+            enabled=True,
+            player=player,
+            research_time=5,
+            cost_type=(Attribute.UNUSED_RESOURCE_498, None),
+            cost_quantity=(1, None),
+            icon_id=103,
+        ),
+    ]
+    set_up_grey_object = [
+        object_setup(
+            object=BuildingInfo.TENT_C.ID,
+            name="Expedition tent",
+            description="Build the expedition shrine <cost> : Harris expedition tent, allow you to exchange is anger point with special tech for is army",
+            building=UnitInfo.VILLAGER_MALE.ID,
+            button=8,
+            enabled_object=True,
+            player=player,
+            cost_type=(Attribute.WOOD_STORAGE, Attribute.STONE_STORAGE),
+            cost_quantity=(200, 175),
+        ),
+        object_setup(
+            object=HeroInfo.ZAKARE.ID,
+            name="Harris handbook",
+            description="Rage point : <cost> \nHarris is clinicaly insane, You must kill enemy unit in a short period of time to gain rage point to spend here, the stone stone is the amount of rage point you have",
+            building=BuildingInfo.TENT_C.ID,
+            button=15,
+            enabled_object=False,
+            player=player,
+            cost_type=(Attribute.STONE_STORAGE, Attribute.UNUSED_RESOURCE_200),
+            cost_quantity=(0, 9999),
+
+        ),
+
+    ]
+    for cfg in set_up_grey_tech:
+        shared_trigger = tech_define(
+            scenario,
+            trigger_manager,
+            name=cfg.name,
+            description=cfg.description,
+            tech_id=cfg.tech_id,
+            player=cfg.player,
+            location=cfg.location,
+            button=cfg.button,
+            enabled=cfg.enabled,
+            research_time=cfg.research_time,
+            cost_quantity=cfg.cost_quantity,
+            cost_type=cfg.cost_type,
+            trigger=shared_trigger,
+            icon_id=cfg.icon_id,
+        )
+    for cfg in set_up_grey_object:
+        shared_trigger = object_define(
+            scenario,
+            trigger_manager,
+            name=cfg.name,
+            description=cfg.description,
+            object=cfg.object,
+            player=cfg.player,
+            building=cfg.building,
+            button=cfg.button,
+            enabled_object=cfg.enabled_object,
+            cost_quantity=cfg.cost_quantity,
+            cost_type=cfg.cost_type,
+            trigger=shared_trigger,
+        )
+    shared_trigger.new_effect.script_call(
+        message="setup_harris()",
+    )
+    for i in range (len(tech_list)):
+        tech_id, xs = tech_list[i]
+        if tech_id == TechInfo.BLANK_TECHNOLOGY_6.ID or tech_id == TechInfo.BLANK_TECHNOLOGY_5.ID:
+            boolean_man = True
+        else:
+            boolean_man = False
+        tech_trigger = trigger_manager.add_trigger(
+            name=f"Rage tech {tech_id}",
+            enabled=True,
+            looping=boolean_man
+        )
+        tech_trigger.new_condition.research_technology(
+            source_player=player,
+            technology=tech_id,
+        )
+        tech_trigger.new_effect.script_call(
+            message=xs,
+        )
+        if tech_id == TechInfo.BLANK_TECHNOLOGY_6.ID or tech_id == TechInfo.BLANK_TECHNOLOGY_5.ID:
+            tech_trigger.new_effect.enable_disable_technology(
+                source_player=player,
+                technology=tech_id,
+                enabled=False,
+            )
+            tech_trigger.new_effect.enable_disable_technology(
+                source_player=player,
+                technology=tech_id,
+                enabled=True,
+            )
+

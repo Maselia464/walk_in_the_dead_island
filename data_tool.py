@@ -216,3 +216,4 @@ def object_define(scenario,trigger_manager,player,object,building,button,enabled
         resource_3_quantity=qua_3,
     )
     return obj_preparation
+

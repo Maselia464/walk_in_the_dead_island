@@ -1,3 +1,5 @@
+from dataclasses import dataclass
+
 from AoE2ScenarioParser.datasets.effects import attributes
 from AoE2ScenarioParser.objects.support import area
 
@@ -49,55 +51,56 @@ from AoE2ScenarioParser.scenarios.support.data_triggers import DataTriggers
 from AoE2ScenarioParser.objects.managers.option_manager import OptionManager
 
 from AoE2ScenarioParser.datasets.support.info_dataset_base import InfoDatasetBase
-from AoE2ScenarioParser.scenarios.aoe2_de_scenario import AoE2DEScenario
-from dataclasses import dataclass
-from typing import Optional
-
-
-
 @dataclass
-class SpawnConfig:
-    main_vector : list #XS use vector to handle coordinate, vector contains X Y AND Z, Z is never used because AOE 2 has fake height
-    second_area_vector : list #This value is optionnal, basically certain part of the map aren't
-    # open to the player until they reach it, once they reach enemy can spawn here, otherwise it send back to main
-    unit: list      # The unit ID, using the unit dataset of parser, can take multiple unit
-    danger_level: list #XS function I made, basically it's a value that keep increasing diificulty inb this case danger level must be between two value to activate the rule
+class extension_setup:
+    area_x: float
+    area_y: float
+    area_x2: float
+    area_y2: float
+    scenario : any
+    trigger_manager : any
+    trigger_edit : any
 
-    quantity: list #Number of total unit
-    spawn_rate: list # Number of unit that spawn in one volley
-    rule_name: str #The name of the rule important since XS kinda hate same name, even if the documentation say otherwise, DESYNC EXIST, AND DESYNC LOVE TO DO RANDOM BS
-coord_spawn_main_spawn = {
-#Dictionary that will contains all the possible spawning area and spawn variation
-
-    #Some_area_name = [(X_coord,Y_coord
-    # ,incrementation of X(only positive), incrementation of Y (only positive)
-    # ,coord where the x stop at, coord where the y stop at]
-
-    "right side a": [(1.0,1.0,
-                      1.0,1.0,
-                      15,8)],
-
-    "right side b": [(8.0,8.0,
-                      7.0,7.0,
-                      15,8)],
-    "up_corner_spawn" : [(
-                          194.0,0.0
-                          ,1.0,1.0,
-                          5,30,"value")]
-
-}
-spawn_data_wave = [ #Here for this wave I summon 35 longbowman five per volley and 77 royal janisary seven per volley at the same place
-    #Making list allow me to place multiple unit in the same rule avoiding endless of CTRL C and CTRL V or for loop with list in for loop
-    SpawnConfig(
-        second_area_vector=None,
-        main_vector=[
-        coord_spawn_main_spawn["right side a"],
-        coord_spawn_main_spawn["right side b"],
-    ],
-        unit=[UnitInfo.MILITIA.ID,UnitInfo.SPEARMAN.ID],
-        danger_level=[0,15],
-        quantity=[45,45],
-        spawn_rate=[5,7],
-        rule_name="Main_wave_start",
-    )]
-
+def extension_area_detector(scenario,trigger_manager, area_x, area_y,area_x2,area_y2,trigger_edit):
+    scenario_uuid = scenario.uuid
+    for p in range(1, 8):
+        if p == 1:
+            trigger_edit.new_condition.or_()
+        trigger_edit.new_condition.objects_in_area(
+            source_player=p,
+            quantity=1,
+            area_x1=area_x,
+            area_y1=area_y,
+            area_x2=area_x2,
+            area_y2=area_y2,
+        )
+        if p != PlayerId.SEVEN:
+            trigger_edit.new_condition.or_()
+def special_area_function (scenario,trigger_manager,X_area, Y_area,trigger):
+    scenario_uuid = scenario.uuid
+    if X_area == 76.5 and Y_area == 6.5:
+       data_extension = [ extension_setup(
+            area_x=95,
+            area_y=0,
+            area_x2=34,
+            area_y2=4,
+           scenario=scenario,
+           trigger_manager=trigger_manager,
+           trigger_edit = trigger,
+        )
+       ]
+       for i in data_extension:
+           extension_area_detector(
+               i.scenario,
+               i.trigger_manager,
+               area_x=i.area_x,
+               area_y=i.area_y,
+               area_x2=i.area_x2,
+               area_y2=i.area_y2,
+               trigger_edit=i.trigger_edit,
+           )
+       trigger.new_effect.script_call(
+           message="dry_spawn_knight_function();"
+       )
+    else :
+        return None
