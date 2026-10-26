@@ -60,7 +60,10 @@ class extension_setup:
     scenario : any
     trigger_manager : any
     trigger_edit : any
-
+@dataclass
+class SpawnZone:
+    script: str
+    rectangles: list[tuple[int, int, int, int]]
 def extension_area_detector(scenario,trigger_manager, area_x, area_y,area_x2,area_y2,trigger_edit):
     scenario_uuid = scenario.uuid
     for p in range(1, 8):
@@ -102,5 +105,205 @@ def special_area_function (scenario,trigger_manager,X_area, Y_area,trigger):
        trigger.new_effect.script_call(
            message="dry_spawn_knight_function();"
        )
+    elif X_area == 238.5 and Y_area == 6.5:
+        data_extension = [extension_setup(
+            area_x=222,
+            area_y=5,
+            area_x2=229,
+            area_y2=31,
+            scenario=scenario,
+            trigger_manager=trigger_manager,
+            trigger_edit=trigger,
+        ),
+            extension_setup(
+                area_x=213,
+                area_y=14,
+                area_x2=238,
+                area_y2=22,
+                scenario=scenario,
+                trigger_manager=trigger_manager,
+                trigger_edit=trigger,
+            ),
+            extension_setup(
+                area_x=195,
+                area_y=0,
+                area_x2=239,
+                area_y2=4,
+                scenario=scenario,
+                trigger_manager=trigger_manager,
+                trigger_edit=trigger,
+            )
+        ]
+        for i in data_extension:
+            extension_area_detector(
+                i.scenario,
+                i.trigger_manager,
+                area_x=i.area_x,
+                area_y=i.area_y,
+                area_x2=i.area_x2,
+                area_y2=i.area_y2,
+                trigger_edit=i.trigger_edit,
+            )
+        trigger.new_effect.script_call(
+            message="dry_spawn_corner_fortress_function();"
+        )
+    elif X_area == 139.5 and Y_area == 6.5:
+        data_extension = [extension_setup(
+            area_x=132,
+            area_y=14,
+            area_x2=139,
+            area_y2=31,
+            scenario=scenario,
+            trigger_manager=trigger_manager,
+            trigger_edit=trigger,
+        ),
+            extension_setup(
+                area_x=213,
+                area_y=14,
+                area_x2=238,
+                area_y2=22,
+                scenario=scenario,
+                trigger_manager=trigger_manager,
+                trigger_edit=trigger,
+            ),
+            extension_setup(
+                area_x=123,
+                area_y=24,
+                area_x2=131,
+                area_y2=31,
+                scenario=scenario,
+                trigger_manager=trigger_manager,
+                trigger_edit=trigger,
+            )
+        ]
+        for i in data_extension:
+            extension_area_detector(
+                i.scenario,
+                i.trigger_manager,
+                area_x=i.area_x,
+                area_y=i.area_y,
+                area_x2=i.area_x2,
+                area_y2=i.area_y2,
+                trigger_edit=i.trigger_edit,
+            )
+        trigger.new_effect.script_call(
+            message="dry_spawn_L_function();"
+        )
+    elif X_area == 222.5 and Y_area == 33.5:
+        data_extension = [
+            extension_setup(
+                area_x=231,
+                area_y=24,
+                area_x2=238,
+                area_y2=49,
+                scenario=scenario,
+                trigger_manager=trigger_manager,
+                trigger_edit=trigger,
+            ),
+        ]
+    elif X_area == 130.5 and Y_area == 114.5:
+        data_extension = [
+            extension_setup(
+                area_x=6,
+                area_y=114,
+                area_x2=130,
+                area_y2=130,
+                scenario=scenario,
+                trigger_manager=trigger_manager,
+                trigger_edit=trigger,
+            ),
+            extension_setup(
+                area_x=6,
+                area_y=114,
+                area_x2=130,
+                area_y2=238,
+                scenario=scenario,
+                trigger_manager=trigger_manager,
+                trigger_edit=trigger,
+            ),
+        ]
     else :
         return None
+
+
+def normal_area_spawn_activate(scenario,trigger_manager):
+    scenario_uuid = scenario.uuid
+    spawn_list = [
+        SpawnZone(
+            script="jungle_spawn_river_function();",
+            rectangles=[
+                (177, 186, 184, 193),
+                (177, 195, 202, 211),
+                (186, 186, 193, 193),
+                (177, 177, 184, 184),
+                (150, 177, 175, 211),
+            ],
+        ),
+
+        SpawnZone(
+            script="jungle_spawn_mill_function();",
+            rectangles=[
+                (167, 87, 175, 95),
+                (177, 87, 184, 94),
+                (168, 96, 175, 103),
+                (159, 87, 166, 94),
+                (150, 69, 175, 85),
+            ],
+        ),
+        SpawnZone(
+            script="jungle_spawn_hero_cav_function();",
+            rectangles=[
+                (51, 78, 58, 85),
+                (60, 78, 67, 85),
+                (51, 87, 58, 94),
+                (42, 78, 49, 85),
+                (51, 69, 58, 76),
+            ],
+        ),
+        SpawnZone(
+            script="jungle_spawn_crusader_function();",
+            rectangles=[
+                (114, 42, 121, 49),
+                (114, 33, 121, 40),
+                (87, 33, 112, 58),
+                (114, 51, 121, 58),
+                (123, 42, 130, 49),
+            ],
+        ),
+        SpawnZone(
+            script="jungle_spawn_crusader_function();",
+            rectangles=[
+                (231, 177, 239, 202),
+                (213, 186, 230, 193),
+                (222, 177, 229, 184),
+                (222, 195, 229, 202),
+                (213, 238, 204, 238),
+            ],
+        ),
+    ]
+    for zone in spawn_list:
+        activate_spawn_area = trigger_manager.add_trigger(
+            name="Activate the spawn",
+            looping=False,
+            enabled=True,
+        )
+        rectangles = zone.rectangles
+        total_conditions = 7 * len(rectangles)
+
+        condition_index = 0
+        for x1, y1, x2, y2 in zone.rectangles:
+            for p in range (1,8):
+                activate_spawn_area.new_condition.objects_in_area(
+                    source_player=p,
+                    quantity=1,
+                    area_x1=x1,
+                    area_x2=x2,
+                    area_y1=y1,
+                    area_y2=y2,
+                )
+                condition_index += 1
+
+                if condition_index < total_conditions:
+                    activate_spawn_area.new_condition.or_()
+
+

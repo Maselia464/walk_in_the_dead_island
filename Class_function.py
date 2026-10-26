@@ -427,6 +427,17 @@ def Markus_skoliose (scenario,trigger_manager):
             cost_type=(Attribute.WOOD_STORAGE, Attribute.STONE_STORAGE),
             cost_quantity=(200, 75),
         ),
+        object_setup(
+            object=BuildingInfo.OUTPOST.ID,
+            name="Cartograph outpost",
+            description="Build the Cartograph outpost <cost> : for every cartograph outpost standing up at the time level up, you gain an extra skill point to spend on other shops.",
+            building=UnitInfo.VILLAGER_MALE.ID,
+            button=6,
+            enabled_object=True,
+            player=player,
+            cost_type=(Attribute.WOOD_STORAGE, Attribute.STONE_STORAGE),
+            cost_quantity=(2000, 475),
+        ),
     ]
     for cfg in set_up_green_tech:
         shared_trigger = tech_define(

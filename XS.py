@@ -296,6 +296,9 @@ rule setup_variable
 command_post_skillpoint_{p} = xsPlayerAttribute(tracked_player_P{p}, 500); 
 chief_tent_skillpoint_{p} = xsPlayerAttribute(tracked_player_P{p}, 499);
 skill_point_player_{p} = xsPlayerAttribute(tracked_player_P{p}, 498);
+skill_point_player_{p} = skill_point_player_{p} + 1;
+command_post_skillpoint_{p} = command_post_skillpoint_{p} + 1;
+chief_tent_skillpoint_{p} = chief_tent_skillpoint_{p} + 1;
 xsSetPlayerAttribute(tracked_player_P{p}, 498, skill_point_player_{p});
 xsSetPlayerAttribute(tracked_player_P{p}, 499, chief_tent_skillpoint_{p}) ;
 xsSetPlayerAttribute(tracked_player_P{p}, 500, command_post_skillpoint_{p}) ;
@@ -308,7 +311,9 @@ P{p}_five_level_treshold = P{p}_five_level_treshold + 5;
             variable_3 = 6
             xs_to_add_five = f"""
 command_post_skillpoint_{p} = xsPlayerAttribute(tracked_player_P{p}, 500); 
-chief_tent_skillpoint_{p} = xsPlayerAttribute(tracked_player_P{p}, 499); 
+chief_tent_skillpoint_{p} = xsPlayerAttribute(tracked_player_P{p}, 499);
+command_post_skillpoint_{p} = command_post_skillpoint_{p} + 1;
+chief_tent_skillpoint_{p} = chief_tent_skillpoint_{p} + 1;
 xsSetPlayerAttribute(tracked_player_P{p}, 499, chief_tent_skillpoint_{p}) ;
 xsSetPlayerAttribute(tracked_player_P{p}, 500, command_post_skillpoint_{p}) ;
 P{p}_five_level_treshold = P{p}_five_level_treshold + 5;
@@ -323,15 +328,20 @@ gary_atk_bonus = gary_atk_bonus + 1;
             variable_2 = 8
             variable_3 = 9
             xs_to_add_five = f"""
+int outpost_bonus = xsGetObjectCount(tracked_player_P{p},{BuildingInfo.OUTPOST.ID});
 command_post_skillpoint_{p} = xsPlayerAttribute(tracked_player_P{p}, 500); 
 chief_tent_skillpoint_{p} = xsPlayerAttribute(tracked_player_P{p}, 499);
+command_post_skillpoint_{p} = command_post_skillpoint_{p} + 1 + outpost_bonus;
+chief_tent_skillpoint_{p} = chief_tent_skillpoint_{p} + 1 + outpost_bonus;
 xsSetPlayerAttribute(tracked_player_P{p}, 499, chief_tent_skillpoint_{p}) ;
 xsSetPlayerAttribute(tracked_player_P{p}, 500, command_post_skillpoint_{p}) ;
 P{p}_five_level_treshold = P{p}_five_level_treshold + 5;
             """
             xs_to_add_ten =f"""
 skill_point_player_{p} = xsPlayerAttribute(tracked_player_P{p}, 498);
+skill_point_player_{p} = skill_point_player_{p} + 1;
 xsSetPlayerAttribute(tracked_player_P{p}, 498, skill_point_player_{p});
+P{p}_ten_level_treshold = P{p}_ten_level_treshold + 10 ;
 """
 
         elif p == PlayerId.FOUR:
@@ -341,13 +351,17 @@ xsSetPlayerAttribute(tracked_player_P{p}, 498, skill_point_player_{p});
             xs_to_add_five = f"""
 command_post_skillpoint_{p} = xsPlayerAttribute(tracked_player_P{p}, 500); 
 chief_tent_skillpoint_{p} = xsPlayerAttribute(tracked_player_P{p}, 499);
+command_post_skillpoint_{p} = command_post_skillpoint_{p} + 1;
+chief_tent_skillpoint_{p} = chief_tent_skillpoint_{p} + 1;
 xsSetPlayerAttribute(tracked_player_P{p}, 499, chief_tent_skillpoint_{p}) ;
 xsSetPlayerAttribute(tracked_player_P{p}, 500, command_post_skillpoint_{p}) ;
 P{p}_five_level_treshold = P{p}_five_level_treshold + 5;
             """
             xs_to_add_ten = f"""
 skill_point_player_{p} = xsPlayerAttribute(tracked_player_P{p}, 498);
+skill_point_player_{p} = skill_point_player_{p} +1;
 xsSetPlayerAttribute(tracked_player_P{p}, 498, skill_point_player_{p});
+P{p}_ten_level_treshold = P{p}_ten_level_treshold + 10 ;
 """
         elif p == PlayerId.FIVE:
             variable_1 = 13
@@ -355,7 +369,9 @@ xsSetPlayerAttribute(tracked_player_P{p}, 498, skill_point_player_{p});
             variable_3 = 15
             xs_to_add_five = f"""
 command_post_skillpoint_{p} = xsPlayerAttribute(tracked_player_P{p}, 500); 
-chief_tent_skillpoint_{p} = xsPlayerAttribute(tracked_player_P{p}, 499); 
+chief_tent_skillpoint_{p} = xsPlayerAttribute(tracked_player_P{p}, 499);
+command_post_skillpoint_{p} = command_post_skillpoint_{p} + 1;
+chief_tent_skillpoint_{p} = chief_tent_skillpoint_{p} + 1;
 xsSetPlayerAttribute(tracked_player_P{p}, 499, chief_tent_skillpoint_{p}) ;
 xsSetPlayerAttribute(tracked_player_P{p}, 500, command_post_skillpoint_{p}) ;
 P{p}_five_level_treshold = P{p}_five_level_treshold + 5;
@@ -367,7 +383,8 @@ P{p}_five_level_treshold = P{p}_five_level_treshold + 5;
             xs_to_add_five = f"""
 command_post_skillpoint_{p} = xsPlayerAttribute(tracked_player_P{p}, 500); 
 chief_tent_skillpoint_{p} = xsPlayerAttribute(tracked_player_P{p}, 499);
-
+command_post_skillpoint_{p} = command_post_skillpoint_{p} + 1;
+chief_tent_skillpoint_{p} = chief_tent_skillpoint_{p} + 1;
 xsSetPlayerAttribute(tracked_player_P{p}, 499, chief_tent_skillpoint_{p}) ;
 xsSetPlayerAttribute(tracked_player_P{p}, 500, command_post_skillpoint_{p}) ;
 
@@ -376,6 +393,7 @@ P{p}_five_level_treshold = P{p}_five_level_treshold + 5;
             xs_to_add_ten = f"""
 if (P{p}_ten_level_treshold <= 40)  {{
 skill_point_player_{p} = xsPlayerAttribute(tracked_player_P{p}, 498);
+skill_point_player_{p} = skill_point_player_{p} + 1;
 xsSetPlayerAttribute(tracked_player_P{p}, 498, skill_point_player_{p});
 P{p}_ten_level_treshold = P{p}_ten_level_treshold + 10 ;
 }}
@@ -386,7 +404,9 @@ P{p}_ten_level_treshold = P{p}_ten_level_treshold + 10 ;
             variable_3 = 21
             xs_to_add_five = f"""
 command_post_skillpoint_{p} = xsPlayerAttribute(tracked_player_P{p}, 500); 
-chief_tent_skillpoint_{p} = xsPlayerAttribute(tracked_player_P{p}, 499); 
+chief_tent_skillpoint_{p} = xsPlayerAttribute(tracked_player_P{p}, 499);
+command_post_skillpoint_{p} = command_post_skillpoint_{p} + 1;
+chief_tent_skillpoint_{p} = chief_tent_skillpoint_{p} + 1;
 xsSetPlayerAttribute(tracked_player_P{p}, 499, chief_tent_skillpoint_{p}) ;
 xsSetPlayerAttribute(tracked_player_P{p}, 500, command_post_skillpoint_{p}) ;
 P{p}_five_level_treshold = P{p}_five_level_treshold + 5;
@@ -802,7 +822,7 @@ void know_the_environnement() {{
         class_id = XS_general_ID[i]
         xs_function += f"xsArraySetInt(class_id_units_markus, {i},{class_id});\n"
     xs_function += f"""
-for (i = 0; < xsArrayGetSize(class_id_units)) {{
+for (i = 0; < xsArrayGetSize(class_id_units_markus)) {{
     int class_id = xsArrayGetInt(class_id_units_markus, i);
     bool check_melee = (class_id_units_markus == 906) || (class_id_units_markus == 912) || (class_id_units_markus == 947);
     if (check_melee == true) {{
@@ -1334,7 +1354,7 @@ xsModifyObjectTasks(fireTower, warmer_stephano);
 
     """
     xs_warmer += f"""
-    for (i = 0; < xsArrayGetSize(class_id_units)) {{
+    for (i = 0; < xsArrayGetSize(class_id_units_warmer)) {{
         int class_id = xsArrayGetInt(class_id_units_warmer, i);
         xsTaskAmount(cTaskAttrObjectClass, class_id);
         xsModifyObjectTasks(fireTower, warmer_stephano);
@@ -1720,7 +1740,7 @@ bool {xs_variable} = false;
     with open(xs_input_path, "a") as script_sister_land_pine:
         script_sister_land_pine.write(xs_area)
 
-def xs_function(scenario,list_xs):
+def xs_function_creator(scenario,list_xs):
     xs_input_path = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\AoE2DE\\resources\\_common\\xs\\security_breach_in_ruin.xs"
     xs_area = ""
     for i in range(len(list_xs)):
@@ -1735,3 +1755,551 @@ void {xs_var}_function () {{
         with open(xs_input_path, "a") as script_sister_land_pine:
             script_sister_land_pine.write(xs_area)
 
+def xs_old_man_relic (scenario,trigger_manager):
+    xs_input_path = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\AoE2DE\\resources\\_common\\xs\\security_breach_in_ruin.xs"
+    cursed_units = [
+        (UnitInfo.SPEARMAN.ID, -200, 4),
+        (UnitInfo.PIKEMAN.ID, -200, 4),
+        (UnitInfo.HALBERDIER.ID, -200, 4),
+        (UnitInfo.SKIRMISHER.ID, -150, 2),
+        (UnitInfo.ELITE_SKIRMISHER.ID, -150, 2),
+        (UnitInfo.IMPERIAL_SKIRMISHER.ID, -150, 2),
+    ]
+    xs_old_man = """
+    int old_man_classes = -1;
+    void setup_old_man() {
+        old_man_classes = xsArrayCreateInt(10, 0, "old_man_classes");
+            xsArraySetInt(old_man_classes, 0, 900);
+            xsArraySetInt(old_man_classes, 1, 904);
+            xsArraySetInt(old_man_classes, 2, 906);
+            xsArraySetInt(old_man_classes, 3, 912);
+            xsArraySetInt(old_man_classes, 4, 913);
+            xsArraySetInt(old_man_classes, 5, 918);
+            xsArraySetInt(old_man_classes, 6, 923);
+            xsArraySetInt(old_man_classes, 7, 936);
+            xsArraySetInt(old_man_classes, 8, 944);
+            xsArraySetInt(old_man_classes, 9, 947);
+        }
+"""
+    for  p in range (1,8) :
+        xs_old_man += f"""
+        void enchanted_boots_{p}() {{
+        int player = xsGetWorldPlayerId({p});
+        float speed_bonus = 1.05;
+
+        for (i = 0; < xsArrayGetSize(old_man_classes)) {{
+            int class_id_old_man = xsArrayGetInt(old_man_classes, i);
+            xsEffectAmount(cMulAttribute, class_id_old_man, cMovementSpeed, speed_bonus, player);
+        }}
+    }}
+         """
+    for p in range(1, 8):
+        xs_old_man += f"""
+    void quartz_powder_{p}() {{
+        int player = xsGetWorldPlayerId({p});
+        xsEffectAmount(cAddAttribute, 906, cArmor, 256 * 4 + 5, player);
+        xsEffectAmount(cAddAttribute, 906, cArmor, 256 * 3 + 3, player);
+    }}
+
+    void enchanted_wheat_{p}() {{
+        int player = xsGetWorldPlayerId({p});
+        for (i = 0; < xsArrayGetSize(old_man_classes)) {{
+            int unit_id = xsArrayGetInt(old_man_classes, i);
+            bool is_cav = (unit_id == 912) || (unit_id == 947) || (unit_id == 923) ;
+            if (is_cav == true) {{
+            xsEffectAmount(cMulAttribute, unit_id, cAttackReloadTime, 0.83, player);
+            xsEffectAmount(cAddAttribute, unit_id, cAttack, 256 * 4 + 3, player);
+            xsEffectAmount(cAddAttribute, unit_id, cArmor, -256 * 4 - 1, player);
+            xsEffectAmount(cAddAttribute, unit_id, cArmor, -256 * 3 - 1, player);
+            xsEffectAmount(cAddAttribute, unit_id, cHitpoints, -20, player);
+            }}
+        }}
+    }}
+    """
+    for p in range(1, 8):
+            xs_old_man += f"""
+    void cursed_spears_{p}() {{
+        int player = xsGetWorldPlayerId({p});
+    """
+            for n, (unit_id, bleed_value, bleed_duration) in enumerate(cursed_units):
+                xs_old_man += f"""
+        xsEffectAmount(cSetAttribute, {unit_id}, {ObjectAttribute.COMBAT_ABILITY}, 132, player);
+        xsEffectAmount(cAddAttribute, {unit_id}, {ObjectAttribute.HIT_POINTS}, -10, player);
+        xsResetTaskAmount();
+        xsTaskAmount(cTaskAttrWorkValue1, {bleed_value});
+        xsTaskAmount(cTaskAttrWorkValue2, {bleed_duration});
+        xsTaskAmount(cTaskAttrWorkRange, 1);
+        xsTaskAmount(cTaskAttrSearchWaitTime, {ObjectAttribute.REGENERATION_RATE});
+        xsTaskAmount(cTaskAttrTaskType, cTaskTypeStinger);
+        for (idx_{n} = 0; < xsArrayGetSize(old_man_classes)) {{
+            int target_class_{n} = xsArrayGetInt(old_man_classes, idx_{n});
+            bool is_siege_{n} = (target_class_{n} == 913) || (target_class_{n} == 955) || (target_class_{n} == 951) || (target_class_{n} == 954);
+            if (is_siege_{n} == false) {{
+                xsTaskAmount(cTaskAttrObjectClass, target_class_{n});
+                xsModifyObjectTasks({unit_id}, player);
+            }}
+        }}
+    
+    """
+            xs_old_man += "}\n"
+    for p in range(1, 8):
+        xs_old_man +=f"""
+rule old_man_point_display_{p}
+    active
+    minInterval 1
+    maxInterval 1
+{{
+    int player = xsGetWorldPlayerId({p});
+    float artifact_points_{p} = xsPlayerAttribute(player, 500);
+    xsEffectAmount(cSetAttribute, {HeroInfo.THE_BLACK_PRINCE.ID}, {ObjectAttribute.STONE_COSTS}, artifact_points_{p}, player);
+}}
+
+int hungry_doll_time_{p} = 300;
+int villager_count_{p} = 0;
+int bool_sacrifice_{p} = -1;
+rule count_vill_hungry_doll_{p}
+    inactive
+    minInterval 300
+    maxInterval 601
+    {{
+    int player = xsGetWorldPlayerId({p});
+    villager_count_{p} = xsGetObjectCount(player, 904);
+    if (villager_count_{p} >= 15) {{
+        bool_sacrifice_{p} = 1 ;
+    }}
+    else {{
+        bool_sacrifice_{p} = 0;
+    }}
+}}
+void hungry_doll_{p}() {{
+    xsEnableRule("count_vill_hungry_doll_{p}");
+}}
+
+bool doll_feed_check_{p}() {{
+    if (bool_sacrifice_{p} == 1) {{
+        bool_sacrifice_{p} = -1;
+        return (true);
+    }}
+    return (false);
+}}
+
+bool doll_starve_check_{p}() {{
+    if (bool_sacrifice_{p} == 0) {{
+        bool_sacrifice_{p} = -1;
+        return (true);
+    }}
+    return (false);
+}}
+
+void enchanted_totem_{p}() {{
+    int player = xsGetWorldPlayerId({p});
+    int permaAuraEffects = 0;
+    float atk_size = 3;
+    float atk_reduction = -2;
+    for (i = 0; < xsArrayGetSize(old_man_classes)) {{
+        int totem_class = xsArrayGetInt(old_man_classes, i);
+        bool is_siege = (totem_class == 913) || (totem_class == 955) || (totem_class == 951) || (totem_class == 954);
+        if (is_siege == false) {{
+            bool totem_aura_barrack = xsAddAura({BuildingInfo.BARRACKS.ID}, totem_class, player, {ObjectAttribute.ATTACK}, atk_reduction, atk_size, permaAuraEffects, cAuraDiplomacyNeutralEnemy);
+            bool totem_aura_archery = xsAddAura({BuildingInfo.ARCHERY_RANGE.ID}, totem_class, player, {ObjectAttribute.ATTACK}, atk_reduction, atk_size, permaAuraEffects, cAuraDiplomacyNeutralEnemy);
+            bool totem_aura_stable = xsAddAura({BuildingInfo.STABLE.ID}, totem_class, player, {ObjectAttribute.ATTACK}, atk_reduction, atk_size, permaAuraEffects, cAuraDiplomacyNeutralEnemy);
+            bool totem_aura_siege = xsAddAura({BuildingInfo.SIEGE_WORKSHOP.ID}, totem_class, player, {ObjectAttribute.ATTACK}, atk_reduction, atk_size, permaAuraEffects, cAuraDiplomacyNeutralEnemy);
+            bool totem_aura_barrack_2 = xsAddAura(20, totem_class, player, {ObjectAttribute.ATTACK}, atk_reduction, atk_size, permaAuraEffects, cAuraDiplomacyNeutralEnemy);
+            bool totem_aura_barrack_3  = xsAddAura(132, totem_class, player, {ObjectAttribute.ATTACK}, atk_reduction, atk_size, permaAuraEffects, cAuraDiplomacyNeutralEnemy);
+            bool totem_aura_barrack_4  = xsAddAura(498, totem_class, player, {ObjectAttribute.ATTACK}, atk_reduction, atk_size, permaAuraEffects, cAuraDiplomacyNeutralEnemy);
+            bool totem_aura_archery_2 = xsAddAura(14, totem_class, player, {ObjectAttribute.ATTACK}, atk_reduction, atk_size, permaAuraEffects, cAuraDiplomacyNeutralEnemy);
+            bool totem_aura_archery_3 = xsAddAura(87, totem_class, player, {ObjectAttribute.ATTACK}, atk_reduction, atk_size, permaAuraEffects, cAuraDiplomacyNeutralEnemy);
+            bool totem_aura_stable_2 = xsAddAura(101, totem_class, player, {ObjectAttribute.ATTACK}, atk_reduction, atk_size, permaAuraEffects, cAuraDiplomacyNeutralEnemy);
+            bool totem_aura_stable_3 = xsAddAura(153, totem_class, player, {ObjectAttribute.ATTACK}, atk_reduction, atk_size, permaAuraEffects, cAuraDiplomacyNeutralEnemy);
+            bool totem_aura_siege_2 = xsAddAura(150, totem_class, player, {ObjectAttribute.ATTACK}, atk_reduction, atk_size, permaAuraEffects, cAuraDiplomacyNeutralEnemy);
+
+        }}
+    }}
+}}
+
+int feed_the_relic_{p} = 0;
+int gold_eaten_{p} = 0;
+float gold_player_{p} = 0;
+float gold_deduce_{p} = 0;
+
+rule hungry_relic_{p}
+    inactive
+    minInterval 25
+    maxInterval 25
+{{
+    int player = xsGetWorldPlayerId({p});
+    gold_player_{p} = xsPlayerAttribute(player, 3);
+    if (gold_eaten_{p} < feed_the_relic_{p}) {{
+        if (gold_player_{p} >= 200) {{
+            gold_deduce_{p} = gold_player_{p} - 200;
+            xsSetPlayerAttribute(player, 3, gold_deduce_{p});
+            gold_eaten_{p} = gold_eaten_{p} + 200;
+        }}
+        else {{
+            xsSetPlayerAttribute(player, 3, 0);
+            gold_eaten_{p} = gold_eaten_{p} + gold_player_{p};
+        }}
+    }}
+    else {{
+        float relic_reward_{p} = xsPlayerAttribute(player, 500);
+        relic_reward_{p} = relic_reward_{p} + 25;
+        xsSetPlayerAttribute(player, 500, relic_reward_{p});
+        xsDisableSelf();
+    }}
+}}
+
+void buy_hungry_relic_{p}() {{
+    feed_the_relic_{p} = xsGetRandomNumberLH(2500, 5001);
+    xsEnableRule("hungry_relic_{p}");
+}}
+
+    """
+
+    with open(xs_input_path, "a") as xs_file:
+        xs_file.write(xs_old_man)
+    return xs_old_man
+def xs_forge(scenario,trigger_manager):
+    xs_input_path = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\AoE2DE\\resources\\_common\\xs\\security_breach_in_ruin.xs"
+    forge_cost = {
+        "sword": 3,
+        "chestplate": 6,
+        "nailed": 6,
+        "tipped": 5,
+        "gun": 6,
+        "rivet": 8,
+        "silk_7" : 7,
+        "silk_6": 6,
+        "silk_5": 5,
+        "silk_4": 4,
+        "silk_3": 3,
+        "precious" : 4,
+    }
+    xs_input =""
+    for p in range(1, 8):
+        xs_input +=f"""
+int tech_archer_forge_count_{p} = 0 ;
+int spent_forge_point_{p} = 0;
+"""
+    xs_input += """
+    int forge_class = -1;
+    void setup_forge() {
+        forge_class = xsArrayCreateInt(10, 0, "forge_class");
+            xsArraySetInt(forge_class, 0, 900);
+            xsArraySetInt(forge_class, 1, 904);
+            xsArraySetInt(forge_class, 2, 906);
+            xsArraySetInt(forge_class, 3, 912);
+            xsArraySetInt(forge_class, 4, 913);
+            xsArraySetInt(forge_class, 5, 918);
+            xsArraySetInt(forge_class, 6, 923);
+            xsArraySetInt(forge_class, 7, 936);
+            xsArraySetInt(forge_class, 8, 944);
+            xsArraySetInt(forge_class, 9, 947);
+        }
+    """
+    for p in range (1,8):
+        xs_input += f"""
+        int atk_given_{p} = 1;
+int count_forge_of_the_sword_{p} = 0;
+void forge_of_the_sword_{p}() {{
+    int player = xsGetWorldPlayerId({p});
+    spent_forge_point_{p} = spent_forge_point_{p} + {forge_cost["sword"]};
+    for (i = 0; < xsArrayGetSize(forge_class)) {{
+        int sword_class = xsArrayGetInt(forge_class, i);
+        bool is_melee = (sword_class == 906) || (sword_class == 912) || (sword_class == 947);
+        if (is_melee == true) {{
+            xsEffectAmount(cAddAttribute, sword_class, 9, 256 * 4 + atk_given_{p}, player);
+        }}
+    }}
+    count_forge_of_the_sword_{p} = count_forge_of_the_sword_{p} + 1;
+    if (count_forge_of_the_sword_{p} == 3) {{
+        atk_given_{p} = atk_given_{p} + 1;
+        count_forge_of_the_sword_{p} = 0;
+    }}
+}}
+        """
+
+    for p in range(1, 8):
+        xs_input += f"""
+    
+    
+    
+    void chestplate_of_the_forge_{p}() {{
+        int count_relic_{p} = 0;
+        int armor_given_{p} = 1;
+        int player = xsGetWorldPlayerId({p});
+        spent_forge_point_{p} = spent_forge_point_{p} + {forge_cost["chestplate"]};
+        int relic_capture_{p} = xsPlayerAttribute(player, 7);
+        //There is no need to go over the loop if the relic count isn't at least 5
+        if (relic_capture_{p} >= 5) {{ 
+            for (y=0; < relic_capture_{p}) {{
+                count_relic_{p} = count_relic_{p} +1 ;
+                if (count_relic_{p} >= 5) {{
+                armor_given_{p} = armor_given_{p} + 1;
+                count_relic_{p} = 0;
+                }}
+            }}
+        }}
+        for (i = 0; < xsArrayGetSize(forge_class)) {{ 
+            int armor_class = xsArrayGetInt(forge_class, i);
+            bool is_melee = (armor_class == 906) || (armor_class == 912) || (armor_class == 947);
+            if (is_melee == true) {{
+                xsEffectAmount(cAddAttribute, armor_class, 8, 256 * 3 + armor_given_{p}, player);
+                xsEffectAmount(cAddAttribute, armor_class, 8, 256 * 4 + armor_given_{p}, player);
+            
+            }}
+        }}
+    }}
+            """
+    for p in range(1, 8):
+        xs_input += f"""
+    int reduce_cost_silk_{p} = 0;
+    bool reduce_cost_silk_cord_{p}_1() {{
+        if (reduce_cost_silk_{p} == 1) {{
+            return (true);
+        }}
+        return (false);
+    }}
+    bool reduce_cost_silk_cord_{p}_2() {{
+        if (reduce_cost_silk_{p} == 2) {{
+            return (true);
+        }}
+        return (false);
+    }}
+    bool reduce_cost_silk_cord_{p}_3() {{
+        if (reduce_cost_silk_{p} == 3) {{
+            return (true);
+        }}
+        return (false);
+    }}
+    void silk_coord_of_the_forge_{p}() {{
+        int player = xsGetWorldPlayerId({p});
+        if (reduce_cost_silk_{p} == 0) {{
+            spent_forge_point_{p} = spent_forge_point_{p} + {forge_cost["silk_7"]};
+        }}
+        else if (reduce_cost_silk_{p} == 1) {{
+            spent_forge_point_{p} = spent_forge_point_{p} + {forge_cost["silk_6"]};
+        }}
+        else if (reduce_cost_silk_{p} == 2) {{
+            spent_forge_point_{p} = spent_forge_point_{p} + {forge_cost["silk_5"]};
+        }}
+        else {{
+            spent_forge_point_{p} = spent_forge_point_{p} + {forge_cost["silk_4"]};
+        }}
+        reduce_cost_silk_{p} = reduce_cost_silk_{p} + 1;
+        tech_archer_forge_count_{p} = tech_archer_forge_count_{p} + 1;
+        for (i = 0; < xsArrayGetSize(forge_class)) {{
+            int archer_class = xsArrayGetInt(forge_class, i);
+            bool is_archer = (archer_class == 900) || (archer_class == 936);
+            if (is_archer == true) {{
+                xsEffectAmount(cMulAttribute, archer_class, 10, 0.95, player);
+            }}
+        }}
+    }}
+    """
+    for p in range(1, 8):
+        xs_input += f"""
+    void tipped_arrow_of_the_forge_{p}() {{
+    int player = xsGetWorldPlayerId({p});
+    spent_forge_point_{p} = spent_forge_point_{p} + {forge_cost["tipped"]};
+    int archer_atk_given_{p} = 1 + tech_archer_forge_count_{p} / 2;
+    tech_archer_forge_count_{p} = tech_archer_forge_count_{p} + 1;
+    for (i = 0; < xsArrayGetSize(forge_class)) {{ 
+        int archer_class = xsArrayGetInt(forge_class, i);
+        bool is_archer = (archer_class == 900) || (archer_class == 936) ;
+        if (is_archer == true) {{
+            xsEffectAmount(cAddAttribute, archer_class, 9, 256 * 3 + archer_atk_given_{p}, player);
+        }}
+    }}
+}}
+                """
+    for p in range(1, 8):
+            xs_input += f"""
+void nailed_leather_of_the_forge_{p}() {{
+int player = xsGetWorldPlayerId({p});
+spent_forge_point_{p} = spent_forge_point_{p} + {forge_cost["nailed"]};
+int archer_armor_given = 0;
+int cav_archer_armor = 0;
+int canon_armor = 0;
+int archer_count = xsGetObjectCount(player, 900);
+int cav_count = xsGetObjectCount(player, 936);
+int canon_count = xsGetObjectCount(player, 944);
+bool canon_supperior = (canon_count > cav_count) && (canon_count > archer_count);
+bool archer_supperior = (archer_count > cav_count) && (archer_count > canon_count);
+bool cav_supperior = (cav_count > archer_count) && (cav_count > canon_count);
+if (archer_supperior == true) {{
+    archer_armor_given = 2;
+    cav_archer_armor = 1;
+    canon_armor = 1;
+}}
+else if (canon_supperior == true) {{
+    archer_armor_given = 1;
+    cav_archer_armor = 1;
+    canon_armor = 2;
+}}
+else if (cav_supperior == true) {{
+    archer_armor_given = 1;
+    cav_archer_armor = 2;
+    canon_armor = 1;
+}}
+else {{
+    archer_armor_given = 1;
+    cav_archer_armor = 1;
+    canon_armor = 1;
+}}
+tech_archer_forge_count_{p} = tech_archer_forge_count_{p} + 1;
+xsEffectAmount(cAddAttribute, 900, 8, 256 * 3 + archer_armor_given, player);
+xsEffectAmount(cAddAttribute, 936, 8, 256 * 3 + cav_archer_armor, player);
+xsEffectAmount(cAddAttribute, 900, 8, 256 * 4 + archer_armor_given, player);
+xsEffectAmount(cAddAttribute, 936, 8, 256 * 4 + cav_archer_armor, player);  
+xsEffectAmount(cAddAttribute, 944, 8, 256 * 3 + canon_armor, player);
+xsEffectAmount(cAddAttribute, 944, 8, 256 * 4 + canon_armor, player);
+}}
+
+                    """
+    for p in range (1,8):
+        xs_input+=f"""
+
+int bullet_already_given_{p} = 0;
+
+void gun_powder_of_the_forge_{p}() {{
+    int player = xsGetWorldPlayerId({p});
+    spent_forge_point_{p} = spent_forge_point_{p} + {forge_cost["gun"]};
+    int bullet_target_{p} = spent_forge_point_{p} / 10;
+    int bullet_new_{p} = bullet_target_{p} - bullet_already_given_{p};
+    bullet_already_given_{p} = bullet_target_{p};
+    for (i = 0; < xsArrayGetSize(forge_class)) {{
+        int gun_class = xsArrayGetInt(forge_class, i);
+        bool is_gun = (gun_class == 944) || (gun_class == 923);
+        if (is_gun == true) {{
+            xsEffectAmount(cAddAttribute, gun_class, 9, 256 * 3 + 1, player);
+            if (bullet_new_{p} > 0) {{
+                xsEffectAmount(cAddAttribute, gun_class, 102, bullet_new_{p}, player);
+                xsEffectAmount(cAddAttribute, gun_class, 107, bullet_new_{p}, player);
+            }}
+        }}
+    }}
+}}    
+        """
+    for p in range (1,8):
+        xs_input+=f"""
+void siege_forge_tech_{p}() {{
+int siege_hp_bonus = 15;
+spent_forge_point_{p} = spent_forge_point_{p} + {forge_cost["rivet"]};
+int player = xsGetWorldPlayerId({p});
+int scorpion_get = xsGetObjectCount(player, {UnitInfo.SCORPION.ID});
+int hscorpion_get = xsGetObjectCount(player, {UnitInfo.HEAVY_SCORPION.ID}); 
+
+int mangonel_get = xsGetObjectCount(player, {UnitInfo.MANGONEL.ID});
+int onagre_get = xsGetObjectCount(player, {UnitInfo.ONAGER.ID});
+int Sonagre_get = xsGetObjectCount(player, {UnitInfo.SIEGE_ONAGER.ID});
+
+int ram_get = xsGetObjectCount(player, {UnitInfo.BATTERING_RAM.ID});
+int cram_get = xsGetObjectCount(player, {UnitInfo.CAPPED_RAM.ID});
+int sram_get = xsGetObjectCount(player, {UnitInfo.SIEGE_RAM.ID});
+
+int bombard = xsGetObjectCount(player, {UnitInfo.BOMBARD_CANNON.ID});
+int houfnice = xsGetObjectCount(player, {UnitInfo.HOUFNICE.ID});
+
+int treb_unpack = xsGetObjectCount(player, {UnitInfo.TREBUCHET.ID});
+int treb_pack = xsGetObjectCount(player, {UnitInfo.TREBUCHET_PACKED.ID});
+
+int rocket_cart = xsGetObjectCount(player, {UnitInfo.ROCKET_CART.ID});
+int hrocket_cart = xsGetObjectCount(player, {UnitInfo.HEAVY_ROCKET_CART.ID});
+
+int siege_tower = xsGetObjectCount(player, {UnitInfo.SIEGE_TOWER.ID}); 
+int camel_treb = xsGetObjectCount(player, {UnitInfo.MOUNTED_TREBUCHET.ID}); 
+
+int hussite_wagon = xsGetObjectCount(player, {UnitInfo.HUSSITE_WAGON.ID});
+int Ehussite_wagon = xsGetObjectCount(player, {UnitInfo.ELITE_HUSSITE_WAGON.ID}); 
+
+int organ_gun = xsGetObjectCount(player, {UnitInfo.ORGAN_GUN.ID});
+int Eorgan_gun = xsGetObjectCount(player, {UnitInfo.ELITE_ORGAN_GUN.ID}); 
+
+int count_rams = ram_get + cram_get + sram_get ;
+int count_mango = mangonel_get + onagre_get + Sonagre_get ;
+int count_scorpion = scorpion_get + hscorpion_get ; 
+int canon_count = bombard + houfnice ;
+int treb_count = treb_pack + treb_unpack ; 
+int rocket_count = rocket_cart + hrocket_cart ;
+int hussite_count = hussite_wagon + Ehussite_wagon;
+int count_organ = organ_gun + Eorgan_gun ;
+
+if (count_rams >= 20) {{
+siege_hp_bonus = siege_hp_bonus + 5;
+}}
+if (count_mango >= 20) {{
+siege_hp_bonus = siege_hp_bonus + 5;
+}}
+if (count_scorpion >= 20) {{
+siege_hp_bonus = siege_hp_bonus + 5;
+}}
+if (canon_count >= 20) {{
+siege_hp_bonus = siege_hp_bonus + 5;
+}}
+if (treb_count >= 20) {{
+siege_hp_bonus = siege_hp_bonus + 5;
+}}if (rocket_count >= 20) {{
+siege_hp_bonus = siege_hp_bonus + 5;
+}}
+if (hussite_count >= 20) {{
+siege_hp_bonus = siege_hp_bonus + 5;
+}}
+if (count_organ >= 20) {{
+siege_hp_bonus = siege_hp_bonus + 5;
+}}
+xsEffectAmount(cAddAttribute, 951, 0, siege_hp_bonus, player);
+xsEffectAmount(cAddAttribute, 954, 0, siege_hp_bonus, player);
+xsEffectAmount(cAddAttribute, 955, 0, siege_hp_bonus, player);
+xsEffectAmount(cAddAttribute, 913, 0, siege_hp_bonus, player);
+
+}}
+
+"""
+    for p in range(1, 8):
+            xs_input += f"""
+    void precious_metal_{p}() {{
+        int player = xsGetWorldPlayerId({p});
+        spent_forge_point_{p} = spent_forge_point_{p} + {forge_cost["precious"]};
+        int count_building_{p} = 0;
+        int count_convert_{p} = 0;
+        int building_destroyed_{p} = xsPlayerAttribute(player, 43);
+        int converted_unit_{p} = xsPlayerAttribute(player, 41);
+
+        XP_value_P{p} = XP_value_P{p} + 0.25;
+
+        if (building_destroyed_{p} >= 15) {{
+            for (b = 0; < building_destroyed_{p}) {{
+                count_building_{p} = count_building_{p} + 1;
+                if (count_building_{p} >= 15) {{
+                    XP_value_P{p} = XP_value_P{p} + 0.15;
+                    count_building_{p} = 0;
+                }}
+            }}
+        }}
+        if (converted_unit_{p} >= 10) {{
+            for (c = 0; < converted_unit_{p}) {{
+                count_convert_{p} = count_convert_{p} + 1;
+                if (count_convert_{p} >= 10) {{
+                    XP_value_P{p} = XP_value_P{p} + 0.15;
+                    count_convert_{p} = 0;
+                }}
+            }}
+        }}
+    }}
+    """
+    for p in range (1,8):
+        xs_input+= f"""
+    rule forge_display_{p}
+    active
+    minInterval 1
+    maxInterval 1
+{{
+    int player = xsGetWorldPlayerId({p});
+    float artifact_points_{p} = xsPlayerAttribute(player, 499);
+    xsEffectAmount(cSetAttribute, {HeroInfo.GAWAIN.ID}, {ObjectAttribute.STONE_COSTS}, artifact_points_{p}, player);
+}}
+
+        """
+    with open(xs_input_path, "a") as xs_file:
+        xs_file.write(xs_input)
+    return xs_input

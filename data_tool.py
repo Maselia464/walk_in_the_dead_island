@@ -217,3 +217,85 @@ def object_define(scenario,trigger_manager,player,object,building,button,enabled
     )
     return obj_preparation
 
+def barrack_rule(scenario,unit_list,barrack,spawn_rate,spawn_time,quantity,rule,rule_to_activate):
+    xs_line_wave =""
+    xs_input_path = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\AoE2DE\\resources\\_common\\xs\\security_breach_in_ruin.xs"
+
+    xs_quantity = ""
+    xs_true_variable = ""
+    debut = quantity[0]
+    fin = quantity[-1]
+    if rule_to_activate != None :
+        rule_to_activate = f'xsEnableRule("{rule_to_activate}");'
+    else:
+        rule_to_activate = None
+    for i in range(len(unit_list)):
+        unit_id = unit_list[i]
+        quantity_unit = quantity[i]
+        spawn_rate_id = spawn_rate[i]
+        xs_quantity += f"""
+int quantity_count_for_{rule}_{unit_id}_{i} = 0;
+"""
+        xs_line_wave +=f"""
+        if ({rule}_check_barrack == true) {{
+            if (quantity_count_for_{rule}_{unit_id}_{i} < {quantity_unit}) {{
+                for (i_{unit_id} = 0; < {spawn_rate_id}) {{
+                int unit_id_{rule}_{i} = xsCreateUnit(
+                    {unit_id}, 
+                    enemy_player, Spawnpos_barrack_{rule}, false, false, false);
+                    xsSetUnitProperty(unit_id_{rule}_{i}, 5, {barrack}, 1);
+                    quantity_count_for_{rule}_{unit_id}_{i} = quantity_count_for_{rule}_{unit_id}_{i} + 1;
+                }}
+            }}
+        }}
+        else {{
+            xsDisableSelf();
+            return;
+        }}
+"""
+        if i == 0 and i == len(unit_list) - 1:
+            xs_true_variable += f"""
+bool end_{rule}_check = (quantity_count_for_{rule}_{unit_id}_{i} >= {quantity_unit});
+                    """
+        elif i == 0:
+            xs_true_variable += f"""
+bool end_{rule}_check = (quantity_count_for_{rule}_{unit_id}_{i} >= {quantity_unit})
+                    """
+        elif i == len(unit_list) - 1:
+            xs_true_variable += f""" && (quantity_count_for_{rule}_{unit_id}_{i} >= {quantity_unit});
+                    """
+        else:
+            xs_true_variable += f""" && (quantity_count_for_{rule}_{unit_id}_{i} >= {quantity_unit})
+                    """
+    xs_rules = f"""
+//Desert fortress defence
+{xs_quantity}
+rule {rule}
+minInterval {spawn_time}
+maxInterval {spawn_time}
+inactive
+{{
+    float barrack_coord_X = 1.0;
+    float barrack_coord_Y = 211.0;
+    int enemy_player = xsGetWorldPlayerId(8);
+    bool {rule}_check_barrack = xsDoesUnitExist({barrack});
+    vector Spawnpos_barrack_{rule} = xsVectorSet(barrack_coord_X, barrack_coord_Y, 0);
+        {xs_line_wave}
+        
+        int garrisonedUnits = xsGetGarrisonedUnitIds({barrack});
+            xsTaskUnits(
+                garrisonedUnits,
+                cActionTypeUngarrison
+                );
+        {xs_true_variable}
+        if (end_{rule}_check == true) {{
+            {rule_to_activate}
+            xsDisableSelf();
+        }}
+}}
+
+    """
+
+
+    with open(xs_input_path, "a") as script_sister_land_pine:
+        script_sister_land_pine.write(xs_rules)

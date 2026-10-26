@@ -50,17 +50,19 @@ from AoE2ScenarioParser.objects.managers.option_manager import OptionManager
 
 from AoE2ScenarioParser.datasets.support.info_dataset_base import InfoDatasetBase
 from AoE2ScenarioParser.scenarios.aoe2_de_scenario import AoE2DEScenario
-from XS import xs_function,danger_level, wave_function, danger_rule_spawn, Gary_buerg_xs, Markus_skioliose_XS, Morange_legellan_xs,hamish_davelton_xs, warmer_stephano_xs, harris_galvas_xs, area_open
+from XS import xs_function,danger_level, wave_function, danger_rule_spawn, Gary_buerg_xs, Markus_skioliose_XS, Morange_legellan_xs,hamish_davelton_xs, warmer_stephano_xs, harris_galvas_xs, area_open, xs_old_man_relic, xs_forge
 from level_display import level_display
 from wave_composition import spawn_data_wave
 from Class_function import John_Galverb, Gary_buerg,Markus_skoliose, Morange_legellan, Hamish_davelton, Warmer_stephano, Haris_galvas
 from special_area import special_area_function
+from Barrack_defense import barrack_function
+from Old_man_relic import old_man_relic_function, Blacksmith_of_takoas
 from unicodedata import category
 # Dictionnaire pour le script
 from AoE2ScenarioParser.objects.support.area import Area
 
-input_path = "C:\\Users\\USER\\Games\\Age of Empires 2 DE\\ID_AOE2\\resources\\_common\\scenario\\7V1 security breach in the ruins.aoe2scenario"
-output_path = "C:\\Users\\USER\\Games\\Age of Empires 2 DE\\ID_AOE2\\resources\\_common\\scenario\\7V1 security breach in the ruins v0-1.aoe2scenario"
+input_path = "C:\\Users\\redma\\Games\\Age of Empires 2 DE\\76561198382316787\\resources\\_common\\scenario\\7V1 security breach in the ruins.aoe2scenario"
+output_path = "C:\\Users\\redma\\Games\\Age of Empires 2 DE\\76561198382316787\\resources\\_common\\scenario\\7V1 security breach in the ruins v0-1.aoe2scenario"
 
 scenario = AoE2DEScenario.from_file(input_path)
 scenario_uuid = scenario.uuid
@@ -87,7 +89,7 @@ list_flag_D = unit_manager.filter_units_by_const(
     blacklist=False,  # <-- When True, everything in the unit_consts list will be excluded instead of included
     player_list=[PlayerId.EIGHT],
 )
-
+activation_triggers = {}
 def AREA_maker(scenario,flag,x_calculus,y_calculus,name,xs_name):
     list_flag = unit_manager.filter_units_by_const(
         unit_consts=[flag],
@@ -107,6 +109,17 @@ def AREA_maker(scenario,flag,x_calculus,y_calculus,name,xs_name):
             looping=False,
             execute_on_load=True,
         )
+        simple_area.new_condition.objects_in_area(
+            source_player=PlayerId.GAIA,
+            quantity=1,
+            area_x1=area_x,
+            area_y1=area_y,
+            area_x2=area_x2,
+            area_y2=area_y2,
+            object_state=ObjectState.ALMOST_DEAD,
+            object_type=ObjectType.MILITARY,
+        )
+        simple_area.new_condition.or_()
         for p in range(1, 8):
             simple_area.new_condition.objects_in_area(
                 source_player=p,
@@ -127,6 +140,15 @@ def AREA_maker(scenario,flag,x_calculus,y_calculus,name,xs_name):
             area_y2=area_y2,
             object_type=ObjectType.MILITARY,
         )
+        simple_area.new_effect.change_ownership(
+            source_player=PlayerId.GAIA,
+            target_player=PlayerId.EIGHT,
+            area_x1=area_x,
+            area_y1=area_y,
+            area_x2=area_x2,
+            area_y2=area_y2,
+            object_type=ObjectType.BUILDING,
+        )
         simple_area.new_effect.script_call(
             message=xs_name,
         )
@@ -145,7 +167,93 @@ def AREA_maker(scenario,flag,x_calculus,y_calculus,name,xs_name):
                 source_player=PlayerId.EIGHT,
                 object_list_unit_id=BuildingInfo.PALISADE_WALL.ID,
             )
-
+        if x_coordinate == 211.5 and y_coordinate == 213.5:
+            activation_triggers["old_man"] = simple_area
+        if x_coordinate == 238.5 and y_coordinate == 204.5:
+            activation_triggers["forge"] = simple_area
+        if x_coordinate == 139.5 and y_coordinate == 6.5:
+            simple_area.new_effect.change_ownership(
+                source_player=PlayerId.GAIA,
+                target_player=PlayerId.EIGHT,
+                area_x1=132,
+                area_y1=14,
+                area_x2=139,
+                area_y2=31,
+                object_type=ObjectType.MILITARY,
+            )
+            simple_area.new_effect.change_ownership(
+                source_player=PlayerId.GAIA,
+                target_player=PlayerId.EIGHT,
+                area_x1=132,
+                area_y1=14,
+                area_x2=139,
+                area_y2=31,
+                object_type=ObjectType.BUILDING,
+            )
+            simple_area.new_effect.change_ownership(
+                source_player=PlayerId.GAIA,
+                target_player=PlayerId.EIGHT,
+                area_x1=132,
+                area_y1=14,
+                area_x2=139,
+                area_y2=31,
+                object_type=ObjectType.MILITARY,
+            )
+            simple_area.new_effect.change_ownership(
+                source_player=PlayerId.GAIA,
+                target_player=PlayerId.EIGHT,
+                area_x1=124,
+                area_y1=24,
+                area_x2=131,
+                area_y2=31,
+                object_type=ObjectType.BUILDING,
+            )
+        if x_coordinate == 238.5 and y_coordinate == 6.5:
+            simple_area.new_effect.change_ownership(
+                source_player=PlayerId.GAIA,
+                target_player=PlayerId.EIGHT,
+                area_x1=222,
+                area_y1=6,
+                area_x2=238,
+                area_y2=22,
+                object_type=ObjectType.MILITARY,
+            )
+            simple_area.new_effect.change_ownership(
+                source_player=PlayerId.GAIA,
+                target_player=PlayerId.EIGHT,
+                area_x1=222,
+                area_y1=6,
+                area_x2=238,
+                area_y2=22,
+                object_type=ObjectType.BUILDING,
+            )
+            simple_area.new_effect.change_ownership(
+                source_player=PlayerId.GAIA,
+                target_player=PlayerId.EIGHT,
+                area_x1=213,
+                area_y1=15,
+                area_x2=221,
+                area_y2=22,
+                object_type=ObjectType.MILITARY,
+            )
+            simple_area.new_effect.change_ownership(
+                source_player=PlayerId.GAIA,
+                target_player=PlayerId.EIGHT,
+                area_x1=213,
+                area_y1=15,
+                area_x2=221,
+                area_y2=22,
+                object_type=ObjectType.BUILDING,
+            )
+            simple_area.new_effect.change_ownership(
+                source_player=PlayerId.GAIA,
+                target_player=PlayerId.EIGHT,
+                area_x1=222,
+                area_y1=23,
+                area_x2=229,
+                area_y2=31,
+                object_type=ObjectType.MILITARY,
+            )
 print(list_flag_A)
 Gaia_change = trigger_manager.add_trigger(
         name=f"Everything become GAIA",
@@ -189,8 +297,9 @@ Gaia_change.new_effect.change_ownership(
         area_y2 = 239,
         object_type=ObjectType.MILITARY,
     )
+
 flag_list = [(OtherInfo.FLAG_A.ID,7,7,"Simple area","area_reach_tracker_small();"),(OtherInfo.FLAG_C.ID,25,16,"3x2 area ","area_reach_tracker_big();"),(OtherInfo.FLAG_B.ID,16,16,"Bigger square ","area_reach_tracker_medium();"),
-             (OtherInfo.FLAG_D.ID,16,25,"2x3 area ","area_reach_tracker_big();"),(OtherInfo.FLAG_G.ID,34,16,"3x4 area ","area_reach_tracker_very_big();"),(OtherInfo.FLAG_H.ID,16,34,"4x3 area ","area_reach_tracker_very_big();"),(OtherInfo.FLAG_I.ID,25,25,"4x3 area","area_reach_tracker_very_big();")
+             (OtherInfo.FLAG_D.ID,16,25,"2x3 area ","area_reach_tracker_big();"),(OtherInfo.FLAG_G.ID,34,16,"3x4 area ","area_reach_tracker_very_big();"),(OtherInfo.FLAG_H.ID,16,34,"4x3 area ","area_reach_tracker_very_big();")
              ,(OtherInfo.FLAG_E.ID,7,16,"1x2 area","area_reach_tracker_small();"),(OtherInfo.FLAG_F.ID,16,7,"1x2 area","area_reach_tracker_small();"),(OtherInfo.FLAG_I.ID,25,25,"Big area","area_reach_tracker_very_big();"),(OtherInfo.FLAG_J.ID,25,34,"very Big area","area_reach_tracker_very_big();")
              ,(OtherInfo.FLAG_K.ID,16,16,"ALERT square","area_reach_tracker_very_big();")]
 for m in range (len(flag_list)):
@@ -204,8 +313,10 @@ for m in range (len(flag_list)):
         xs_name=XS,
     )
 
+
 xs_function(scenario,trigger_manager)
 danger_level(scenario,trigger_manager)
+
 #------------------------------------ CLASS SETUP -------------------------------
 
 John_Galverb(scenario,trigger_manager)
@@ -222,7 +333,10 @@ Warmer_stephano(scenario,trigger_manager)
 harris_galvas_xs(scenario,trigger_manager)
 Haris_galvas(scenario,trigger_manager)
 
-
+xs_old_man_relic(scenario,trigger_manager)
+old_man_relic_function(scenario,trigger_manager,activation_triggers)
+xs_forge(scenario,trigger_manager)
+Blacksmith_of_takoas(scenario,trigger_manager,activation_triggers)
 #------------------------------------ Area spawn setup -------------------------------
 
 area_open(scenario,trigger_manager)
@@ -230,7 +344,6 @@ area_open(scenario,trigger_manager)
 
 
 level_display(scenario,trigger_manager)
-
 
 for cfg in spawn_data_wave:
     wave_function(
@@ -274,5 +387,6 @@ for p in range (1,8):
         age_check.new_effect.deactivate_trigger(
             trigger_id=age_check.trigger_id,
         )
+barrack_function(scenario)
 
 scenario.write_to_file(output_path)
