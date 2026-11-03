@@ -50,7 +50,7 @@ from AoE2ScenarioParser.objects.managers.option_manager import OptionManager
 
 from AoE2ScenarioParser.datasets.support.info_dataset_base import InfoDatasetBase
 from AoE2ScenarioParser.scenarios.aoe2_de_scenario import AoE2DEScenario
-from XS import xs_function,danger_level, wave_function, danger_rule_spawn, Gary_buerg_xs, Markus_skioliose_XS, Morange_legellan_xs,hamish_davelton_xs, warmer_stephano_xs, harris_galvas_xs, area_open, xs_old_man_relic, xs_forge
+from XS import xs_function,danger_level, wave_function, danger_rule_spawn, Gary_buerg_xs, Markus_skioliose_XS, Morange_legellan_xs,hamish_davelton_xs, warmer_stephano_xs, harris_galvas_xs, area_open, xs_old_man_relic, xs_forge, xs_function_creator
 from level_display import level_display
 from wave_composition import spawn_data_wave
 from Class_function import John_Galverb, Gary_buerg,Markus_skoliose, Morange_legellan, Hamish_davelton, Warmer_stephano, Haris_galvas
@@ -208,6 +208,10 @@ def AREA_maker(scenario,flag,x_calculus,y_calculus,name,xs_name):
                 area_y2=31,
                 object_type=ObjectType.BUILDING,
             )
+            simple_area.new_effect.script_call(
+                message="dry_spawn_L_A_function();\ndry_spawn_L_B_function();"
+
+            )
         if x_coordinate == 238.5 and y_coordinate == 6.5:
             simple_area.new_effect.change_ownership(
                 source_player=PlayerId.GAIA,
@@ -254,6 +258,152 @@ def AREA_maker(scenario,flag,x_calculus,y_calculus,name,xs_name):
                 area_y2=31,
                 object_type=ObjectType.MILITARY,
             )
+            simple_area.new_effect.script_call(
+                message="dry_spawn_fortress_A_function();"
+            )
+        if x_coordinate == 229.5 and y_coordinate == 177.5 or x_coordinate == 238.5 and y_coordinate == 141.5 or x_coordinate == 220.5 and y_coordinate == 186.5 or x_coordinate == 229.5 and y_coordinate == 195.5 or x_coordinate == 238.5 and y_coordinate == 204.5 :
+            simple_area.new_effect.script_call(
+                message="dry_spawn_chief_hut_big_A_function();"
+            )
+        if x_coordinate == 193.5 and y_coordinate == 186.5 or x_coordinate == 202.5 and y_coordinate == 195.5 or x_coordinate == 175.5 and y_coordinate == 177.5 or x_coordinate == 184.5 and y_coordinate == 177.5 :
+            simple_area.new_effect.script_call(
+                message="jungle_spawn_river_A_function();"
+            )
+        if x_coordinate == 121.5 and y_coordinate == 33.5 or x_coordinate == 130.5 and y_coordinate == 42.5 or x_coordinate == 121.5 and y_coordinate == 51.5 or x_coordinate == 112.5 and y_coordinate == 33.5 :
+            simple_area.new_effect.script_call(
+                message="jungle_spawn_crusader_function();"
+            )
+        if x_coordinate == 175.5 and y_coordinate == 69.5 or x_coordinate == 184.5 and y_coordinate == 87.5 or x_coordinate == 175.5 and y_coordinate == 96.5 or x_coordinate == 166.5 and y_coordinate == 87.5 :
+            simple_area.new_effect.script_call(
+                message="jungle_spawn_mill_A_function();"
+            )
+        if x_coordinate == 67.5 and y_coordinate == 78.5 or x_coordinate == 58.5 and y_coordinate == 87.5 or x_coordinate == 49.5 and y_coordinate == 78.5 or x_coordinate == 58.5 and y_coordinate == 69.5 :
+            simple_area.new_effect.script_call(
+                message="jungle_spawn_hero_cav_A_function();"
+            )
+        if x_coordinate == 238.5 and y_coordinate == 204.5 :
+            simple_area.new_effect.script_call(
+                message="Desert_fortress_1_defence_function();"
+            )
+        if x_coordinate == 40.5 and y_coordinate == 204.5:
+            simple_area.new_effect.script_call(
+                message="last_defence();"
+            )
+            for p in range(1, 8):
+                area_x = 0
+                area_y = 204
+                area_x2 = 40
+                area_y2 = 239
+                simple_area.new_condition.objects_in_area(
+                    source_player=p,
+                    quantity=1,
+                    area_x1=area_x,
+                    area_y1=area_y,
+                    area_x2=area_x2,
+                    area_y2=area_y2,
+                )
+                if p != PlayerId.SEVEN:
+                    #It's Ugly to do it like this but it's working we need one passage and P7 is the last soooo...
+                    simple_area.new_condition.or_()
+                    simple_area.new_effect.change_ownership(
+                        source_player=PlayerId.GAIA,
+                        target_player=PlayerId.EIGHT,
+                        area_x1=area_x,
+                        area_y1=area_y,
+                        area_x2=area_x2,
+                        area_y2=area_y2,
+                        object_type=ObjectType.MILITARY,
+                    )
+                    simple_area.new_effect.change_ownership(
+                        source_player=PlayerId.GAIA,
+                        target_player=PlayerId.EIGHT,
+                        area_x1=area_x,
+                        area_y1=area_y,
+                        area_x2=area_x2,
+                        area_y2=area_y2,
+                        object_type=ObjectType.BUILDING,
+                    )
+        if x_coordinate == 211.5 and y_coordinate == 213.5:
+            simple_area.new_effect.script_call(
+                message="Jungle_fortress_big_function();"
+            )
+        if x_coordinate == 130.5 and y_coordinate == 114.5:
+            simple_area.new_effect.script_call(
+                message="Mid_area_defence_function();"
+            )
+            area_x = 6
+            area_y = 114
+            area_x2 = 130
+            area_y2 = 130
+            for p in range(1, 8):
+                simple_area.new_condition.objects_in_area(
+                    source_player=p,
+                    quantity=1,
+                    area_x1=area_x,
+                    area_y1=area_y,
+                    area_x2=area_x2,
+                    area_y2=area_y2,
+                )
+                if p != PlayerId.SEVEN:
+                    simple_area.new_condition.or_()
+                    # Horrible pratice do not do it !
+            simple_area.new_effect.change_ownership(
+                source_player=PlayerId.GAIA,
+                target_player=PlayerId.EIGHT,
+                area_x1=area_x,
+                area_y1=area_y,
+                area_x2=area_x2,
+                area_y2=area_y2,
+                object_type=ObjectType.MILITARY,
+            )
+            simple_area.new_effect.change_ownership(
+                source_player=PlayerId.GAIA,
+                target_player=PlayerId.EIGHT,
+                area_x1=area_x,
+                area_y1=area_y,
+                area_x2=area_x2,
+                area_y2=area_y2,
+                object_type=ObjectType.BUILDING,
+            )
+            area_x = 114
+            area_y = 114
+            area_x2 = 130
+            area_y2 = 238
+            simple_area.new_condition.or_()
+            for p in range(1, 8):
+                simple_area.new_condition.objects_in_area(
+                    source_player=p,
+                    quantity=1,
+                    area_x1=area_x,
+                    area_y1=area_y,
+                    area_x2=area_x2,
+                    area_y2=area_y2,
+                )
+                if p != PlayerId.SEVEN:
+                    simple_area.new_condition.or_()
+            simple_area.new_effect.change_ownership(
+                source_player=PlayerId.GAIA,
+                target_player=PlayerId.EIGHT,
+                area_x1=area_x,
+                area_y1=area_y,
+                area_x2=area_x2,
+                area_y2=area_y2,
+                object_type=ObjectType.MILITARY,
+            )
+            simple_area.new_effect.change_ownership(
+                source_player=PlayerId.GAIA,
+                target_player=PlayerId.EIGHT,
+                area_x1=area_x,
+                area_y1=area_y,
+                area_x2=area_x2,
+                area_y2=area_y2,
+                object_type=ObjectType.BUILDING,
+            )
+        if x_coordinate == 31.5 and y_coordinate == 78.5:
+            simple_area.new_effect.script_call(
+                message="Jungle_fortress_small_function();"
+            )
+
 print(list_flag_A)
 Gaia_change = trigger_manager.add_trigger(
         name=f"Everything become GAIA",
@@ -340,7 +490,11 @@ Blacksmith_of_takoas(scenario,trigger_manager,activation_triggers)
 #------------------------------------ Area spawn setup -------------------------------
 
 area_open(scenario,trigger_manager)
-
+spawn_zone_list = ["dry_spawn_chief_hut_big_A", "dry_spawn_knight_A", "dry_spawn_knight_B",
+                   "dry_spawn_fortress_A", "dry_spawn_L_A", "dry_spawn_L_B",
+                   "jungle_spawn_river_A", "jungle_spawn_mill_A", "jungle_spawn_hero_cav_A",
+                   "jungle_spawn_crusader"]
+xs_function_creator(scenario, spawn_zone_list)
 
 
 level_display(scenario,trigger_manager)
@@ -367,7 +521,7 @@ danger_rule_spawn(
 
 for p in range (1,8):
     age_tech = [TechInfo.FEUDAL_AGE.ID,TechInfo.CASTLE_AGE.ID,TechInfo.IMPERIAL_AGE.ID]
-    xs_call = ["feudal_age_reached","castle_age_reached","imperial_age_reached"]
+    xs_call = ["feudal_age_reached();","castle_age_reached();","imperial_age_reached();"]
     for i in range (len(age_tech)):
         xs = xs_call[i]
         tech_id = age_tech[i]

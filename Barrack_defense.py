@@ -94,6 +94,9 @@ class Building_config:
 
 
 def barrack_function(scenario):
+
+
+
     barrack_list = {
 
         "last_area_1":56444,
@@ -343,7 +346,7 @@ def barrack_function(scenario):
             spawn_rate=[10, 10],
             spawn_time=15,
             rule="jungle_fortress_small_defence_1",
-            rule_to_activate="jungle_fortress_big_defence_2",
+            rule_to_activate="jungle_fortress_small_defence_2",
 
         ),
         Building_config(
@@ -353,7 +356,7 @@ def barrack_function(scenario):
             spawn_rate=[10, 10],
             spawn_time=15,
             rule="jungle_fortress_small_defence_2",
-            rule_to_activate="jungle_fortress_big_defence_1",
+            rule_to_activate="jungle_fortress_small_defence_1",
 
         ),
         Building_config(
@@ -363,7 +366,7 @@ def barrack_function(scenario):
             spawn_rate=[10],
             spawn_time=15,
             rule="jungle_fortress_small_defence_3",
-            rule_to_activate="jungle_fortress_big_defence_4",
+            rule_to_activate="jungle_fortress_small_defence_4",
 
         ),
         Building_config(
@@ -373,7 +376,7 @@ def barrack_function(scenario):
             spawn_rate=[10, 5],
             spawn_time=15,
             rule="jungle_fortress_small_defence_4",
-            rule_to_activate="jungle_fortress_big_defence_3",
+            rule_to_activate="jungle_fortress_small_defence_3",
 
         ),
 
@@ -384,7 +387,7 @@ def barrack_function(scenario):
             spawn_rate=[10,10],
             spawn_time=15,
             rule="jungle_fortress_small_defence_5",
-            rule_to_activate="jungle_fortress_big_defence_6",
+            rule_to_activate="jungle_fortress_small_defence_6",
 
         ),
         Building_config(
@@ -394,7 +397,7 @@ def barrack_function(scenario):
             spawn_rate=[10, 10],
             spawn_time=15,
             rule="jungle_fortress_small_defence_6",
-            rule_to_activate="jungle_fortress_big_defence_5",
+            rule_to_activate="jungle_fortress_small_defence_5",
 
         ),
 
@@ -405,7 +408,7 @@ def barrack_function(scenario):
             spawn_rate=[5, 5],
             spawn_time=15,
             rule="jungle_fortress_small_defence_7",
-            rule_to_activate="jungle_fortress_big_defence_8",
+            rule_to_activate="jungle_fortress_small_defence_8",
 
         ),
         Building_config(
@@ -415,7 +418,7 @@ def barrack_function(scenario):
             spawn_rate=[10, 10],
             spawn_time=15,
             rule="jungle_fortress_small_defence_8",
-            rule_to_activate="jungle_fortress_big_defence_7",
+            rule_to_activate="jungle_fortress_small_defence_7",
 
         ),
 #--------------------------------------------------------------------------
@@ -477,7 +480,7 @@ def barrack_function(scenario):
             spawn_rate=[10, 10],
             spawn_time=15,
             rule="Mid_area_defence_6",
-            rule_to_activate="Mid_area_defence_7",
+            rule_to_activate="Mid_area_defence_8",
 
         ),
         Building_config(
@@ -641,7 +644,7 @@ def barrack_function(scenario):
             spawn_rate=[20, 10],
             spawn_time=15,
             rule="Mid_area_defence_23",
-            rule_to_activate="Mid_area_defence_24",
+            rule_to_activate="Mid_area_defence_25",
 
         ),
         Building_config(
@@ -692,7 +695,7 @@ def barrack_function(scenario):
             spawn_rate=[20, 1],
             spawn_time=15,
             rule="Mid_area_defence_29",
-            rule_to_activate="Mid_area_defence_30",
+            rule_to_activate="Mid_area_defence_31",
 
         ),
         Building_config(
@@ -851,12 +854,12 @@ def barrack_function(scenario):
         ),
         Building_config(
             barrack=barrack_list["Mid_defence_zone_11"],
-            unit_list=[HeroInfo.JARL.ID, UnitInfo.HOUFNICE.ID],
+            unit_list=[UnitInfo.JARL.ID, UnitInfo.HOUFNICE.ID],
             quantity=[45, 14],
             spawn_rate=[5, 1],
             spawn_time=15,
             rule="Mid_area_defence_46",
-            rule_to_activate="Mid_area_defence_47",
+            rule_to_activate="Mid_area_defence_48",
 
         ),
         Building_config(
@@ -867,6 +870,272 @@ def barrack_function(scenario):
             spawn_time=15,
             rule="Mid_area_defence_48",
             rule_to_activate="Mid_area_defence_44",
+
+        ),
+        # ----------------------------------------------------------------------------------------------
+        Building_config(
+            barrack=barrack_list["last_area_1"],
+            unit_list=[HeroInfo.GAJAH_MADA.ID, HeroInfo.MUSTAFA_PASHA.ID, HeroInfo.FRANCISCO_DE_ORELLANA.ID],
+            quantity=[300, 200, 150],
+            spawn_rate=[20, 20, 15],
+            spawn_time=15,
+            rule="Final_area_defence_1",
+            rule_to_activate="Final_area_defence_2",
+
+        ),
+        Building_config(
+            barrack=barrack_list["last_area_1"],
+            unit_list=[HeroInfo.ABRAHA_ELEPHANT.ID, HeroInfo.GAWAIN.ID, HeroInfo.ROBIN_HOOD.ID],
+            quantity=[400, 300, 150],
+            spawn_rate=[20, 15, 15],
+            spawn_time=15,
+            rule="Final_area_defence_2",
+            rule_to_activate="Final_area_defence_3",
+
+        ),
+        Building_config(
+            barrack=barrack_list["last_area_1"],
+            unit_list=[HeroInfo.SALADIN.ID, UnitInfo.HALBERDIER.ID, HeroInfo.THEODORIC_THE_GOTH.ID,
+                       HeroInfo.POPE_LEO_I.ID],
+            quantity=[230, 300, 150, 100],
+            spawn_rate=[23, 30, 15, 10],
+            spawn_time=15,
+            rule="Final_area_defence_3",
+            rule_to_activate="Final_area_defence_4",
+
+        ),
+        Building_config(
+            barrack=barrack_list["last_area_1"],
+            unit_list=[HeroInfo.TARIQ_IBN_ZIYAD.ID, HeroInfo.SUBOTAI.ID, HeroInfo.GENGHIS_KHAN.ID,
+                       HeroInfo.CUMAN_CHIEF.ID],
+            quantity=[120, 130, 130, 200],
+            spawn_rate=[12, 13, 13, 10],
+            spawn_time=15,
+            rule="Final_area_defence_4",
+            rule_to_activate="Final_area_defence_5",
+
+        ),
+        Building_config(
+            barrack=barrack_list["last_area_1"],
+            unit_list=[HeroInfo.AETHELFRITH.ID, HeroInfo.THEODORIC_THE_GOTH.ID, HeroInfo.FREDERICK_BARBAROSSA.ID,
+                       UnitInfo.SIEGE_ONAGER.ID],
+            quantity=[300, 150, 300, 60],
+            spawn_rate=[15, 15, 15, 10],
+            spawn_time=15,
+            rule="Final_area_defence_5",
+            rule_to_activate="Final_area_defence_1",
+
+        ),
+        # ----------------------------------------------------------------------------------------------
+        Building_config(
+            barrack=barrack_list["last_area_2"],
+            unit_list=[HeroInfo.BABUR.ID, HeroInfo.EDWARD_LONGSHANKS.ID, HeroInfo.ERIK_THE_RED.ID,
+                       UnitInfo.HEAVY_SCORPION.ID],
+            quantity=[150, 200, 120, 100],
+            spawn_rate=[15, 20, 12, 10],
+            spawn_time=35,
+            rule="Final_area_defence_6",
+            rule_to_activate="Final_area_defence_7",
+
+        ),
+        Building_config(
+            barrack=barrack_list["last_area_2"],
+            unit_list=[UnitInfo.ELITE_BERSERK.ID, HeroInfo.THEODORIC_THE_GOTH.ID, HeroInfo.ATTILA_THE_HUN.ID,
+                       HeroInfo.BAYINNAUNG.ID, HeroInfo.GUGLIELMO_EMBRIACO.ID],
+            quantity=[75, 5, 150, 200, 140],
+            spawn_rate=[75, 5, 15, 20, 14],
+            spawn_time=35,
+            rule="Final_area_defence_7",
+            rule_to_activate="Final_area_defence_8",
+
+        ),
+        Building_config(
+            barrack=barrack_list["last_area_2"],
+            unit_list=[HeroInfo.IVANE.ID, HeroInfo.GAWAIN.ID, HeroInfo.GIDAJAN.ID, HeroInfo.EL_CID_CAMPEADOR.ID],
+            quantity=[140, 140, 200, 120],
+            spawn_rate=[14, 14, 20, 12],
+            spawn_time=35,
+            rule="Final_area_defence_8",
+            rule_to_activate="Final_area_defence_9",
+
+        ),
+        Building_config(
+            barrack=barrack_list["last_area_2"],
+            unit_list=[HeroInfo.KITABATAKE.ID, UnitInfo.SIEGE_ONAGER.ID, HeroInfo.MORDRED.ID, HeroInfo.BELISARIUS.ID,
+                       UnitInfo.ELITE_HUSSITE_WAGON.ID],
+            quantity=[170, 45, 175, 175, 75],
+            spawn_rate=[17, 15, 15, 15, 15],
+            spawn_time=35,
+            rule="Final_area_defence_9",
+            rule_to_activate="Final_area_defence_10",
+
+        ),
+        Building_config(
+            barrack=barrack_list["last_area_2"],
+            unit_list=[HeroInfo.KING_ARTHUR.ID, HeroInfo.GENERAL_ARAIYAN.ID, HeroInfo.HENRY_THE_LION.ID,
+                       HeroInfo.HEPHAISTION.ID, UnitInfo.HOUFNICE.ID],
+            quantity=[175, 200, 175, 175, 15],
+            spawn_rate=[15, 20, 15, 15, 15],
+            spawn_time=35,
+            rule="Final_area_defence_10",
+            rule_to_activate="Final_area_defence_6",
+
+        ),
+        # ----------------------------------------------------------------------------------------------
+        Building_config(
+            barrack=barrack_list["last_area_3"],
+            unit_list=[HeroInfo.EL_CID.ID, HeroInfo.FREDERICK_BARBAROSSA.ID, HeroInfo.THEODORIC_THE_GOTH.ID,
+                       UnitInfo.ELITE_THROWING_AXEMAN.ID],
+            quantity=[175, 175, 175, 175],
+            spawn_rate=[15, 15, 15, 15],
+            spawn_time=15,
+            rule="Final_area_defence_11",
+            rule_to_activate="Final_area_defence_12",
+
+        ),
+        Building_config(
+            barrack=barrack_list["last_area_3"],
+            unit_list=[UnitInfo.ELITE_WAR_ELEPHANT.ID, UnitInfo.ELITE_ELEPHANT_ARCHER.ID],
+            quantity=[200, 200],
+            spawn_rate=[20, 20],
+            spawn_time=25,
+            rule="Final_area_defence_12",
+            rule_to_activate="Final_area_defence_13",
+
+        ),
+        Building_config(
+            barrack=barrack_list["last_area_3"],
+            unit_list=[HeroInfo.ALGIRDAS.ID, HeroInfo.KHOSRAU.ID, UnitInfo.FLAMING_CAMEL.ID,
+                       UnitInfo.HEAVY_ROCKET_CART.ID],
+            quantity=[175, 175, 90, 5],
+            spawn_rate=[15, 15, 30, 5],
+            spawn_time=15,
+            rule="Final_area_defence_13",
+            rule_to_activate="Final_area_defence_14",
+
+        ),
+        Building_config(
+            barrack=barrack_list["last_area_3"],
+            unit_list=[HeroInfo.ROBIN_HOOD.ID, HeroInfo.MUSA_IBN_NUSAYR.ID, HeroInfo.ARTAPHERNES.ID,
+                       UnitInfo.SIEGE_RAM.ID],
+            quantity=[175, 180, 180, 20],
+            spawn_rate=[15, 18, 18, 20],
+            spawn_time=25,
+            rule="Final_area_defence_14",
+            rule_to_activate="Final_area_defence_15",
+
+        ),
+        Building_config(
+            barrack=barrack_list["last_area_3"],
+            unit_list=[HeroInfo.SHERIFF_OF_NOTTINGHAM.ID, HeroInfo.THEODORIC_THE_GOTH.ID, HeroInfo.GAWAIN.ID,
+                       HeroInfo.MORDRED.ID, HeroInfo.JOAN_OF_ARC.ID],
+            quantity=[200, 200, 200, 175, 200],
+            spawn_rate=[20, 20, 20, 15, 20],
+            spawn_time=30,
+            rule="Final_area_defence_15",
+            rule_to_activate="Final_area_defence_11",
+
+        ),
+        # ----------------------------------------------------------------------------------------------
+        Building_config(
+            barrack=barrack_list["last_area_4"],
+            unit_list=[HeroInfo.GAJAH_MADA.ID, HeroInfo.CHARLEMAGNE.ID, HeroInfo.ROBERT_GUISCARD.ID,
+                       HeroInfo.AMOGHAVARSHA.ID, HeroInfo.GONZALO_PIZARRO.ID],
+            quantity=[150, 150, 150, 150, 200],
+            spawn_rate=[15, 15, 15, 15, 20],
+            spawn_time=45,
+            rule="Final_area_defence_16",
+            rule_to_activate="Final_area_defence_17",
+
+        ),
+        Building_config(
+            barrack=barrack_list["last_area_4"],
+            unit_list=[HeroInfo.ALEXANDER_NEVSKI.ID, HeroInfo.HARALD_HARDRADA.ID, HeroInfo.CUAUHTEMOC.ID,
+                       HeroInfo.EMPEROR_SIGISMUND.ID, HeroInfo.ARCHER_OF_THE_EYES.ID],
+            quantity=[200, 150, 150, 175, 200],
+            spawn_rate=[20, 15, 15, 15, 20],
+            spawn_time=45,
+            rule="Final_area_defence_17",
+            rule_to_activate="Final_area_defence_18",
+
+        ),
+        Building_config(
+            barrack=barrack_list["last_area_4"],
+            unit_list=[HeroInfo.ABRAHA_ELEPHANT.ID, HeroInfo.BABUR.ID, HeroInfo.ARISTAGORAS.ID, UnitInfo.CENTURION.ID,
+                       HeroInfo.DINH_LE.ID],
+            quantity=[100, 100, 200, 200, 120],
+            spawn_rate=[10, 10, 20, 20, 12],
+            spawn_time=35,
+            rule="Final_area_defence_18",
+            rule_to_activate="Final_area_defence_19",
+
+        ),
+        Building_config(
+            barrack=barrack_list["last_area_4"],
+            unit_list=[UnitInfo.ELITE_BERSERK.ID, UnitInfo.ELITE_THROWING_AXEMAN.ID, UnitInfo.ELITE_TEUTONIC_KNIGHT.ID,
+                       UnitInfo.ELITE_COUSTILLIER.ID, UnitInfo.ELITE_JANISSARY.ID,
+                       UnitInfo.ELITE_KAMAYUK.ID, UnitInfo.ELITE_HUSKARL.ID, UnitInfo.ELITE_URUMI_SWORDSMAN.ID,
+                       UnitInfo.ELITE_BALLISTA_ELEPHANT.ID, UnitInfo.SIEGE_RAM.ID],
+            quantity=[30, 30, 30, 30, 30, 30, 30, 30, 30, 30],
+            spawn_rate=[10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
+            spawn_time=25,
+            rule="Final_area_defence_19",
+            rule_to_activate="Final_area_defence_16",
+
+        ),
+        # ----------------------------------------------------------------------------------------------
+        Building_config(
+            barrack=barrack_list["last_area_5"],
+            unit_list=[HeroInfo.ITZCOATL.ID, HeroInfo.PACAL_II.ID, UnitInfo.SIEGE_RAM.ID],
+            quantity=[300, 300, 50],
+            spawn_rate=[15, 15, 5],
+            spawn_time=15,
+            rule="Final_area_defence_20",
+            rule_to_activate="Final_area_defence_21",
+
+        ),
+        Building_config(
+            barrack=barrack_list["last_area_5"],
+            unit_list=[HeroInfo.NORSE_CHIEFTAIN.ID, UnitInfo.ELITE_BERSERK.ID, HeroInfo.DATIS.ID,
+                       UnitInfo.HEAVY_SCORPION.ID],
+            quantity=[120, 120, 150, 75],
+            spawn_rate=[12, 12, 15, 15],
+            spawn_time=25,
+            rule="Final_area_defence_21",
+            rule_to_activate="Final_area_defence_22",
+
+        ),
+        Building_config(
+            barrack=barrack_list["last_area_5"],
+            unit_list=[UnitInfo.ELITE_FIRE_ARCHER.ID, UnitInfo.ELITE_CATAPHRACT.ID, HeroInfo.GUACOLDA.ID,
+                       HeroInfo.KOTYAN_KHAN.ID, UnitInfo.FLAMING_CAMEL.ID],
+            quantity=[175, 175, 45, 100, 15],
+            spawn_rate=[15, 15, 45, 10, 15],
+            spawn_time=15,
+            rule="Final_area_defence_22",
+            rule_to_activate="Final_area_defence_23",
+
+        ),
+        Building_config(
+            barrack=barrack_list["last_area_5"],
+            unit_list=[HeroInfo.LUU_NHAN_CHU.ID, HeroInfo.MASTER_OF_THE_TEMPLAR.ID, UnitInfo.BOMBARD_CANNON.ID,
+                       UnitInfo.SIEGE_RAM.ID, UnitInfo.ELITE_KAMAYUK.ID],
+            quantity=[200, 200, 45, 45, 300],
+            spawn_rate=[20, 20, 5, 5, 30],
+            spawn_time=20,
+            rule="Final_area_defence_23",
+            rule_to_activate="Final_area_defence_24",
+
+        ),
+        Building_config(
+            barrack=barrack_list["last_area_5"],
+            unit_list=[HeroInfo.MINAMOTO.ID, HeroInfo.MUSTAFA_PASHA.ID, HeroInfo.OSMAN.ID, HeroInfo.ORNLU_THE_WOLF.ID,
+                       UnitInfo.FLAMETHROWER.ID, HeroInfo.SUBOTAI.ID],
+            quantity=[175, 175, 175, 200, 175, 175],
+            spawn_rate=[15, 15, 15, 20, 15, 15],
+            spawn_time=15,
+            rule="Final_area_defence_24",
+            rule_to_activate="Final_area_defence_20",
 
         ),
     ]
@@ -882,4 +1151,4 @@ def barrack_function(scenario):
             rule = cfg.rule,
             rule_to_activate = cfg.rule_to_activate,
         )
-
+    
