@@ -237,6 +237,7 @@ def barrack_rule(scenario,unit_list,barrack,spawn_rate,spawn_time,quantity,rule,
 int quantity_count_for_{rule}_{unit_id}_{i} = 0;
 """
         xs_line_wave +=f"""
+        
         if ({rule}_check_barrack == true) {{
             if (quantity_count_for_{rule}_{unit_id}_{i} < {quantity_unit}) {{
                 for (i_{unit_id} = 0; < {spawn_rate_id}) {{
@@ -278,6 +279,8 @@ inactive
     float barrack_coord_X = 1.0;
     float barrack_coord_Y = 211.0;
     int enemy_player = xsGetWorldPlayerId(8);
+    float military_pop_barrack = xsPlayerAttribute(enemy_player, 40);
+    if (military_pop_barrack < 600) {{ 
     bool {rule}_check_barrack = xsDoesUnitExist({barrack});
     vector Spawnpos_barrack_{rule} = xsVectorSet(barrack_coord_X, barrack_coord_Y, 0);
         {xs_line_wave}
@@ -292,8 +295,9 @@ inactive
             {rule_to_activate}
             xsDisableSelf();
         }}
+        //close the security check
+    }}
 }}
-
     """
 
 

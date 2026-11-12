@@ -540,6 +540,8 @@ void imperial_age_reached (){
 def danger_rule_spawn (scenario,trigger_manager,configs,rule_name):
     xs_input_path = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\AoE2DE\\resources\\_common\\xs\\security_breach_in_ruin.xs"
     xs_script_danger_rule ="""
+bool boss_active = false;
+
 //This rule is just a huge IF ELIF, every 5 minutes a check is done to see which spawn rule can be fired
 rule danger_level_spawn_trigger
 //Minimum time between the execution of the rule
@@ -556,7 +558,7 @@ active
         xs_script_danger_rule += f"""
 float minimum_danger_level_{cfg.rule_name} = {min_danger_level};
 float maximum_danger_level_{cfg.rule_name} = {max_danger_level};
-bool can_we_activate_{cfg.rule_name} = (minimum_danger_level_{cfg.rule_name} < danger_level) && (maximum_danger_level_{cfg.rule_name} > danger_level);
+bool can_we_activate_{cfg.rule_name} = (minimum_danger_level_{cfg.rule_name} <= danger_level) && (maximum_danger_level_{cfg.rule_name} >= danger_level) && (boss_active == false) ;
 
             """
     for i, cfg in enumerate(configs):
@@ -578,6 +580,9 @@ else if (can_we_activate_{cfg.rule_name} == true) {{
         
 """
     xs_script_danger_rule +="\n}"
+#This part handle boss special rules for condition
+
+
     with open(xs_input_path, "a") as script_sister_land_pine:
         script_sister_land_pine.write(xs_script_danger_rule)
 
@@ -961,16 +966,16 @@ rule inflation_mercenaries
         dead_merc = 0;
         dead_count_reached = dead_count_reached +1;
         bool lost_lot = (dead_count_reached >= 15) && (danger_level >= 80);
-            if (danger_level >= 40) {{
-                dead_marc_limit = dead_marc_limit - 5;
-            }}
-            else if (danger_level >= 80) {{
+            if (danger_level >= 160) {{
                 dead_marc_limit = dead_marc_limit - 5;
             }}
             else if (danger_level >= 120) {{
                 dead_marc_limit = dead_marc_limit - 10;
             }}
-            else if (danger_level >= 160) {{
+            else if (danger_level >= 80) {{
+                dead_marc_limit = dead_marc_limit - 10;
+            }}
+            else if (danger_level >= 40) {{
                 dead_marc_limit = dead_marc_limit - 5;
             }}
             
@@ -1579,12 +1584,13 @@ inactive
 {{ 
 // Get player 8 real ID, lobby order mess ID 
 int PlayerID = xsGetWorldPlayerId(8);
+float military_pop = xsPlayerAttribute(PlayerID, 40);
 """
         if len(unit) != len(vector):
             raise f"Error : Unit and vector must be the same lenght, one vector per unit, to define a vector make list with tuple [(x_coord,y_coord,x_increment,y_increment, limit_x, limit_y), and so on and so on] "
         else:
             for i in range(len(vector)):
-                if isinstance(second_area_vector, list):
+                if  isinstance(second_area_vector, list) and second_area_vector[i] is not None:
                     # In case of the second area, we unpack it's value for XS too
                     unit_id = unit[i]
                     second_area_x, second_area_y, x_incrementation_second_area, y_incrementation_second_area, limit_x_sec_area, limit_y_sec_area, open_variable = \
@@ -1623,8 +1629,8 @@ int PlayerID = xsGetWorldPlayerId(8);
     for i in range(len(unit)):
         unit_id = unit[i]
         # create the vectors depending if the secondary area is a case or not
-        if not isinstance(second_area_vector, list):
-            second_area_vector = None
+        if not (isinstance(second_area_vector, list) and second_area_vector[i] is not None):
+
             vector_line = f"vector spawnPos_{rule_name}_{unit_id}_{i} = xsVectorSet(x_spawn_{rule_name}_{unit_id}_{i}, y_spawn_{rule_name}_{unit_id}_{i}, 0);"
             vector_second = None
         else:
@@ -1634,11 +1640,12 @@ int PlayerID = xsGetWorldPlayerId(8);
         xs_script_wave += f"""
     // ----------------------------------------
 
-
+        if (military_pop < 600) {{
         for (qty_{rule_name}_{unit_id}_{i} = 0; < SpawnRateEnemy_{rule_name}_{unit_id}_{i}) {{
 
 """
-        if not isinstance(second_area_vector, list):
+
+        if not (isinstance(second_area_vector, list) and second_area_vector[i] is not None):
             # if the second area isn't define we do a normal rule
             xs_script_wave += f"""
 {vector_line}
@@ -1651,13 +1658,16 @@ if (x_spawn_{rule_name}_{unit_id}_{i}>= limit_x_{rule_name}_{unit_id}_{i}) {{
     x_spawn_{rule_name}_{unit_id}_{i} = x_incrementation_{rule_name}_{unit_id}_{i} + x_spawn_{rule_name}_{unit_id}_{i};
 }}
 
+        }} 
+        //close the for loop
         }}
+        //close the security check
 """
         else:
             # if the second area is define we do a rule that check if that area has been reached the boolean, if not then we do normal spawn, but the number of unit count is double to reduce the amount of spawn
-
+            open_variable = second_area_vector[i][0][6]
             xs_script_wave += f"""
-            // if that check is the area is reached
+            // "if" that check is the area is reached
              if ({open_variable}) {{
                 {vector_second}
                 // it's better to have the spawn function returning is ID to avoid desync
@@ -1675,7 +1685,7 @@ if (x_spawn_{rule_name}_{unit_id}_{i}>= limit_x_{rule_name}_{unit_id}_{i}) {{
                 else 
                 {{
                 // Well if X hasn't reached is value it get increase
-                    x_spawn_{rule_name}_{unit_id}_{i} = x_incrementation_{rule_name}_{unit_id}_{i} + y_spawn_sec_area_{rule_name}_{unit_id}_{i};
+                    x_spawn_sec_area_{rule_name}_{unit_id}_{i} = x_incrementation_sec_area_{rule_name}_{unit_id}_{i} + x_spawn_sec_area_{rule_name}_{unit_id}_{i};
                 }}
              }}
             else {{
@@ -1692,7 +1702,11 @@ if (x_spawn_{rule_name}_{unit_id}_{i}>= limit_x_{rule_name}_{unit_id}_{i}) {{
                 }}
 
             }}                 
+        //close the for
         }}
+        // close the if
+        }} 
+        
             """
     mount_the_bool = """"""
     for i in range(len(unit)):
@@ -1725,7 +1739,6 @@ if (x_spawn_{rule_name}_{unit_id}_{i}>= limit_x_{rule_name}_{unit_id}_{i}) {{
     # Write inside the XS file
     with open(xs_input_path, "a") as script_sister_land_pine:
         script_sister_land_pine.write(xs_script_wave)
-
 def xs_variable (scenario,list_xs):
     xs_input_path = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\AoE2DE\\resources\\_common\\xs\\security_breach_in_ruin.xs"
     xs_area = ""
@@ -1747,13 +1760,14 @@ def xs_function_creator(scenario,list_xs):
         xs_var = list_xs[i]
         xs_variable = f"{xs_var}_variable"
         xs_area +=f"""
+bool {xs_variable} = false ;
 void {xs_var}_function () {{
 
 {xs_variable} = true ;
 }}
 """
-        with open(xs_input_path, "a") as script_sister_land_pine:
-            script_sister_land_pine.write(xs_area)
+    with open(xs_input_path, "a") as script_sister_land_pine:
+        script_sister_land_pine.write(xs_area)
 
 def xs_old_man_relic (scenario,trigger_manager):
     xs_input_path = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\AoE2DE\\resources\\_common\\xs\\security_breach_in_ruin.xs"
@@ -2303,3 +2317,46 @@ xsEffectAmount(cAddAttribute, 913, 0, siege_hp_bonus, player);
     with open(xs_input_path, "a") as xs_file:
         xs_file.write(xs_input)
     return xs_input
+def wave_activation(scenario):
+    xs_input_path = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\AoE2DE\\resources\\_common\\xs\\security_breach_in_ruin.xs"
+    xs_input =f"""
+void Desert_fortress_1_defence_function() {{
+    xsEnableRule("dry_fortress_defence_area_1");
+    xsEnableRule("dry_fortress_defence_area_4");
+    xsEnableRule("dry_fortress_defence_area_7");
+    xsEnableRule("dry_fortress_defence_area_9");
+}}
+void Jungle_fortress_big_function() {{
+xsEnableRule("jungle_fortress_big_defence_1");
+xsEnableRule("jungle_fortress_big_defence_5");
+}}
+void Jungle_fortress_small_function() {{
+xsEnableRule("jungle_fortress_small_defence_1");
+xsEnableRule("jungle_fortress_small_defence_3");
+xsEnableRule("jungle_fortress_small_defence_5");
+xsEnableRule("jungle_fortress_small_defence_7");
+}}
+void Mid_area_defence_function() {{
+xsEnableRule("Mid_area_defence_1");
+xsEnableRule("Mid_area_defence_5");
+xsEnableRule("Mid_area_defence_10");
+xsEnableRule("Mid_area_defence_14");
+xsEnableRule("Mid_area_defence_18");
+xsEnableRule("Mid_area_defence_22");
+xsEnableRule("Mid_area_defence_27");
+xsEnableRule("Mid_area_defence_32");
+xsEnableRule("Mid_area_defence_36");
+xsEnableRule("Mid_area_defence_40");
+xsEnableRule("Mid_area_defence_44");
+}}
+
+void last_defence() {{
+xsEnableRule("Final_area_defence_11");
+xsEnableRule("Final_area_defence_6");
+xsEnableRule("Final_area_defence_1");
+xsEnableRule("Final_area_defence_16");
+xsEnableRule("Final_area_defence_20");
+}}
+"""
+    with open(xs_input_path, "a") as xs_file:
+        xs_file.write(xs_input)
