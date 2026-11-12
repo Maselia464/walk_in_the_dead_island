@@ -120,7 +120,7 @@ def level_display(scenario,trigger_manager):
             enabled=True,
             looping=False,
             execute_on_load=True,
-            short_description=f"{color} current level : <Variable {variable_1}>\nRequired XP for next level <Variable {variable_3}>\ <Variable {variable_2}> ",
+            short_description=f"{color} current level : <Variable {variable_1}>\nNext level in : : <Variable {variable_3}>\ <Variable {variable_2}> ",
             description_order=description_order,
             display_on_screen=True,
             description=f"{color} current level : <Variable {variable_1}>\nNext level in : <Variable {variable_3}>\ <Variable {variable_2}> ",

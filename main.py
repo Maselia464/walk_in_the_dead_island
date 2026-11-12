@@ -1,3 +1,5 @@
+from dis import Instruction
+
 from AoE2ScenarioParser.datasets.effects import attributes
 from AoE2ScenarioParser.objects.support import area
 
@@ -18,11 +20,12 @@ from AoE2ScenarioParser.datasets.buildings import BuildingInfo
 from AoE2ScenarioParser.datasets.techs import TechInfo
 # Information about player IDs
 from AoE2ScenarioParser.datasets.players import PlayerId, PlayerColorId, ColorId
+from manutention_file import  main
 from AoE2ScenarioParser import scenarios
 from AoE2ScenarioParser.scenarios.aoe2_de_scenario import AoE2DEScenario
 # Information about terrain IDs
 from AoE2ScenarioParser.datasets.terrains import TerrainId
-
+from dialogue_and_event import start_of_the_game, middle_area, jungle_fortress, last_area, the_first_fortress, the_blackmist
 from AoE2ScenarioParser.datasets.trigger_lists import \
     DiplomacyState, Operation, ButtonLocation, PanelLocation, \
     TimeUnit, VisibilityState, DifficultyLevel, TechnologyState, \
@@ -50,19 +53,19 @@ from AoE2ScenarioParser.objects.managers.option_manager import OptionManager
 
 from AoE2ScenarioParser.datasets.support.info_dataset_base import InfoDatasetBase
 from AoE2ScenarioParser.scenarios.aoe2_de_scenario import AoE2DEScenario
-from XS import xs_function,danger_level, wave_function, danger_rule_spawn, Gary_buerg_xs, Markus_skioliose_XS, Morange_legellan_xs,hamish_davelton_xs, warmer_stephano_xs, harris_galvas_xs, area_open, xs_old_man_relic, xs_forge, xs_function_creator, wave_activation
+from XS import xs_function,danger_level, wave_function, danger_rule_spawn, Gary_buerg_xs, Markus_skioliose_XS, Morange_legellan_xs,hamish_davelton_xs, warmer_stephano_xs, harris_galvas_xs, area_open, xs_old_man_relic, xs_forge, xs_function_creator, wave_activation, danger_upgrade, orange_unit_xs
 from level_display import level_display
 from wave_composition import spawn_data_wave
 from Class_function import John_Galverb, Gary_buerg,Markus_skoliose, Morange_legellan, Hamish_davelton, Warmer_stephano, Haris_galvas
 from special_area import special_area_function
 from Barrack_defense import barrack_function
-from Old_man_relic import old_man_relic_function, Blacksmith_of_takoas
+from Old_man_relic import old_man_relic_function, Blacksmith_of_takoas, forge_capture, university_capture
 from unicodedata import category
 # Dictionnaire pour le script
 from AoE2ScenarioParser.objects.support.area import Area
 
-input_path = "C:\\Users\\redma\\Games\\Age of Empires 2 DE\\76561198382316787\\resources\\_common\\scenario\\7V1 security breach in the ruins.aoe2scenario"
-output_path = "C:\\Users\\redma\\Games\\Age of Empires 2 DE\\76561198382316787\\resources\\_common\\scenario\\7V1 security breach in the ruins v0-1.aoe2scenario"
+input_path = "C:\\Users\\USER\\Games\\Age of Empires 2 DE\\ID\\resources\\_common\\scenario\\7V1 security breach in the ruins.aoe2scenario"
+output_path = "C:\\Users\\USER\\Games\\Age of Empires 2 DE\\ID\\resources\\_common\\scenario\\BETA 7V1 unwished treasure of the ruins v0-1.aoe2scenario"
 
 scenario = AoE2DEScenario.from_file(input_path)
 scenario_uuid = scenario.uuid
@@ -89,8 +92,32 @@ list_flag_D = unit_manager.filter_units_by_const(
     blacklist=False,  # <-- When True, everything in the unit_consts list will be excluded instead of included
     player_list=[PlayerId.EIGHT],
 )
+MUSIC_CREDITS = {
+    2751: ("You are listening to lambda core, from half life 2", "Kelly Bailey"),
+    2750: ("You are listening to Unwished treasure of the ruins", "Snuper dog for this map !!"),
+    2752: ("You are listening to Last legs from half life 2", "Kelly Bailey"),
+    2753: ("You are listening to Venger", "Perturbator feat Greta Link"),
+    2754: ("You are listening to Vortal combat, from half life 2", "Kelly Bailey"),
+}
+
+
+def music_credit(trigger, music_id):
+    title, composer = MUSIC_CREDITS[music_id]
+    trigger.new_effect.display_instructions(
+        source_player=PlayerId.ONE,
+        message=f"<WHITE>Now playing : {title} - {composer}",
+        display_time=60,
+        instruction_panel_position=PanelLocation.BOTTOM,
+    )
+
+
 activation_triggers = {}
 def AREA_maker(scenario,flag,x_calculus,y_calculus,name,xs_name):
+    lambda_core = 2751
+    unwished_treasure = 2750
+    venger =2753
+    vortal_combat = 2754
+    last_two_leg = 2752
     list_flag = unit_manager.filter_units_by_const(
         unit_consts=[flag],
         blacklist=False,  # <-- When True, everything in the unit_consts list will be excluded instead of included
@@ -217,6 +244,38 @@ def AREA_maker(scenario,flag,x_calculus,y_calculus,name,xs_name):
 
             )
         if x_coordinate == 238.5 and y_coordinate == 6.5:
+            simple_area.new_condition.or_()
+            for p in range(1, 8):
+                simple_area.new_condition.objects_in_area(
+                    source_player=p,
+                    quantity=1,
+                    area_x1=222,
+                    area_y1=5,
+                    area_x2=238,
+                    area_y2=22,
+                )
+                simple_area.new_condition.or_()
+            for p in range(1, 8):
+                simple_area.new_condition.objects_in_area(
+                    source_player=p,
+                    quantity=1,
+                    area_x1=213,
+                    area_y1=15,
+                    area_x2=221,
+                    area_y2=22,
+                )
+                simple_area.new_condition.or_()
+            for p in range(1, 8):
+                simple_area.new_condition.objects_in_area(
+                    source_player=p,
+                    quantity=1,
+                    area_x1=222,
+                    area_y1=22,
+                    area_x2=229,
+                    area_y2=31,
+                )
+                if p != PlayerId.SEVEN:
+                    simple_area.new_condition.or_()
             simple_area.new_effect.change_ownership(
                 source_player=PlayerId.GAIA,
                 target_player=PlayerId.EIGHT,
@@ -257,13 +316,73 @@ def AREA_maker(scenario,flag,x_calculus,y_calculus,name,xs_name):
                 source_player=PlayerId.GAIA,
                 target_player=PlayerId.EIGHT,
                 area_x1=222,
-                area_y1=23,
+                area_y1=22,
                 area_x2=229,
                 area_y2=31,
                 object_type=ObjectType.MILITARY,
             )
+            simple_area.new_effect.change_ownership(
+                source_player=PlayerId.GAIA,
+                target_player=PlayerId.EIGHT,
+                area_x1=222,
+                area_y1=22,
+                area_x2=229,
+                area_y2=31,
+                object_type=ObjectType.BUILDING,
+            )
             simple_area.new_effect.script_call(
                 message="dry_spawn_fortress_A_function();"
+            )
+            music_credit(simple_area, lambda_core)
+            for p in range(1, 8):
+                simple_area.new_effect.create_object(
+                    source_player=p,
+                    object_list_unit_id=lambda_core,
+                    location_x=103 + p,
+                    location_y=0,
+                )
+                simple_area.new_effect.modify_attribute(
+                    source_player=p,
+                    object_list_unit_id=lambda_core,
+                    object_attributes=ObjectAttribute.TRAIN_SOUND,
+                    operation=Operation.SET,
+                    quantity=935,
+                )
+            fort_clear = trigger_manager.add_trigger(
+                name="Clear first fortress",
+                enabled=False,
+                looping=False,
+            )
+            fort_clear.new_condition.objects_in_area(
+                source_player=PlayerId.EIGHT,
+                object_group=ObjectClass.TOWER,
+                quantity=1,
+                inverted=True,
+                area_x1=222, area_y1=6, area_x2=238, area_y2=22,
+            )
+            fort_clear.new_condition.objects_in_area(
+                source_player=PlayerId.EIGHT,
+                object_group=ObjectClass.TOWER,
+                quantity=1,
+                inverted=True,
+                area_x1=213, area_y1=15, area_x2=221, area_y2=22,
+            )
+            fort_clear.new_condition.objects_in_area(
+                source_player=PlayerId.EIGHT,
+                object_group=ObjectClass.TOWER,
+                quantity=1,
+                inverted=True,
+                area_x1=222, area_y1=22, area_x2=229, area_y2=31,
+            )
+            for p in range(1, 8):
+                fort_clear.new_effect.create_object(
+                    source_player=p,
+                    object_list_unit_id=lambda_core,
+                    location_x=103 + p,
+                    location_y=1,
+                )
+            simple_area.new_effect.activate_trigger(
+                trigger_id=fort_clear.trigger_id,
             )
         if x_coordinate == 229.5 and y_coordinate == 177.5 or x_coordinate == 238.5 and y_coordinate == 141.5 or x_coordinate == 220.5 and y_coordinate == 186.5 or x_coordinate == 229.5 and y_coordinate == 195.5 or x_coordinate == 238.5 and y_coordinate == 204.5 :
             simple_area.new_effect.script_call(
@@ -289,56 +408,274 @@ def AREA_maker(scenario,flag,x_calculus,y_calculus,name,xs_name):
             simple_area.new_effect.script_call(
                 message="Desert_fortress_1_defence_function();"
             )
-        if x_coordinate == 40.5 and y_coordinate == 204.5:
-            simple_area.new_effect.script_call(
-                message="last_defence();"
-            )
+            music_credit(simple_area, last_two_leg)
             for p in range(1, 8):
-                area_x = 0
-                area_y = 204
-                area_x2 = 40
-                area_y2 = 239
+                simple_area.new_effect.create_object(
+                    source_player=p,
+                    object_list_unit_id=last_two_leg,
+                    location_x=110 + p,
+                    location_y=0,
+                )
+                simple_area.new_effect.modify_attribute(
+                    source_player=p,
+                    object_list_unit_id=last_two_leg,
+                    object_attributes=ObjectAttribute.TRAIN_SOUND,
+                    operation=Operation.SET,
+                    quantity=935,
+                )
+            fort_clear = trigger_manager.add_trigger(
+                name="Clear desert fortress",
+                enabled=False,
+                looping=False,
+            )
+            for barrack_id in [30018, 29943, 29948, 30017]:
+                fort_clear.new_condition.destroy_object(
+                    unit_object=barrack_id,
+                )
+            for p in range(1, 8):
+                fort_clear.new_effect.create_object(
+                    source_player=p,
+                    object_list_unit_id=last_two_leg,
+                    location_x=110 + p,
+                    location_y=1,
+                )
+            fort_clear.new_effect.activate_trigger(
+                trigger_id=dialogue_start["blackmist_forge"].trigger_id,
+            )
+            simple_area.new_effect.activate_trigger(
+                trigger_id=fort_clear.trigger_id,
+            )
+        if x_coordinate == 40.5 and y_coordinate == 204.5:
+            simple_area.new_condition.or_()
+            music_credit(simple_area, unwished_treasure)
+            for p in range(1, 8):
                 simple_area.new_condition.objects_in_area(
                     source_player=p,
                     quantity=1,
-                    area_x1=area_x,
-                    area_y1=area_y,
-                    area_x2=area_x2,
-                    area_y2=area_y2,
+                    area_x1=0,
+                    area_y1=204,
+                    area_x2=40,
+                    area_y2=239,
+                )
+                simple_area.new_effect.create_object(
+                    source_player=p,
+                    object_list_unit_id=unwished_treasure,
+                    location_x=131 + p,
+                    location_y=0,
+                )
+                simple_area.new_effect.modify_attribute(
+                    source_player=p,
+                    object_list_unit_id=unwished_treasure,
+                    object_attributes=ObjectAttribute.TRAIN_SOUND,
+                    operation=Operation.SET,
+                    quantity=935,
                 )
                 if p != PlayerId.SEVEN:
-                    #It's Ugly to do it like this but it's working we need one passage and P7 is the last soooo...
                     simple_area.new_condition.or_()
-                    simple_area.new_effect.change_ownership(
-                        source_player=PlayerId.GAIA,
-                        target_player=PlayerId.EIGHT,
-                        area_x1=area_x,
-                        area_y1=area_y,
-                        area_x2=area_x2,
-                        area_y2=area_y2,
-                        object_type=ObjectType.MILITARY,
-                    )
-                    simple_area.new_effect.change_ownership(
-                        source_player=PlayerId.GAIA,
-                        target_player=PlayerId.EIGHT,
-                        area_x1=area_x,
-                        area_y1=area_y,
-                        area_x2=area_x2,
-                        area_y2=area_y2,
-                        object_type=ObjectType.BUILDING,
-                    )
+            simple_area.new_effect.change_ownership(
+                source_player=PlayerId.GAIA,
+                target_player=PlayerId.EIGHT,
+                area_x1=0,
+                area_y1=204,
+                area_x2=40,
+                area_y2=239,
+                object_type=ObjectType.BUILDING,
+            )
+            simple_area.new_effect.change_ownership(
+                source_player=PlayerId.GAIA,
+                target_player=PlayerId.EIGHT,
+                area_x1=0,
+                area_y1=204,
+                area_x2=40,
+                area_y2=239,
+                object_type=ObjectType.MILITARY,
+            )
+            simple_area.new_effect.script_call(
+                message="last_defence();"
+            )
+            simple_area.new_effect.activate_trigger(
+                trigger_id=dialogue_start["last"].trigger_id,
+            )
+
+            killing_soldier = trigger_manager.add_trigger(
+                name="Last area kill monsters",
+                enabled=False,
+                looping=True,
+            )
+            killing_soldier.new_condition.timer(
+                timer=25
+            )
+            killing_soldier.new_effect.kill_object(
+                source_player=PlayerId.GAIA,
+                object_type=ObjectType.MILITARY,
+                max_units_affected=150,
+                **area.select_entire_map().to_dict()
+            )
+            killing_soldier.new_effect.kill_object(
+                source_player=PlayerId.EIGHT,
+                object_type=ObjectType.MILITARY,
+                max_units_affected=150,
+                **area.select_entire_map().to_dict()
+            )
+
+            end_dial_1 = trigger_manager.add_trigger(
+                name="End dialogue 1",
+                enabled=False,
+                looping=False,
+            )
+            end_dial_1.new_condition.timer(
+                timer=15
+            )
+            end_dial_1.new_effect.display_instructions(
+                source_player=PlayerId.ONE,
+                message="<BLUE>John : We DID it ! We are victorious, our journey has come to an end",
+                display_time=15,
+                object_list_unit_id=UnitInfo.HAND_CANNONEER.ID,
+                instruction_panel_position=PanelLocation.MIDDLE,
+            )
+
+            end_dial_2 = trigger_manager.add_trigger(
+                name="End dialogue 2",
+                enabled=False,
+                looping=False,
+            )
+            end_dial_2.new_condition.timer(
+                timer=30
+            )
+            end_dial_2.new_effect.display_instructions(
+                source_player=PlayerId.ONE,
+                message="<BLUE>John : Everyone gather your bags and mules, take the gold, the treasure, everything ! It's OURS NOW !!!",
+                display_time=15,
+                object_list_unit_id=UnitInfo.HAND_CANNONEER.ID,
+                instruction_panel_position=PanelLocation.BOTTOM,
+            )
+
+            final_victory = trigger_manager.add_trigger(
+                name="Final victory",
+                enabled=False,
+                looping=False,
+            )
+            final_victory.new_condition.timer(
+                timer=45
+            )
+            for p in range(1, 8):
+                final_victory.new_effect.declare_victory(
+                    source_player=p,
+                    enabled=1,
+                )
+
+            last_clear = trigger_manager.add_trigger(
+                name="Last area clear",
+                enabled=False,
+                looping=False,
+            )
+            last_clear.new_condition.destroy_object(
+                unit_object=55649,
+            )
+            for p in range(1, 8):
+                last_clear.new_effect.create_object(
+                    source_player=p,
+                    object_list_unit_id=unwished_treasure,
+                    location_x=131 + p,
+                    location_y=1,
+                )
+            last_clear.new_effect.clear_instructions(
+                instruction_panel_position=PanelLocation.TOP
+            )
+            last_clear.new_effect.clear_instructions(
+                instruction_panel_position=PanelLocation.MIDDLE
+            )
+            last_clear.new_effect.clear_instructions(
+                instruction_panel_position=PanelLocation.BOTTOM
+            )
+            last_clear.new_effect.display_instructions(
+                source_player=PlayerId.TWO,
+                message="<RED>Garry : LOOK ! The curse, it's fading away ! The monsters, they all start dying !",
+                display_time=15,
+                object_list_unit_id=UnitInfo.MERCHANT.ID,
+                instruction_panel_position=PanelLocation.TOP,
+            )
+            last_clear.new_effect.kill_object(
+                source_player=PlayerId.EIGHT,
+                object_list_unit_id=BuildingInfo.BARRACKS.ID,
+                **area.select_entire_map().to_dict(),
+            )
+            last_clear.new_effect.activate_trigger(trigger_id=killing_soldier.trigger_id)
+            last_clear.new_effect.activate_trigger(trigger_id=end_dial_1.trigger_id)
+            last_clear.new_effect.activate_trigger(trigger_id=end_dial_2.trigger_id)
+            last_clear.new_effect.activate_trigger(trigger_id=final_victory.trigger_id)
+
+            simple_area.new_effect.activate_trigger(
+                trigger_id=last_clear.trigger_id,
+            )
         if x_coordinate == 211.5 and y_coordinate == 213.5:
             simple_area.new_effect.script_call(
                 message="Jungle_fortress_big_function();"
+            )
+            music_credit(simple_area, vortal_combat)
+            for p in range(1, 8):
+                simple_area.new_effect.create_object(
+                    source_player=p,
+                    object_list_unit_id=vortal_combat,
+                    location_x=124 + p,
+                    location_y=0,
+                )
+                simple_area.new_effect.modify_attribute(
+                    source_player=p,
+                    object_list_unit_id=vortal_combat,
+                    object_attributes=ObjectAttribute.TRAIN_SOUND,
+                    operation=Operation.SET,
+                    quantity=935,
+                )
+            fort_clear = trigger_manager.add_trigger(
+                name="Clear jungle fortress",
+                enabled=False,
+                looping=False,
+            )
+            for barrack_id in [35368, 35372]:
+                fort_clear.new_condition.destroy_object(
+                    unit_object=barrack_id,
+                )
+            for p in range(1, 8):
+                fort_clear.new_effect.create_object(
+                    source_player=p,
+                    object_list_unit_id=vortal_combat,
+                    location_x=124 + p,
+                    location_y=1,
+                )
+            fort_clear.new_effect.activate_trigger(
+                trigger_id=dialogue_start["jungle"].trigger_id,
+            )
+            simple_area.new_effect.activate_trigger(
+                trigger_id=fort_clear.trigger_id,
             )
         if x_coordinate == 130.5 and y_coordinate == 114.5:
             simple_area.new_effect.script_call(
                 message="Mid_area_defence_function();"
             )
+            simple_area.new_effect.activate_trigger(
+                trigger_id=dialogue_start["middle"].trigger_id,
+            )
+            music_credit(simple_area, venger)
+            for p in range(1, 8):
+                simple_area.new_effect.create_object(
+                    source_player=p,
+                    object_list_unit_id=venger,
+                    location_x=117 + p,
+                    location_y=0,
+                )
+                simple_area.new_effect.modify_attribute(
+                    source_player=p,
+                    object_list_unit_id=venger,
+                    object_attributes=ObjectAttribute.TRAIN_SOUND,
+                    operation=Operation.SET,
+                    quantity=935,
+                )
             area_x = 6
             area_y = 114
             area_x2 = 130
             area_y2 = 130
+            simple_area.new_condition.or_()
             for p in range(1, 8):
                 simple_area.new_condition.objects_in_area(
                     source_player=p,
@@ -403,9 +740,67 @@ def AREA_maker(scenario,flag,x_calculus,y_calculus,name,xs_name):
                 area_y2=area_y2,
                 object_type=ObjectType.BUILDING,
             )
-        if x_coordinate == 31.5 and y_coordinate == 78.5:
-            simple_area.new_effect.script_call(
-                message="Jungle_fortress_small_function();"
+            fort_clear = trigger_manager.add_trigger(
+                name="Clear mid area",
+                enabled=False,
+                looping=False,
+            )
+            for barrack_id in [24080, 24079, 24078, 24077, 24076, 24081, 24082, 24085, 24086, 24087, 24088]:
+                fort_clear.new_condition.destroy_object(
+                    unit_object=barrack_id,
+                )
+            for p in range(1, 8):
+                fort_clear.new_effect.create_object(
+                    source_player=p,
+                    object_list_unit_id=venger,
+                    location_x=117 + p,
+                    location_y=1,
+                )
+            simple_area.new_effect.activate_trigger(
+                trigger_id=fort_clear.trigger_id,
+            )
+        if x_coordinate == 238.5 and y_coordinate == 24.5 :
+            simple_area.new_condition.or_()
+            for p in range(1, 8):
+                simple_area.new_condition.objects_in_area(
+                    source_player=p,
+                    quantity=1,
+                    area_x1=231,
+                    area_y1=24,
+                    area_x2=238,
+                    area_y2=49,
+                )
+                if p != PlayerId.SEVEN:
+                    simple_area.new_condition.or_()
+            simple_area.new_condition.or_()
+            for p in range(1, 8):
+                simple_area.new_condition.objects_in_area(
+                    source_player=p,
+                    quantity=1,
+                    area_x1=222,
+                    area_y1=33,
+                    area_x2=230,
+                    area_y2=40,
+                )
+                if p != PlayerId.SEVEN:
+                    simple_area.new_condition.or_()
+            simple_area.new_effect.change_ownership(
+                source_player=PlayerId.GAIA,
+                target_player=PlayerId.EIGHT,
+                area_x1=231,
+                area_y1=24,
+                area_x2=238,
+                area_y2=49,
+                object_type=ObjectType.BUILDING,
+            )
+            simple_area.new_effect.change_ownership(
+                source_player=PlayerId.GAIA,
+                target_player=PlayerId.EIGHT,
+                area_x1=222,
+                area_y1=23,
+                area_x2=229,
+                area_y2=31,
+                object_type=ObjectType.MILITARY,
             )
 
 print(list_flag_A)
@@ -415,6 +810,9 @@ Gaia_change = trigger_manager.add_trigger(
         looping=False,
         execute_on_load=True,
     )
+Gaia_change.new_effect.script_call(
+    message="setup_orange_unit();"
+)
 Gaia_change.new_effect.change_ownership(
         source_player=PlayerId.EIGHT,
         target_player=PlayerId.GAIA,
@@ -451,7 +849,76 @@ Gaia_change.new_effect.change_ownership(
         area_y2 = 239,
         object_type=ObjectType.MILITARY,
     )
-
+disable_list = [BuildingInfo.BLACKSMITH.ID,BuildingInfo.UNIVERSITY.ID]
+setup_map = trigger_manager.add_trigger(
+        name=f"Setup map",
+        enabled=True,
+        looping=False,
+        execute_on_load=True,
+    )
+for p in range (1,8):
+    for disable in range (len(disable_list)):
+        disable_id = disable_list[disable]
+        setup_map.new_effect.enable_disable_object(
+            source_player=p,
+            object_list_unit_id=disable_id,
+            enabled=False,
+        )
+gaia_buff = trigger_manager.add_trigger(
+        name=f"GAIA BUFF",
+        enabled=True,
+        looping=False,
+        execute_on_load=True,
+    )
+gaia_buff.new_condition.script_call(
+    xs_function="gaia_buff_check();",
+)
+gaia_buff.new_effect.change_object_attack()
+blackmist_arrival, blackmist_forge = the_blackmist(scenario)
+dialogue_start = {
+    "blackmist_forge": blackmist_forge,
+    "middle": middle_area(scenario),
+    "jungle": jungle_fortress(scenario),
+    "last": last_area(scenario),
+}
+first_fortress_approach = trigger_manager.add_trigger(
+    name="First fortress approach",
+    enabled=True,
+    looping=False,
+)
+for p in range(1, 8):
+    first_fortress_approach.new_condition.objects_in_area(
+        source_player=p,
+        quantity=1,
+        area_x1=195,
+        area_y1=0,
+        area_x2=239,
+        area_y2=40,
+    )
+    if p != PlayerId.SEVEN:
+        first_fortress_approach.new_condition.or_()
+first_fortress_approach.new_effect.activate_trigger(
+    trigger_id=the_first_fortress(scenario).trigger_id,
+)
+blackmist_approach = trigger_manager.add_trigger(
+    name="Blackmist approach",
+    enabled=True,
+    looping=False,
+)
+for p in range(1, 8):
+    blackmist_approach.new_condition.objects_in_area(
+        source_player=p,
+        quantity=1,
+        area_x1=204,
+        area_y1=186,
+        area_x2=239,
+        area_y2=239,
+    )
+    if p != PlayerId.SEVEN:
+        blackmist_approach.new_condition.or_()
+blackmist_approach.new_effect.activate_trigger(
+    trigger_id=blackmist_arrival.trigger_id,
+)
 flag_list = [(OtherInfo.FLAG_A.ID,7,7,"Simple area","area_reach_tracker_small();"),(OtherInfo.FLAG_C.ID,25,16,"3x2 area ","area_reach_tracker_big();"),(OtherInfo.FLAG_B.ID,16,16,"Bigger square ","area_reach_tracker_medium();"),
              (OtherInfo.FLAG_D.ID,16,25,"2x3 area ","area_reach_tracker_big();"),(OtherInfo.FLAG_G.ID,34,16,"3x4 area ","area_reach_tracker_very_big();"),(OtherInfo.FLAG_H.ID,16,34,"4x3 area ","area_reach_tracker_very_big();")
              ,(OtherInfo.FLAG_E.ID,7,16,"1x2 area","area_reach_tracker_small();"),(OtherInfo.FLAG_F.ID,16,7,"1x2 area","area_reach_tracker_small();"),(OtherInfo.FLAG_I.ID,25,25,"Big area","area_reach_tracker_very_big();"),(OtherInfo.FLAG_J.ID,25,34,"very Big area","area_reach_tracker_very_big();")
@@ -490,6 +957,8 @@ Haris_galvas(scenario,trigger_manager)
 xs_old_man_relic(scenario,trigger_manager)
 old_man_relic_function(scenario,trigger_manager,activation_triggers)
 xs_forge(scenario,trigger_manager)
+forge_capture(scenario, trigger_manager)
+university_capture(scenario, trigger_manager)
 Blacksmith_of_takoas(scenario,trigger_manager,activation_triggers)
 #------------------------------------ Area spawn setup -------------------------------
 wave_activation(scenario)
@@ -499,6 +968,8 @@ spawn_zone_list = ["dry_spawn_chief_hut_big_A", "dry_spawn_knight_A", "dry_spawn
                    "jungle_spawn_river_A", "jungle_spawn_mill_A", "jungle_spawn_hero_cav_A",
                    "jungle_spawn_crusader"]
 xs_function_creator(scenario, spawn_zone_list)
+orange_unit_xs(scenario,trigger_manager)
+danger_upgrade(scenario)
 
 
 level_display(scenario,trigger_manager)
@@ -546,5 +1017,6 @@ for p in range (1,8):
             trigger_id=age_check.trigger_id,
         )
 barrack_function(scenario)
-
+start_of_the_game(scenario=scenario)
 scenario.write_to_file(output_path)
+main()
