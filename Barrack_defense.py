@@ -213,6 +213,7 @@ def barrack_function(scenario):
             quantity=[140, 50, 140],
             spawn_rate=[14, 5, 14],
             spawn_time=25,
+            rule="dry_fortress_defence_area_8",
             rule_to_activate="dry_fortress_defence_area_7",
 
         ),
@@ -1150,4 +1151,3 @@ def barrack_function(scenario):
             rule = cfg.rule,
             rule_to_activate = cfg.rule_to_activate,
         )
-    

@@ -182,6 +182,39 @@ def John_Galverb(scenario,trigger_manager):
             trigger=shared_trigger,
             icon_id= cfg.icon_id,
         )
+#All my loves to the devs of AOE2 who though that the chinese bonus has to be a float into an int for some reason
+    chinese_cost_trigger = trigger_manager.add_trigger(
+        name=f"Chinese tech cost fix player {player}",
+        enabled=True,
+        looping=False,
+        execute_on_load=False,
+    )
+    chinese_cost_trigger.new_condition.research_technology(
+        source_player=player,
+        technology=TechInfo.CHINESE.ID,
+    )
+    chinese_cost_trigger.new_condition.research_technology(
+        source_player=player,
+        technology=TechInfo.CASTLE_AGE.ID,
+    )
+    for cfg in set_up_blue_tech:
+        if cfg.cost_type == (Attribute.UNUSED_RESOURCE_498, None):
+            tech_define(
+                scenario,
+                trigger_manager,
+                name=cfg.name,
+                description=cfg.description,
+                tech_id=cfg.tech_id,
+                player=cfg.player,
+                location=cfg.location,
+                button=cfg.button,
+                enabled=cfg.enabled,
+                research_time=cfg.research_time,
+                cost_quantity=(2, None),
+                cost_type=cfg.cost_type,
+                trigger=chinese_cost_trigger,
+                icon_id=cfg.icon_id,
+            )
     for cfg in set_up_blue_object:
         shared_trigger = object_define(
             scenario,
@@ -456,6 +489,39 @@ def Markus_skoliose (scenario,trigger_manager):
             trigger=shared_trigger,
             icon_id=cfg.icon_id,
         )
+# All my loves to the devs of AOE2 who though that the chinese bonus has to be a float into an int for some reason
+    chinese_cost_trigger = trigger_manager.add_trigger(
+        name=f"Chinese tech cost fix player {player}",
+        enabled=True,
+        looping=False,
+        execute_on_load=False,
+    )
+    chinese_cost_trigger.new_condition.research_technology(
+        source_player=player,
+        technology=TechInfo.CHINESE.ID,
+    )
+    chinese_cost_trigger.new_condition.research_technology(
+        source_player=player,
+        technology=TechInfo.CASTLE_AGE.ID,
+    )
+    for cfg in set_up_green_tech:
+        if cfg.cost_type == (Attribute.UNUSED_RESOURCE_498, None):
+            tech_define(
+                scenario,
+                trigger_manager,
+                name=cfg.name,
+                description=cfg.description,
+                tech_id=cfg.tech_id,
+                player=cfg.player,
+                location=cfg.location,
+                button=cfg.button,
+                enabled=cfg.enabled,
+                research_time=cfg.research_time,
+                cost_quantity=(2, None),
+                cost_type=cfg.cost_type,
+                trigger=chinese_cost_trigger,
+                icon_id=cfg.icon_id,
+            )
     for cfg in set_up_green_object:
         shared_trigger = object_define(
             scenario,
@@ -642,6 +708,39 @@ def Morange_legellan(scenario,trigger_manager):
             trigger=shared_trigger,
             icon_id=cfg.icon_id,
         )
+# All my loves to the devs of AOE2 who though that the chinese bonus has to be a float into an int for some reason
+    chinese_cost_trigger = trigger_manager.add_trigger(
+        name=f"Chinese tech cost fix player {player}",
+        enabled=True,
+        looping=False,
+        execute_on_load=False,
+    )
+    chinese_cost_trigger.new_condition.research_technology(
+        source_player=player,
+        technology=TechInfo.CHINESE.ID,
+    )
+    chinese_cost_trigger.new_condition.research_technology(
+        source_player=player,
+        technology=TechInfo.CASTLE_AGE.ID,
+    )
+    for cfg in set_up_yellow_tech:
+        if cfg.cost_type == (Attribute.UNUSED_RESOURCE_498, None):
+            tech_define(
+                scenario,
+                trigger_manager,
+                name=cfg.name,
+                description=cfg.description,
+                tech_id=cfg.tech_id,
+                player=cfg.player,
+                location=cfg.location,
+                button=cfg.button,
+                enabled=cfg.enabled,
+                research_time=cfg.research_time,
+                cost_quantity=(2, None),
+                cost_type=cfg.cost_type,
+                trigger=chinese_cost_trigger,
+                icon_id=cfg.icon_id,
+            )
     for cfg in set_up_yellow_object:
         shared_trigger = object_define(
             scenario,
@@ -1299,6 +1398,39 @@ def Warmer_stephano(scenario,trigger_manager):
             trigger=shared_trigger,
             icon_id=cfg.icon_id,
         )
+    # #All my loves to the devs of AOE2 who though that the chinese bonus has to be a float into an int for some reason
+    chinese_cost_trigger = trigger_manager.add_trigger(
+        name=f"Chinese tech cost fix player {player}",
+        enabled=True,
+        looping=False,
+        execute_on_load=False,
+    )
+    chinese_cost_trigger.new_condition.research_technology(
+        source_player=player,
+        technology=TechInfo.CHINESE.ID,
+    )
+    chinese_cost_trigger.new_condition.research_technology(
+        source_player=player,
+        technology=TechInfo.CASTLE_AGE.ID,
+    )
+    for cfg in set_up_purple_tech:
+        if cfg.cost_type == (Attribute.UNUSED_RESOURCE_498, None):
+            tech_define(
+                scenario,
+                trigger_manager,
+                name=cfg.name,
+                description=cfg.description,
+                tech_id=cfg.tech_id,
+                player=cfg.player,
+                location=cfg.location,
+                button=cfg.button,
+                enabled=cfg.enabled,
+                research_time=cfg.research_time,
+                cost_quantity=(2, None),
+                cost_type=cfg.cost_type,
+                trigger=chinese_cost_trigger,
+                icon_id=cfg.icon_id,
+            )
     for cfg in set_up_purple_object:
         shared_trigger = object_define(
             scenario,
@@ -1384,7 +1516,7 @@ def Haris_galvas(scenario,trigger_manager):
             player=player,
             research_time=5,
             cost_type=(Attribute.UNUSED_RESOURCE_498, None),
-            cost_quantity=(1, None),
+            cost_quantity=(15, None),
             icon_id=179,
         ),
         technology_setup(
@@ -1397,7 +1529,7 @@ def Haris_galvas(scenario,trigger_manager):
             player=player,
             research_time=5,
             cost_type=(Attribute.UNUSED_RESOURCE_498, None),
-            cost_quantity=(1, None),
+            cost_quantity=(25, None),
             icon_id=25,
         ),
         technology_setup(
@@ -1410,7 +1542,7 @@ def Haris_galvas(scenario,trigger_manager):
             player=player,
             research_time=5,
             cost_type=(Attribute.UNUSED_RESOURCE_498, None),
-            cost_quantity=(1, None),
+            cost_quantity=(45, None),
             icon_id=12,
         ),
         technology_setup(
@@ -1423,7 +1555,7 @@ def Haris_galvas(scenario,trigger_manager):
             player=player,
             research_time=5,
             cost_type=(Attribute.UNUSED_RESOURCE_498, None),
-            cost_quantity=(1, None),
+            cost_quantity=(45, None),
             icon_id=39,
         ),
         technology_setup(
@@ -1436,7 +1568,7 @@ def Haris_galvas(scenario,trigger_manager):
             player=player,
             research_time=5,
             cost_type=(Attribute.UNUSED_RESOURCE_498, None),
-            cost_quantity=(1, None),
+            cost_quantity=(15, None),
             icon_id=60,
         ),
         technology_setup(
@@ -1449,7 +1581,7 @@ def Haris_galvas(scenario,trigger_manager):
             player=player,
             research_time=5,
             cost_type=(Attribute.UNUSED_RESOURCE_498, None),
-            cost_quantity=(1, None),
+            cost_quantity=(25, None),
             icon_id=103,
         ),
     ]
@@ -1543,4 +1675,3 @@ def Haris_galvas(scenario,trigger_manager):
                 technology=tech_id,
                 enabled=True,
             )
-
