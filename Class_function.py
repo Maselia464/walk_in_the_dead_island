@@ -153,11 +153,11 @@ def John_Galverb(scenario,trigger_manager):
             cost_quantity=(250,100),
         ),
         object_setup(
-            object=BuildingInfo.TENT_C .ID,
+            object=BuildingInfo.TENT_C.ID,
             name="Expedition tent",
             description="Create expedition tent <cost> : John Galverb expedition tent, John is able to create expedition manager from is tent and upgrade then with skill point",
             building=UnitInfo.VILLAGER_MALE.ID,
-            button=8,
+            button=7,
             enabled_object=True,
             player=player,
             cost_type=(Attribute.WOOD_STORAGE, Attribute.STONE_STORAGE),
@@ -182,6 +182,39 @@ def John_Galverb(scenario,trigger_manager):
             trigger=shared_trigger,
             icon_id= cfg.icon_id,
         )
+#All my loves to the devs of AOE2 who though that the chinese bonus has to be a float into an int for some reason
+    chinese_cost_trigger = trigger_manager.add_trigger(
+        name=f"Chinese tech cost fix player {player}",
+        enabled=True,
+        looping=False,
+        execute_on_load=False,
+    )
+    chinese_cost_trigger.new_condition.research_technology(
+        source_player=player,
+        technology=TechInfo.CHINESE.ID,
+    )
+    chinese_cost_trigger.new_condition.research_technology(
+        source_player=player,
+        technology=TechInfo.CASTLE_AGE.ID,
+    )
+    for cfg in set_up_blue_tech:
+        if cfg.cost_type == (Attribute.UNUSED_RESOURCE_498, None):
+            tech_define(
+                scenario,
+                trigger_manager,
+                name=cfg.name,
+                description=cfg.description,
+                tech_id=cfg.tech_id,
+                player=cfg.player,
+                location=cfg.location,
+                button=cfg.button,
+                enabled=cfg.enabled,
+                research_time=cfg.research_time,
+                cost_quantity=(2, None),
+                cost_type=cfg.cost_type,
+                trigger=chinese_cost_trigger,
+                icon_id=cfg.icon_id,
+            )
     for cfg in set_up_blue_object:
         shared_trigger = object_define(
             scenario,
@@ -252,7 +285,7 @@ def Gary_buerg(scenario,trigger_manager):
             name="Expedition tent",
             description="Create expedition tent <cost> : Gary Buerg expedition tent, Gary tent is equiped with a 7800 powermax drill that will drill for relic on any soil",
             building=UnitInfo.VILLAGER_MALE.ID,
-            button=8,
+            button=7,
             enabled_object=True,
             player=player,
             cost_type=(Attribute.WOOD_STORAGE, Attribute.STONE_STORAGE),
@@ -421,7 +454,7 @@ def Markus_skoliose (scenario,trigger_manager):
             name="Expedition tent",
             description="Build the expedition tent <cost> : Markus Skoliose expedition tent, allow you to search 7 different technologies that get betters every time you search one.",
             building=UnitInfo.VILLAGER_MALE.ID,
-            button=8,
+            button=7,
             enabled_object=True,
             player=player,
             cost_type=(Attribute.WOOD_STORAGE, Attribute.STONE_STORAGE),
@@ -456,6 +489,39 @@ def Markus_skoliose (scenario,trigger_manager):
             trigger=shared_trigger,
             icon_id=cfg.icon_id,
         )
+# All my loves to the devs of AOE2 who though that the chinese bonus has to be a float into an int for some reason
+    chinese_cost_trigger = trigger_manager.add_trigger(
+        name=f"Chinese tech cost fix player {player}",
+        enabled=True,
+        looping=False,
+        execute_on_load=False,
+    )
+    chinese_cost_trigger.new_condition.research_technology(
+        source_player=player,
+        technology=TechInfo.CHINESE.ID,
+    )
+    chinese_cost_trigger.new_condition.research_technology(
+        source_player=player,
+        technology=TechInfo.CASTLE_AGE.ID,
+    )
+    for cfg in set_up_green_tech:
+        if cfg.cost_type == (Attribute.UNUSED_RESOURCE_498, None):
+            tech_define(
+                scenario,
+                trigger_manager,
+                name=cfg.name,
+                description=cfg.description,
+                tech_id=cfg.tech_id,
+                player=cfg.player,
+                location=cfg.location,
+                button=cfg.button,
+                enabled=cfg.enabled,
+                research_time=cfg.research_time,
+                cost_quantity=(2, None),
+                cost_type=cfg.cost_type,
+                trigger=chinese_cost_trigger,
+                icon_id=cfg.icon_id,
+            )
     for cfg in set_up_green_object:
         shared_trigger = object_define(
             scenario,
@@ -574,7 +640,7 @@ def Morange_legellan(scenario,trigger_manager):
             name="Mercenary Tavern",
             description="Build the mercenaries tavern <cost> : Allow you hire mercenaries to do your dirty work, carefull hiring and losing mercenaries increase the cost.",
             building=UnitInfo.VILLAGER_MALE.ID,
-            button=9,
+            button=10,
             enabled_object=True,
             player=player,
             cost_type=(Attribute.WOOD_STORAGE, None),
@@ -642,6 +708,39 @@ def Morange_legellan(scenario,trigger_manager):
             trigger=shared_trigger,
             icon_id=cfg.icon_id,
         )
+# All my loves to the devs of AOE2 who though that the chinese bonus has to be a float into an int for some reason
+    chinese_cost_trigger = trigger_manager.add_trigger(
+        name=f"Chinese tech cost fix player {player}",
+        enabled=True,
+        looping=False,
+        execute_on_load=False,
+    )
+    chinese_cost_trigger.new_condition.research_technology(
+        source_player=player,
+        technology=TechInfo.CHINESE.ID,
+    )
+    chinese_cost_trigger.new_condition.research_technology(
+        source_player=player,
+        technology=TechInfo.CASTLE_AGE.ID,
+    )
+    for cfg in set_up_yellow_tech:
+        if cfg.cost_type == (Attribute.UNUSED_RESOURCE_498, None):
+            tech_define(
+                scenario,
+                trigger_manager,
+                name=cfg.name,
+                description=cfg.description,
+                tech_id=cfg.tech_id,
+                player=cfg.player,
+                location=cfg.location,
+                button=cfg.button,
+                enabled=cfg.enabled,
+                research_time=cfg.research_time,
+                cost_quantity=(2, None),
+                cost_type=cfg.cost_type,
+                trigger=chinese_cost_trigger,
+                icon_id=cfg.icon_id,
+            )
     for cfg in set_up_yellow_object:
         shared_trigger = object_define(
             scenario,
@@ -797,7 +896,7 @@ def Hamish_davelton(scenario,trigger_manager):
             name="Deer status",
             description="Build the deer status : Satisfy the quest of Cernunnos by building those deer status everywhere, the cost increase as you build more",
             building=UnitInfo.VILLAGER_MALE.ID,
-            button=9,
+            button=10,
             enabled_object=False,
             player=player,
             cost_type=(Attribute.WOOD_STORAGE, None),
@@ -1185,7 +1284,7 @@ def Warmer_stephano(scenario,trigger_manager):
             name="defence workshop",
             description="Build the defence workshop <cost> : Defensive building that allow you to build unpacked tower to deploy anywhere for your defences, a wise man said : has an engineer you must think outside the box",
             building=UnitInfo.VILLAGER_MALE.ID,
-            button=9,
+            button=10,
             enabled_object=True,
             player=player,
             cost_type=(Attribute.WOOD_STORAGE, None),
@@ -1299,6 +1398,39 @@ def Warmer_stephano(scenario,trigger_manager):
             trigger=shared_trigger,
             icon_id=cfg.icon_id,
         )
+    # #All my loves to the devs of AOE2 who though that the chinese bonus has to be a float into an int for some reason
+    chinese_cost_trigger = trigger_manager.add_trigger(
+        name=f"Chinese tech cost fix player {player}",
+        enabled=True,
+        looping=False,
+        execute_on_load=False,
+    )
+    chinese_cost_trigger.new_condition.research_technology(
+        source_player=player,
+        technology=TechInfo.CHINESE.ID,
+    )
+    chinese_cost_trigger.new_condition.research_technology(
+        source_player=player,
+        technology=TechInfo.CASTLE_AGE.ID,
+    )
+    for cfg in set_up_purple_tech:
+        if cfg.cost_type == (Attribute.UNUSED_RESOURCE_498, None):
+            tech_define(
+                scenario,
+                trigger_manager,
+                name=cfg.name,
+                description=cfg.description,
+                tech_id=cfg.tech_id,
+                player=cfg.player,
+                location=cfg.location,
+                button=cfg.button,
+                enabled=cfg.enabled,
+                research_time=cfg.research_time,
+                cost_quantity=(2, None),
+                cost_type=cfg.cost_type,
+                trigger=chinese_cost_trigger,
+                icon_id=cfg.icon_id,
+            )
     for cfg in set_up_purple_object:
         shared_trigger = object_define(
             scenario,
@@ -1384,7 +1516,7 @@ def Haris_galvas(scenario,trigger_manager):
             player=player,
             research_time=5,
             cost_type=(Attribute.UNUSED_RESOURCE_498, None),
-            cost_quantity=(1, None),
+            cost_quantity=(15, None),
             icon_id=179,
         ),
         technology_setup(
@@ -1397,7 +1529,7 @@ def Haris_galvas(scenario,trigger_manager):
             player=player,
             research_time=5,
             cost_type=(Attribute.UNUSED_RESOURCE_498, None),
-            cost_quantity=(1, None),
+            cost_quantity=(25, None),
             icon_id=25,
         ),
         technology_setup(
@@ -1410,7 +1542,7 @@ def Haris_galvas(scenario,trigger_manager):
             player=player,
             research_time=5,
             cost_type=(Attribute.UNUSED_RESOURCE_498, None),
-            cost_quantity=(1, None),
+            cost_quantity=(45, None),
             icon_id=12,
         ),
         technology_setup(
@@ -1423,7 +1555,7 @@ def Haris_galvas(scenario,trigger_manager):
             player=player,
             research_time=5,
             cost_type=(Attribute.UNUSED_RESOURCE_498, None),
-            cost_quantity=(1, None),
+            cost_quantity=(45, None),
             icon_id=39,
         ),
         technology_setup(
@@ -1436,7 +1568,7 @@ def Haris_galvas(scenario,trigger_manager):
             player=player,
             research_time=5,
             cost_type=(Attribute.UNUSED_RESOURCE_498, None),
-            cost_quantity=(1, None),
+            cost_quantity=(15, None),
             icon_id=60,
         ),
         technology_setup(
@@ -1449,7 +1581,7 @@ def Haris_galvas(scenario,trigger_manager):
             player=player,
             research_time=5,
             cost_type=(Attribute.UNUSED_RESOURCE_498, None),
-            cost_quantity=(1, None),
+            cost_quantity=(25, None),
             icon_id=103,
         ),
     ]
@@ -1459,7 +1591,7 @@ def Haris_galvas(scenario,trigger_manager):
             name="Expedition tent",
             description="Build the expedition shrine <cost> : Harris expedition tent, allow you to exchange is anger point with special tech for is army",
             building=UnitInfo.VILLAGER_MALE.ID,
-            button=8,
+            button=7,
             enabled_object=True,
             player=player,
             cost_type=(Attribute.WOOD_STORAGE, Attribute.STONE_STORAGE),
@@ -1543,4 +1675,3 @@ def Haris_galvas(scenario,trigger_manager):
                 technology=tech_id,
                 enabled=True,
             )
-

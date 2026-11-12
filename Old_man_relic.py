@@ -853,3 +853,263 @@ def Blacksmith_of_takoas(scenario, trigger_manager,activation_triggers):
     trigger_id.new_effect.activate_trigger(
         trigger_id=command_post_activation.trigger_id,
     )
+def forge_capture(scenario, trigger_manager):
+    area_x = 6
+    area_y = 42
+    area_x2 = 13
+    area_y2 = 49
+    list_command_post_trigger = []
+    for p in range(1, 8):
+        command_post_capture = trigger_manager.add_trigger(
+            name=f"Blacksmith capture P{p}",
+            enabled=False,
+            looping=True,
+        )
+        command_post_capture.new_condition.objects_in_area(
+            source_player=PlayerId.GAIA,
+            object_list=BuildingInfo.BLACKSMITH.ID,
+            quantity=1,
+            area_x1=area_x,
+            area_y1=area_y,
+            area_x2=area_x2,
+            area_y2=area_y2,
+        )
+        for other_player in range(1, 8):
+            if other_player == p:
+                inverted_check = False
+            else:
+                inverted_check = True
+            command_post_capture.new_condition.objects_in_area(
+                source_player=other_player,
+                quantity=1,
+                object_type=ObjectType.MILITARY,
+                inverted=inverted_check,
+                area_x1=area_x,
+                area_y1=area_y,
+                area_x2=area_x2,
+                area_y2=area_y2,
+            )
+        command_post_capture.new_effect.change_ownership(
+            source_player=PlayerId.GAIA,
+            target_player=p,
+            object_list_unit_id=BuildingInfo.BLACKSMITH.ID,
+            area_x1=area_x,
+            area_y1=area_y,
+            area_x2=area_x2,
+            area_y2=area_y2,
+        )
+        list_command_post_trigger.append(command_post_capture)
+    command_post_activation = trigger_manager.add_trigger(
+        name="Activate Blacksmith system",
+        enabled=True,
+        looping=False,
+        execute_on_load=True,
+    )
+    command_post_activation.new_condition.timer(
+        timer=10
+    )
+    command_post_activation.new_effect.change_ownership(
+        source_player=PlayerId.EIGHT,
+        target_player=PlayerId.GAIA,
+        area_x1=area_x,
+        area_y1=area_y,
+        area_x2=area_x2,
+        area_y2=area_y2,
+        object_list_unit_id=BuildingInfo.BLACKSMITH.ID,
+    )
+    command_post_release = trigger_manager.add_trigger(
+        name="Blacksmith back to Gaia",
+        enabled=False,
+        looping=True,
+    )
+    command_post_release.new_condition.objects_in_area(
+        source_player=PlayerId.GAIA,
+        object_list=BuildingInfo.BLACKSMITH.ID,
+        quantity=1,
+        inverted=True,
+        area_x1=area_x,
+        area_y1=area_y,
+        area_x2=area_x2,
+        area_y2=area_y2,
+    )
+    for p in range(1, 8):
+        command_post_release.new_condition.objects_in_area(
+            source_player=p,
+            quantity=1,
+            object_type=ObjectType.MILITARY,
+            inverted=True,
+            area_x1=area_x,
+            area_y1=area_y,
+            area_x2=area_x2,
+            area_y2=area_y2,
+        )
+    for p in range(1, 8):
+        command_post_release.new_effect.change_ownership(
+            source_player=p,
+            target_player=PlayerId.GAIA,
+            object_list_unit_id=BuildingInfo.BLACKSMITH.ID,
+            area_x1=area_x,
+            area_y1=area_y,
+            area_x2=area_x2,
+            area_y2=area_y2,
+        )
+    list_command_post_trigger.append(command_post_release)
+    keep_gaia = trigger_manager.add_trigger(
+        name="Blacksmith stays Gaia",
+        enabled=False,
+        looping=True,
+    )
+    keep_gaia.new_condition.objects_in_area(
+        source_player=PlayerId.EIGHT,
+        object_list=BuildingInfo.BLACKSMITH.ID,
+        quantity=1,
+        area_x1=area_x,
+        area_y1=area_y,
+        area_x2=area_x2,
+        area_y2=area_y2,
+    )
+    keep_gaia.new_effect.change_ownership(
+        source_player=PlayerId.EIGHT,
+        target_player=PlayerId.GAIA,
+        object_list_unit_id=BuildingInfo.BLACKSMITH.ID,
+        area_x1=area_x,
+        area_y1=area_y,
+        area_x2=area_x2,
+        area_y2=area_y2,
+    )
+    list_command_post_trigger.append(keep_gaia)
+    for i in range(len(list_command_post_trigger)):
+        command_post_activation.new_effect.activate_trigger(
+            trigger_id=list_command_post_trigger[i].trigger_id,
+        )
+
+
+def university_capture(scenario, trigger_manager):
+    area_x = 140
+    area_y = 231
+    area_x2 = 148
+    area_y2 = 238
+    list_command_post_trigger = []
+    for p in range(1, 8):
+        command_post_capture = trigger_manager.add_trigger(
+            name=f"University capture P{p}",
+            enabled=False,
+            looping=True,
+        )
+        command_post_capture.new_condition.objects_in_area(
+            source_player=PlayerId.GAIA,
+            object_list=BuildingInfo.UNIVERSITY.ID,
+            quantity=1,
+            area_x1=area_x,
+            area_y1=area_y,
+            area_x2=area_x2,
+            area_y2=area_y2,
+        )
+        for other_player in range(1, 8):
+            if other_player == p:
+                inverted_check = False
+            else:
+                inverted_check = True
+            command_post_capture.new_condition.objects_in_area(
+                source_player=other_player,
+                quantity=1,
+                object_type=ObjectType.MILITARY,
+                inverted=inverted_check,
+                area_x1=area_x,
+                area_y1=area_y,
+                area_x2=area_x2,
+                area_y2=area_y2,
+            )
+        command_post_capture.new_effect.change_ownership(
+            source_player=PlayerId.GAIA,
+            target_player=p,
+            object_list_unit_id=BuildingInfo.UNIVERSITY.ID,
+            area_x1=area_x,
+            area_y1=area_y,
+            area_x2=area_x2,
+            area_y2=area_y2,
+        )
+        list_command_post_trigger.append(command_post_capture)
+    command_post_activation = trigger_manager.add_trigger(
+        name="Activate University system",
+        enabled=True,
+        looping=False,
+        execute_on_load=True,
+    )
+    command_post_activation.new_condition.timer(
+        timer=10
+    )
+    command_post_activation.new_effect.change_ownership(
+        source_player=PlayerId.EIGHT,
+        target_player=PlayerId.GAIA,
+        area_x1=area_x,
+        area_y1=area_y,
+        area_x2=area_x2,
+        area_y2=area_y2,
+        object_list_unit_id=BuildingInfo.UNIVERSITY.ID,
+    )
+    command_post_release = trigger_manager.add_trigger(
+        name="University back to Gaia",
+        enabled=False,
+        looping=True,
+    )
+    command_post_release.new_condition.objects_in_area(
+        source_player=PlayerId.GAIA,
+        object_list=BuildingInfo.UNIVERSITY.ID,
+        quantity=1,
+        inverted=True,
+        area_x1=area_x,
+        area_y1=area_y,
+        area_x2=area_x2,
+        area_y2=area_y2,
+    )
+    for p in range(1, 8):
+        command_post_release.new_condition.objects_in_area(
+            source_player=p,
+            quantity=1,
+            object_type=ObjectType.MILITARY,
+            inverted=True,
+            area_x1=area_x,
+            area_y1=area_y,
+            area_x2=area_x2,
+            area_y2=area_y2,
+        )
+    for p in range(1, 8):
+        command_post_release.new_effect.change_ownership(
+            source_player=p,
+            target_player=PlayerId.GAIA,
+            object_list_unit_id=BuildingInfo.UNIVERSITY.ID,
+            area_x1=area_x,
+            area_y1=area_y,
+            area_x2=area_x2,
+            area_y2=area_y2,
+        )
+    list_command_post_trigger.append(command_post_release)
+    keep_gaia = trigger_manager.add_trigger(
+        name="University stays Gaia",
+        enabled=False,
+        looping=True,
+    )
+    keep_gaia.new_condition.objects_in_area(
+        source_player=PlayerId.EIGHT,
+        object_list=BuildingInfo.UNIVERSITY.ID,
+        quantity=1,
+        area_x1=area_x,
+        area_y1=area_y,
+        area_x2=area_x2,
+        area_y2=area_y2,
+    )
+    keep_gaia.new_effect.change_ownership(
+        source_player=PlayerId.EIGHT,
+        target_player=PlayerId.GAIA,
+        object_list_unit_id=BuildingInfo.UNIVERSITY.ID,
+        area_x1=area_x,
+        area_y1=area_y,
+        area_x2=area_x2,
+        area_y2=area_y2,
+    )
+    list_command_post_trigger.append(keep_gaia)
+    for i in range(len(list_command_post_trigger)):
+        command_post_activation.new_effect.activate_trigger(
+            trigger_id=list_command_post_trigger[i].trigger_id,
+        )
