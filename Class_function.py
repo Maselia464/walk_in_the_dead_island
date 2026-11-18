@@ -335,17 +335,17 @@ def Gary_buerg(scenario,trigger_manager):
         execute_on_load=True,
     )
     drill_cycle.new_condition.research_technology(
-        technology=TechInfo.BLANK_TECHNOLOGY_0.ID,
+        technology=TechInfo.LOOM.ID,
         source_player=player,
     )
     drill_cycle.new_effect.enable_disable_technology(
         source_player=player,
-        technology=TechInfo.BLANK_TECHNOLOGY_0.ID,
+        technology=TechInfo.LOOM.ID,
         enabled=False,
     )
     drill_cycle.new_effect.enable_disable_technology(
         source_player=player,
-        technology=TechInfo.BLANK_TECHNOLOGY_0.ID,
+        technology=TechInfo.LOOM.ID,
         enabled=True,
     )
     drill_cycle.new_effect.script_call(
@@ -691,6 +691,7 @@ def Morange_legellan(scenario,trigger_manager):
             cost_quantity=(1050, None),
         ),
     ]
+    hero_list = [HeroInfo.ZHOU_YU.ID,HeroInfo.ZHANG_FEI.ID,HeroInfo.ZAKARE.ID,HeroInfo.ZHAO_YUN.ID]
     for cfg in set_up_yellow_tech:
         shared_trigger = tech_define(
             scenario,
@@ -1603,10 +1604,10 @@ def Haris_galvas(scenario,trigger_manager):
             description="Rage point : <cost> \nHarris is clinicaly insane, You must kill enemy unit in a short period of time to gain rage point to spend here, the stone stone is the amount of rage point you have",
             building=BuildingInfo.TENT_C.ID,
             button=15,
-            enabled_object=False,
+            enabled_object=True,
             player=player,
             cost_type=(Attribute.STONE_STORAGE, Attribute.UNUSED_RESOURCE_200),
-            cost_quantity=(0, 9999),
+            cost_quantity=(1, 9999),
 
         ),
 
@@ -1644,7 +1645,7 @@ def Haris_galvas(scenario,trigger_manager):
             trigger=shared_trigger,
         )
     shared_trigger.new_effect.script_call(
-        message="setup_harris()",
+        message="setup_harris();",
     )
     for i in range (len(tech_list)):
         tech_id, xs = tech_list[i]

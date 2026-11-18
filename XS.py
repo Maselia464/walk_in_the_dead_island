@@ -1,7 +1,6 @@
 from AoE2ScenarioParser.datasets.effects import attributes
 from AoE2ScenarioParser.objects.support import area
 
-
 from logging import disable
 from AoE2ScenarioParser.datasets.trigger_lists import *
 from AoE2ScenarioParser.scenarios.aoe2_de_scenario import AoE2DEScenario
@@ -51,20 +50,20 @@ from AoE2ScenarioParser.objects.managers.option_manager import OptionManager
 from AoE2ScenarioParser.datasets.support.info_dataset_base import InfoDatasetBase
 from AoE2ScenarioParser.scenarios.aoe2_de_scenario import AoE2DEScenario
 
-
-
 from unicodedata import category
 # Dictionnaire pour le script
 from AoE2ScenarioParser.objects.support.area import Area
-def xs_function (scenario,trigger_manager):
+
+
+def xs_function(scenario, trigger_manager):
     xs_input_path = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\AoE2DE\\resources\\_common\\xs\\security_breach_in_ruin.xs"
     xs_level_function = f"""//XS script for security breach in ruin, feel free to read it to crack the map\n
 int pop_cap_res = 32;
 float up_value = 0;
 float gary_atk_bonus = 1.0;"""
 
-    for p in range (1,8):
-        xs_level_function +=f"""
+    for p in range(1, 8):
+        xs_level_function += f"""
 int P{p}_KILL = 0; //Keep track of the kill P{p} made
 int previous_value_P{p} = 0; //used for the IF condition to detect if P{p} made a new kill
 int chief_tent_skillpoint_{p} = 0;
@@ -83,7 +82,7 @@ float bonus_pop_P{p} = 0.0;
 
 
     """
-        #XS AURA FUNCTION
+        # XS AURA FUNCTION
     xs_level_function += """
     bool xsAddAura(
     int auraUnit = -1, /* unit to add the aura to */
@@ -242,8 +241,6 @@ extern const int cAuraDiplomacyGaiaNeutralAlly = 5;
 extern const int cAuraDiplomacyAllButYou = 6;
     """
 
-
-
     xs_level_function += """
 int kill_res = 20; //The id of the Unit killed in resource
 rule setup_variable
@@ -254,27 +251,27 @@ rule setup_variable
         xsSetTriggerVariable(1, P1_level);
         xsSetTriggerVariable(2, P1_required_XP);
         xsSetTriggerVariable(3, XP_P1);
-        
+
         xsSetTriggerVariable(4, P2_level);
         xsSetTriggerVariable(5, P2_required_XP);
         xsSetTriggerVariable(6, XP_P2);
-        
+
         xsSetTriggerVariable(7, P3_level);
         xsSetTriggerVariable(8, P3_required_XP);
         xsSetTriggerVariable(9, XP_P3);
-        
+
         xsSetTriggerVariable(10, P4_level);
         xsSetTriggerVariable(11, P4_required_XP);
         xsSetTriggerVariable(12, XP_P4);
-        
+
         xsSetTriggerVariable(13, P5_level);
         xsSetTriggerVariable(14, P5_required_XP);
         xsSetTriggerVariable(15, XP_P5);
-        
+
         xsSetTriggerVariable(16, P6_level);
         xsSetTriggerVariable(17, P6_required_XP);
         xsSetTriggerVariable(18, XP_P6);
-        
+
         xsSetTriggerVariable(19, P7_level);
         xsSetTriggerVariable(20, P7_required_XP);
         xsSetTriggerVariable(21, XP_P7);
@@ -282,7 +279,7 @@ rule setup_variable
     }    
     """
 
-    for p in range (1,8):
+    for p in range(1, 8):
         XS_general_ID = [900, 936, 944, 912, 947, 923, 906, 912, 947]
         melee_general_ID = [906, 912, 947]
         xs_to_add_five = None
@@ -337,7 +334,7 @@ xsSetPlayerAttribute(tracked_player_P{p}, 499, chief_tent_skillpoint_{p}) ;
 xsSetPlayerAttribute(tracked_player_P{p}, 500, command_post_skillpoint_{p}) ;
 P{p}_five_level_treshold = P{p}_five_level_treshold + 5;
             """
-            xs_to_add_ten =f"""
+            xs_to_add_ten = f"""
 skill_point_player_{p} = xsPlayerAttribute(tracked_player_P{p}, 498);
 skill_point_player_{p} = skill_point_player_{p} + 1;
 xsSetPlayerAttribute(tracked_player_P{p}, 498, skill_point_player_{p});
@@ -411,7 +408,7 @@ xsSetPlayerAttribute(tracked_player_P{p}, 499, chief_tent_skillpoint_{p}) ;
 xsSetPlayerAttribute(tracked_player_P{p}, 500, command_post_skillpoint_{p}) ;
 P{p}_five_level_treshold = P{p}_five_level_treshold + 5;
             """
-        else :
+        else:
             variable_1 = 0
             variable_2 = 0
             variable_3 = 0
@@ -422,7 +419,7 @@ xsSetPlayerAttribute(tracked_player_P{p}, 499, chief_tent_skillpoint_{p}) ;
 xsSetPlayerAttribute(tracked_player_P{p}, 500, command_post_skillpoint_{p}) ;
 P{p}_five_level_treshold = P{p}_five_level_treshold + 5;
             """
-        xs_level_function +=f"""
+        xs_level_function += f"""
 
 
 
@@ -432,14 +429,14 @@ rule XP_tracker_P{p}
     minInterval 1
     maxInterval 1 
 {{
-    
+
     int tracked_player_P{p} = xsGetWorldPlayerId({p});
     P{p}_KILL = xsPlayerAttribute(tracked_player_P{p}, kill_res);
-    
+
     if (previous_value_P{p} < P{p}_KILL) 
     {{
         previous_value_P{p} = previous_value_P{p} + 1; //Is increase BY 1 until it's equal to P{p}_KILL
-        
+
         xsSetTriggerVariable({variable_3}, XP_P{p});
         XP_P{p} = XP_P{p} + XP_value_P{p}; //GIVE THE XP
     }}    
@@ -451,18 +448,24 @@ rule P{p}_level_function
     minInterval 1
     maxInterval 1 
 {{
-    
+
     if (XP_P{p} >= P{p}_required_XP) 
     {{
-        XP_P{p} = 0; //reset xp count 
+        //XP_P{p} = 0; //Not anymore due to balancing
         int tracked_player_P{p} = xsGetWorldPlayerId({p});
+
         P{p}_level = P{p}_level + 1;
         P{p}_required_XP = P{p}_required_XP * P{p}_XP_increase;
+
         more_pop_P{p} = xsPlayerAttribute(tracked_player_P{p}, pop_cap_res);
         bonus_pop_P{p} = more_pop_P{p} + 5;
+
         xsSetPlayerAttribute(tracked_player_P{p}, pop_cap_res, bonus_pop_P{p});
+
         xsSetTriggerVariable({variable_1}, P{p}_level);
+
         xsSetTriggerVariable({variable_2}, P{p}_required_XP);
+
         xsSetTriggerVariable({variable_3}, XP_P{p});
         up_value = up_value + 0.25;
     }}"""
@@ -472,18 +475,17 @@ rule P{p}_level_function
             {xs_to_add_five}
         }}"""
         if xs_to_add_ten != None:
-                xs_level_function += f"""
+            xs_level_function += f"""
         if (P{p}_level >= P{p}_ten_level_treshold) {{
             {xs_to_add_ten}
         }}"""
         if xs_to_add_fifty != None:
-            xs_level_function +=f"""
+            xs_level_function += f"""
         if (P{p}_level >= P{p}_fifty_level_treshold) {{
             {xs_to_add_fifty}
         }}
 
 """
-
 
         xs_level_function += f"""
 }}
@@ -492,9 +494,10 @@ rule P{p}_level_function
         script_sister_land_pine.write(xs_level_function)
     return xs_level_function
 
-def danger_level(scenario,trigger_manager):
+
+def danger_level(scenario, trigger_manager):
     xs_input_path = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\AoE2DE\\resources\\_common\\xs\\security_breach_in_ruin.xs"
-    xs_script_area ="""
+    xs_script_area = """
 float Age_up_value = 0.0;
 float area_reached_value = 0.0;
 void area_reach_tracker_small () {
@@ -528,7 +531,7 @@ void imperial_age_reached (){
     active
     {
     //Status of the rule when the game start, rule is activated in the danger rule function
-        
+
     danger_level = area_reached_value + up_value + Age_up_value;
     xsSetTriggerVariable(25, danger_level);
     xsDisableSelf();
@@ -537,21 +540,34 @@ void imperial_age_reached (){
     with open(xs_input_path, "a") as script_sister_land_pine:
         script_sister_land_pine.write(xs_script_area)
 
-def danger_rule_spawn (scenario,trigger_manager,configs,rule_name):
+
+def danger_rule_spawn(scenario, trigger_manager, configs, rule_name):
     xs_input_path = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\AoE2DE\\resources\\_common\\xs\\security_breach_in_ruin.xs"
-    xs_script_danger_rule ="""
+    xs_script_danger_rule = """
 bool boss_active = false;
 
 //This rule is just a huge IF ELIF, every 5 minutes a check is done to see which spawn rule can be fired
 rule danger_level_spawn_trigger
 //Minimum time between the execution of the rule
-minInterval 300
-maxInterval 300
+minInterval 600
+maxInterval 600
 //Status of the rule when the game start, rule is activated in the danger rule function
 active
 //This is the brace of the rule 
 {
     xsEnableRule("danger_level_operation");
+    if (danger_level >= 150) {
+        xsSetRuleMinIntervalSelf(300);
+        xsSetRuleMaxIntervalSelf(300);
+        }
+    else if (danger_level >= 100) {
+        xsSetRuleMinIntervalSelf(420);
+        xsSetRuleMaxIntervalSelf(420);
+    }
+    else {
+        xsSetRuleMinIntervalSelf(480);
+        xsSetRuleMaxIntervalSelf(480);
+    }
     """
     for i, cfg in enumerate(configs):
         min_danger_level, max_danger_level = cfg.danger_level
@@ -577,34 +593,32 @@ else if (can_we_activate_{cfg.rule_name} == true) {{
     xsEnableRule("{cfg.rule_name}");
     return;
             }}
-        
-"""
-    xs_script_danger_rule +="\n}"
-#This part handle boss special rules for condition
 
+"""
+    xs_script_danger_rule += "\n}"
+    # This part handle boss special rules for condition
 
     with open(xs_input_path, "a") as script_sister_land_pine:
         script_sister_land_pine.write(xs_script_danger_rule)
-
 
 
 # ----------------- For john Galver
 
 def john_galverg_XS():
     xs_input_path = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\AoE2DE\\resources\\_common\\xs\\security_breach_in_ruin.xs"
-    XS_general_ID = [900, 936, 944, 912, 947, 955, 913, 923,906, 912, 947]
+    XS_general_ID = [900, 936, 944, 912, 947, 955, 913, 923, 906, 912, 947]
     melee_general_ID = [906, 912, 947]
     size = len(XS_general_ID)
     txt_array_name = '"class_id_unit"'
     xs_array = f"class_id_units = xsArrayCreateInt({size}, 0, {txt_array_name});\n"
-    for i in range (len(XS_general_ID)):
+    for i in range(len(XS_general_ID)):
         class_id = XS_general_ID[i]
         xs_array += f"xsArraySetInt(class_id_units, {i},{class_id});\n"
     xs_john = f"""
     int john_expedition_manager = {UnitInfo.KING.ID} ;
     float expedition_area_size = 5;
-    float expedition_attack_reload = 0.1;
-    float expedition_regen_rate = 10;
+    float expedition_attack_reload = 0.3;
+    float expedition_regen_rate = 20;
     float workrate_john = 0.5 ;
     int available_manager = 1;
     int class_id_units = -1;
@@ -624,7 +638,7 @@ for (i = 0; < xsArrayGetSize(class_id_units)) {{
     }}
     bool expedition_manager_workrate = xsAddAura(john_expedition_manager, 904, john_galverb, {ObjectAttribute.WORK_RATE}, workrate_john, expedition_area_size, permaAuraregen, cAuraDiplomacyGaiaYouAlly);  
 
-    
+
 }}
 void dispatch_management(){{
     int john_galverb = xsGetWorldPlayerId(1);
@@ -634,15 +648,15 @@ void dispatch_management(){{
 }}
 void economy_direction() {{
     int john_galverb = xsGetWorldPlayerId(1);
-    workrate_john = workrate_john * 1.05;
+    workrate_john = workrate_john * 1.15;
     int permaAuraEffects = cAuraEffectBitMultiply ;
     bool expedition_manager_workrate = xsAddAura(john_expedition_manager, 904, john_galverb, {ObjectAttribute.WORK_RATE}, workrate_john, expedition_area_size, permaAuraEffects, cAuraDiplomacyGaiaYouAlly);  
 
 }}
 void troop_management() {{
     int john_galverb = xsGetWorldPlayerId(1);
-    expedition_attack_reload = expedition_attack_reload * 1.04;
-    expedition_regen_rate = expedition_regen_rate * 1.05;
+    expedition_attack_reload = expedition_attack_reload * 1.14;
+    expedition_regen_rate = expedition_regen_rate * 1.15;
     int permaAuraEffects = cAuraEffectBitMultiply ;
     int permaAuraregen = 0;
     for (i = 0; < xsArrayGetSize(class_id_units)) {{
@@ -665,13 +679,16 @@ for (i = 0; < xsArrayGetSize(class_id_units)) {{
 
 }}
     """
-    joh_tech_list = [(TechInfo.BLANK_TECHNOLOGY_0.ID,"dispatch_management();"),(TechInfo.BLANK_TECHNOLOGY_1.ID,"economy_direction();"),
-                     (TechInfo.BLANK_TECHNOLOGY_2.ID,"troop_management();"),(TechInfo.BLANK_TECHNOLOGY_3.ID,"extend_peremiters();")]
+    joh_tech_list = [(TechInfo.BLANK_TECHNOLOGY_0.ID, "dispatch_management();"),
+                     (TechInfo.BLANK_TECHNOLOGY_1.ID, "economy_direction();"),
+                     (TechInfo.BLANK_TECHNOLOGY_2.ID, "troop_management();"),
+                     (TechInfo.BLANK_TECHNOLOGY_3.ID, "extend_peremiters();")]
     with open(xs_input_path, "a") as script_sister_land_pine:
         script_sister_land_pine.write(xs_john)
     return xs_john
 
-def Gary_buerg_xs(scenario,trigger_manager):
+
+def Gary_buerg_xs(scenario, trigger_manager):
     xs_input_path = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\AoE2DE\\resources\\_common\\xs\\security_breach_in_ruin.xs"
     XS_general_ID = [900, 936, 944, 906, 912, 947, 955, 913, 923, 906, 912, 947]
     melee_general_ID = [906, 912, 947]
@@ -683,6 +700,7 @@ int ten_relic_check_positive = 10;
 int ten_relic_check_negative = 0;
 int digging_treasure_cost = 2500;
 const int BASE_COST = 2500;
+int last_loom_cost = -1;
 rule relic_check_count_P2
 active
 minInterval 1
@@ -719,7 +737,7 @@ if (P2_relic >= five_relic_check_positive) {{
     five_relic_check_negative = five_relic_check_negative - 5;
     for (y = 0; < xsArrayGetSize(class_id_units)) {{
     int class_id_value_B = xsArrayGetInt(class_id_units, y);
-    bool check_melee_B = (class_id_value_B == 906) || (class_id_value == 912) || (class_id_value == 947) ;
+    bool check_melee_B = (class_id_value_B == 906) || (class_id_value_B == 912) || (class_id_value_B == 947) ;
     if (check_melee_B == true) {{
             xsEffectAmount(cAddAttribute,class_id_value_B, {ObjectAttribute.ATTACK}, -256*4 - 1, gary_buerg);
             }}
@@ -734,7 +752,10 @@ int paliers = P2_relic / 10;
 float f = BASE_COST;
 for(v = 0; < paliers) {{ f = f * 0.80; }}
 int new_cost = f;
-xsEffectAmount(cModifyTech, {TechInfo.LOOM.ID}, cAttrSetGoldCost, new_cost, gary_buerg);
+if (new_cost != last_loom_cost) {{
+    xsEffectAmount(cModifyTech, {TechInfo.LOOM.ID}, cAttrSetGoldCost, new_cost, gary_buerg);
+    last_loom_cost = new_cost;
+}}
 }}
 
 int relic_digged = 1;
@@ -744,8 +765,8 @@ int tent_c = {BuildingInfo.TENT_C.ID} ;
 void drill_reward() {{
     int gary_buerg = xsGetWorldPlayerId(2);
     digged_count = digged_count + 1;
-    
-    xsEffectAmount(cModResource, cAttributeSpawnCap, cAttributeSet, 1);
+
+    xsEffectAmount(cModResource, cAttributeSpawnCap, cAttributeSet, 1, gary_buerg);
     xsEffectAmount(cSpawnUnit, relic_id, tent_c, relic_digged, gary_buerg);
     if (digged_count == 3) {{
         relic_digged = relic_digged + 1 ;
@@ -767,11 +788,12 @@ void setup_gary() {{
     xsEffectAmount(cAddAttribute,904, {ObjectAttribute.ARMOR}, 256*4 - 1, gary_buerg);
     xsEffectAmount(cAddAttribute,904, {ObjectAttribute.HIT_POINTS}, 15, gary_buerg);
 }}
-    
+
     """
     with open(xs_input_path, "a") as script_sister_land_pine:
         script_sister_land_pine.write(xs_gary)
     return xs_gary
+
 
 def Markus_skioliose_XS(scenario, trigger_manager):
     xs_input_path = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\AoE2DE\\resources\\_common\\xs\\security_breach_in_ruin.xs"
@@ -786,7 +808,7 @@ void vintage_point() {{
 }}
 void soil_science() {{
     int markus_skoliose = xsGetWorldPlayerId(3);
-    float decote = 0.05 * tech_selection;
+    float decote = 0.15 * tech_selection;
     float price_reduction = 0.95 - decote;
     xsEffectAmount(cMulAttribute,903, 104, price_reduction, markus_skoliose);
     xsEffectAmount(cMulAttribute,903, 106, price_reduction, markus_skoliose);
@@ -796,22 +818,25 @@ void soil_science() {{
 int skill_point_markus_soldier = 0;
 int skill_point_markus_relic = 0;
 void draw_the_mediant_line() {{
+int markus_skoliose = xsGetWorldPlayerId(3);
 int bonus_skill = 2 * tech_selection;
 if (bonus_skill == 0) {{bonus_skill = 1; }}
 skill_point_markus_soldier = skill_point_markus_soldier + bonus_skill;
 skill_point_markus_relic = skill_point_markus_relic + bonus_skill;
+xsSetPlayerAttribute(markus_skoliose, 499, xsPlayerAttribute(markus_skoliose, 499) + bonus_skill);
+xsSetPlayerAttribute(markus_skoliose, 500, xsPlayerAttribute(markus_skoliose, 500) + bonus_skill);
 }}
 void commercial_road() {{
     int markus_skoliose = xsGetWorldPlayerId(3);
-    float cote = 0.10 * tech_selection;
-    float trade_workrate = 1.10 + cote;
+    float cote = 0.15 * tech_selection;
+    float trade_workrate = 1.15 + cote;
     xsEffectAmount(cMulAttribute,{UnitInfo.TRADE_CART_FULL.ID}, cWorkRate, trade_workrate, markus_skoliose);
     xsEffectAmount(cMulAttribute,{UnitInfo.TRADE_CART_EMPTY.ID}, cWorkRate, trade_workrate, markus_skoliose);
 }}
 
 void clear_the_path () {{
     int markus_skoliose = xsGetWorldPlayerId(3);
-    int number_saboteur = 1 + tech_selection;
+    int number_saboteur = 2 + tech_selection;
     xsEffectAmount(cModResource, cAttributeSpawnCap, cAttributeSet, 1);
     xsEffectAmount(cSpawnUnit, {HeroInfo.SABOTEUR.ID}, {BuildingInfo.TENT_C.ID}, number_saboteur, markus_skoliose);
 }}
@@ -819,7 +844,7 @@ void know_the_environnement() {{
     int markus_skoliose = xsGetWorldPlayerId(3);
     int atk_value = 2 * tech_selection + 2 ;
 """
-    XS_general_ID = [900, 936, 944, 912, 947, 923, 906, 912, 947]
+    XS_general_ID = [900, 936, 944, 912, 947, 923, 906]
     melee_general_ID = [906, 912, 947]
     size = len(XS_general_ID)
     xs_function += f"""int class_id_units_markus = xsArrayCreateInt({size}, 0, "markus_array_buff");\n"""
@@ -829,7 +854,7 @@ void know_the_environnement() {{
     xs_function += f"""
 for (i = 0; < xsArrayGetSize(class_id_units_markus)) {{
     int class_id = xsArrayGetInt(class_id_units_markus, i);
-    bool check_melee = (class_id_units_markus == 906) || (class_id_units_markus == 912) || (class_id_units_markus == 947);
+    bool check_melee = (class_id == 906) || (class_id == 912) || (class_id == 947);
     if (check_melee == true) {{
         xsEffectAmount(cAddAttribute,class_id, cAttack, 256*4 + atk_value, markus_skoliose);
     }}
@@ -840,7 +865,7 @@ for (i = 0; < xsArrayGetSize(class_id_units_markus)) {{
 }}
 void catograph_defensive_gear() {{
     int markus_skoliose = xsGetWorldPlayerId(3);
-    int defense_value = 1 + tech_selection;
+    int defense_value = 2 + tech_selection;
     xsEffectAmount(cAddAttribute,906, cArmor, 256*4 + defense_value, markus_skoliose);
     xsEffectAmount(cAddAttribute,906, cArmor, 256*3 + defense_value, markus_skoliose);
     xsEffectAmount(cAddAttribute,900, cArmor, 256*4 + defense_value, markus_skoliose);
@@ -848,22 +873,27 @@ void catograph_defensive_gear() {{
 }}
 void green_gimmick() {{
     tech_selection = tech_selection + 1;
-    
+
 }}
     """
     with open(xs_input_path, "a") as script_sister_land_pine:
         script_sister_land_pine.write(xs_function)
     return xs_function
 
+
 def Morange_legellan_xs(scenario, trigger_manager):
-    merc_list = [HeroInfo.CUSI_YUPANQUI.ID,HeroInfo.PACAL_II.ID,HeroInfo.CUNHAMBEBE.ID,
-                 HeroInfo.FRANKISH_PALADIN.ID,HeroInfo.LA_HIRE.ID,HeroInfo.CHARLEMAGNE.ID,
-                 HeroInfo.JAYAVIRAVARMAN.ID,HeroInfo.GAJAH_MADA.ID,HeroInfo.DAGNAJAN.ID,HeroInfo.RAJENDRA_CHOLA.ID,
-                 HeroInfo.JEAN_BUREAU.ID,HeroInfo.GUGLIELMO_EMBRIACO.ID,HeroInfo.FRANCESCO_SFORZA.ID]
-    stat_list = [(50,"256*4 + 5","256 * 4 + 3","256 * 3 + 1"),(45,"256*3 + 4","256 * 4 + 1","256 * 3 + 1"),(45,"256*4 + 8","256 * 4 + 0","256 * 3 + 0"),
-                 (125, "256*4 + 10", "256 * 4 + 4", "256 * 3 + 2"), (65, "256*3 + 8", "256 * 4 + 1", "256 * 3 + 6"),(70, "256*4 + 6", "256 * 4 + 1", "256 * 3 + 1"),
-                 (80, "256*4 + 9", "256 * 4 + 3", "256 * 3 + 3"), (125, "256*3 + 8", "256 * 4 + 1", "256 * 3 + 1"),(320, "256*3 + 10", "256 * 4 + 1", "256 * 3 + 1"), (95, "256*4 + 8", "256 * 4 + 0", "256 * 3 + 3"),
-                 (80, "256*4 + 45", "256 * 4 + 0", "256 * 3 + 15"), (100, "256*3 + 15", "256 * 4 + 3", "256 * 3 + 3"),(95, "256*4 + 11", "256 * 4 + 4", "256 * 3 + 3"),
+    merc_list = [HeroInfo.CUSI_YUPANQUI.ID, HeroInfo.PACAL_II.ID, HeroInfo.CUNHAMBEBE.ID,
+                 HeroInfo.FRANKISH_PALADIN.ID, HeroInfo.LA_HIRE.ID, HeroInfo.CHARLEMAGNE.ID,
+                 HeroInfo.JAYAVIRAVARMAN.ID, HeroInfo.GAJAH_MADA.ID, HeroInfo.DAGNAJAN.ID, HeroInfo.RAJENDRA_CHOLA.ID,
+                 HeroInfo.JEAN_BUREAU.ID, HeroInfo.GUGLIELMO_EMBRIACO.ID, HeroInfo.FRANCESCO_SFORZA.ID]
+    stat_list = [(50, "256*4 + 5", "256 * 4 + 3", "256 * 3 + 1"), (45, "256*3 + 4", "256 * 4 + 1", "256 * 3 + 1"),
+                 (45, "256*4 + 8", "256 * 4 + 0", "256 * 3 + 0"),
+                 (125, "256*4 + 10", "256 * 4 + 4", "256 * 3 + 2"), (65, "256*3 + 8", "256 * 4 + 1", "256 * 3 + 6"),
+                 (70, "256*4 + 6", "256 * 4 + 1", "256 * 3 + 1"),
+                 (80, "256*4 + 9", "256 * 4 + 3", "256 * 3 + 3"), (125, "256*3 + 8", "256 * 4 + 1", "256 * 3 + 1"),
+                 (320, "256*3 + 10", "256 * 4 + 1", "256 * 3 + 1"), (95, "256*4 + 8", "256 * 4 + 0", "256 * 3 + 3"),
+                 (80, "256*4 + 45", "256 * 4 + 0", "256 * 3 + 15"), (100, "256*3 + 15", "256 * 4 + 3", "256 * 3 + 3"),
+                 (95, "256*4 + 11", "256 * 4 + 4", "256 * 3 + 3"),
                  ]
     xs_input_path = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\AoE2DE\\resources\\_common\\xs\\security_breach_in_ruin.xs"
     xs_function = f"""
@@ -871,17 +901,18 @@ int mercenarie_array = -1;
 int morrange = -1;
 void setup_morrange(){{
 morrange = xsGetWorldPlayerId(4);
-xsEffectAmount(cMulAttribute,{HeroInfo.ZHOU_YU.ID},{ObjectAttribute.TRAIN_TIME} , 15, morrange);
-xsEffectAmount(cMulAttribute,{HeroInfo.ZHAO_YUN.ID},{ObjectAttribute.TRAIN_TIME} , 45, morrange);
-xsEffectAmount(cMulAttribute,{HeroInfo.ZHANG_FEI.ID},{ObjectAttribute.TRAIN_TIME} , 30, morrange);
-xsEffectAmount(cMulAttribute,{HeroInfo.ZAKARE.ID},{ObjectAttribute.TRAIN_TIME} , 45, morrange);
+xsEffectAmount(cSetAttribute,{HeroInfo.ZHOU_YU.ID},{ObjectAttribute.TRAIN_TIME} , 15, morrange);
+xsEffectAmount(cSetAttribute,{HeroInfo.ZHAO_YUN.ID},{ObjectAttribute.TRAIN_TIME} , 45, morrange);
+xsEffectAmount(cSetAttribute,{HeroInfo.ZHANG_FEI.ID},{ObjectAttribute.TRAIN_TIME} , 30, morrange);
+xsEffectAmount(cSetAttribute,{HeroInfo.ZAKARE.ID},{ObjectAttribute.TRAIN_TIME} , 45, morrange);
+xsEffectAmount(cSetAttribute,{BuildingInfo.TRADE_WORKSHOP.ID},{ObjectAttribute.WORK_RATE} , 100, morrange);
 """
     merc_size = len(merc_list)
     xs_function += f"""
 mercenarie_array = xsArrayCreateInt(11, {merc_size}, "mercenarie_array");
 """
     for mercenaries in range(len(merc_list)):
-        unit_id=merc_list[mercenaries]
+        unit_id = merc_list[mercenaries]
         xs_function += f"""
 xsArraySetInt(mercenarie_array, {mercenaries}, {unit_id});
 """
@@ -904,7 +935,7 @@ xsEffectAmount(cSetAttribute,{unit_id}, {ObjectAttribute.COMBAT_ABILITY}, 4, mor
             xsEffectAmount(cSetAttribute,{unit_id}, {ObjectAttribute.MOVEMENT_SPEED}, 6, morrange);
                         """
     xs_function += f"""
-    
+
 """
     xs_function += "}"
 
@@ -925,7 +956,7 @@ void armor_from_poitier(){{
         int merc_id = xsArrayGetInt(mercenarie_array, i);
         xsEffectAmount(cAddAttribute,merc_id, cArmor, 256*4 + 2, morrange);
         xsEffectAmount(cAddAttribute,merc_id, cArmor, 256*3 + 2, morrange);
-        
+
     }}
 }}
 void projectile_from_brezt(){{
@@ -954,6 +985,9 @@ void french_charisma(){{
     if (inflation >= 1.20) {{
         inflation = inflation - 0.20;
     }}
+    if (inflation_east_merc >= 1.20) {{
+        inflation_east_merc = inflation_east_merc - 0.20;
+    }}
 }}
 
 rule inflation_mercenaries
@@ -961,6 +995,7 @@ rule inflation_mercenaries
     minInterval 15
     maxInterval 15
     {{
+    bool inflation_changed = false;
     if (dead_merc >= dead_marc_limit) {{
         inflation = inflation + 0.15;
         dead_merc = 0;
@@ -978,19 +1013,26 @@ rule inflation_mercenaries
             else if (danger_level >= 40) {{
                 dead_marc_limit = dead_marc_limit - 5;
             }}
-            
+
             if (lost_lot == true) {{
                 dead_marc_limit = dead_marc_limit - 5;
             }}
+            if (dead_marc_limit < 10) {{
+                dead_marc_limit = 10;
+            }}
+        inflation_changed = true;
+    }}
     if (brought_merc >= brought_merc_limit) {{
         inflation = inflation + 0.10;
-        inflation_east_merc = inflation_east_merc + inflation + 0.20;
+        inflation_east_merc = inflation_east_merc + 0.30;
         brought_merc = 0;
+        inflation_changed = true;
     }}
-    xsEffectAmount(cMulAttribute,{HeroInfo.ZHOU_YU.ID},{ObjectAttribute.GOLD_COSTS} , inflation, morrange);
-    xsEffectAmount(cMulAttribute,{HeroInfo.ZHAO_YUN.ID},{ObjectAttribute.GOLD_COSTS} , inflation, morrange);
-    xsEffectAmount(cMulAttribute,{HeroInfo.ZHANG_FEI.ID},{ObjectAttribute.GOLD_COSTS} , inflation_east_merc, morrange);
-    xsEffectAmount(cMulAttribute,{HeroInfo.ZAKARE.ID},{ObjectAttribute.GOLD_COSTS} , inflation, morrange);
+    if (inflation_changed == true) {{
+        xsEffectAmount(cMulAttribute,{HeroInfo.ZHOU_YU.ID},{ObjectAttribute.GOLD_COSTS} , inflation, morrange);
+        xsEffectAmount(cMulAttribute,{HeroInfo.ZHAO_YUN.ID},{ObjectAttribute.GOLD_COSTS} , inflation, morrange);
+        xsEffectAmount(cMulAttribute,{HeroInfo.ZAKARE.ID},{ObjectAttribute.GOLD_COSTS} , inflation_east_merc, morrange);
+        xsEffectAmount(cMulAttribute,{HeroInfo.ZHANG_FEI.ID},{ObjectAttribute.GOLD_COSTS} , inflation, morrange);
     }}
     }}
 void local_merc(){{
@@ -1034,7 +1076,8 @@ void dead_merc_count() {{
         script_sister_land_pine.write(xs_function)
     return xs_function
 
-def hamish_davelton_xs(scenario,trigger_manager):
+
+def hamish_davelton_xs(scenario, trigger_manager):
     xs_input_path = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\AoE2DE\\resources\\_common\\xs\\security_breach_in_ruin.xs"
 
     xs_hamish = f"""
@@ -1060,10 +1103,10 @@ void setup_hamish () {{
     xsEffectAmount(cSetAttribute,food_bonus, cHitpoints, 1, hamish_davelton);
     xsEffectAmount(cSetAttribute,tree_res_bonus, cHitpoints, 1, hamish_davelton);
     xsEffectAmount(cSetAttribute,gold_mine_bonus, cHitpoints, 1, hamish_davelton);
-    
+
     xsEffectAmount(cSetAttribute,deer_statut, {ObjectAttribute.STANDING_GRAPHIC}, 764, hamish_davelton);
     xsEffectAmount(cSetAttribute,deer_statut, {ObjectAttribute.STANDING_GRAPHIC_2}, 763, hamish_davelton);
-    
+
     xsEffectAmount(cSetAttribute,gold_mine_bonus, {ObjectAttribute.DEAD_UNIT_ID}, {OtherInfo.GOLD_MINE.ID}, {PlayerId.GAIA});
     xsEffectAmount(cSetAttribute,tree_res_bonus, {ObjectAttribute.DEAD_UNIT_ID}, {OtherInfo.TREE_C.ID}, {PlayerId.GAIA});
     xsEffectAmount(cSetAttribute,food_bonus, {ObjectAttribute.DEAD_UNIT_ID}, {OtherInfo.FORAGE_BUSH.ID}, {PlayerId.GAIA});
@@ -1089,7 +1132,7 @@ void count_deer_status() {{
         count_tree_res_bonus =  deer_statut_count / 1.5  ;
         count_food_bonus = deer_statut_count / 1.2  ;
         xsSendChat("<AQUA>Os ydych chi'n anrhydeddu natur, bydd yn arwain eich enaid, You have learned well Hamish", hamish_davelton, false) ;
-        
+
     }} else if (deer_statut_count >= high_deer_value) {{
             villager_workrate =  1.6 / deer_statut_count ;
             count_gold_mine_bonus =  deer_statut_count / 5 ;
@@ -1116,7 +1159,7 @@ void count_deer_status() {{
     xsEffectAmount(cSpawnUnit, food_bonus, deer_statut, 1, hamish_davelton);
     xsEffectAmount(cAddAttribute,904, cWorkRate, villager_workrate, hamish_davelton);
     quest_done = quest_done + 1; 
-    
+
 }}
 
 int increase_limit = -1;
@@ -1172,7 +1215,7 @@ void kill_count_hamish () {{
     xsEffectAmount(cAddAttribute,936, cAttack, atk_range, hamish_davelton);
     xsEffectAmount(cAddAttribute,944, cAttack, atk_range, hamish_davelton);
     xsEffectAmount(cAddAttribute,923, cAttack, atk_range, hamish_davelton);
-    
+
     xsEffectAmount(cAddAttribute,906, cAttack, atk_melee, hamish_davelton);
     xsEffectAmount(cAddAttribute,912, cAttack, atk_melee, hamish_davelton);
 }}
@@ -1240,13 +1283,16 @@ void activate_deer_count() {{
         script_sister_land_pine.write(xs_hamish)
     return xs_function
 
+
 def warmer_stephano_xs(scenario, trigger_manager):
     xs_input_path = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\AoE2DE\\resources\\_common\\xs\\security_breach_in_ruin.xs"
 
-    list_unit = [(HeroInfo.AETHELFRITH.ID,HeroInfo.ARCHER_OF_THE_EYES.ID),(HeroInfo.ARISTIDES.ID,HeroInfo.ROBIN_HOOD.ID)
-    ,(HeroInfo.ATAULF.ID,HeroInfo.PACAL_II.ID),(HeroInfo.ALEXANDER_NEVSKI.ID,HeroInfo.SU_DINGFANG.ID),
-                 (HeroInfo.ARTAPHERNES.ID,HeroInfo.ATTILA_THE_HUN.ID),(HeroInfo.ALEXANDER_DISMOUNTED.ID,HeroInfo.ARCHBISHOP.ID)
-                 ,(HeroInfo.AMOGHAVARSHA.ID,HeroInfo.ARARIBOIA.ID)]
+    list_unit = [(HeroInfo.AETHELFRITH.ID, HeroInfo.ARCHER_OF_THE_EYES.ID),
+                 (HeroInfo.ARISTIDES.ID, HeroInfo.ROBIN_HOOD.ID)
+        , (HeroInfo.ATAULF.ID, HeroInfo.PACAL_II.ID), (HeroInfo.ALEXANDER_NEVSKI.ID, HeroInfo.SU_DINGFANG.ID),
+                 (HeroInfo.ARTAPHERNES.ID, HeroInfo.ATTILA_THE_HUN.ID),
+                 (HeroInfo.ALEXANDER_DISMOUNTED.ID, HeroInfo.ARCHBISHOP.ID)
+        , (HeroInfo.AMOGHAVARSHA.ID, HeroInfo.ARARIBOIA.ID)]
     list_stat = []
     xs_warmer = f"""
 int warmer_stephano = -1;
@@ -1271,9 +1317,9 @@ int atk_size = 20 ;
     for i in range(len(XS_general_ID)):
         class_id = XS_general_ID[i]
         xs_warmer += f"xsArraySetInt(class_id_units_warmer, {i},{class_id});\n"
-    for i in range (len(list_unit)):
+    for i in range(len(list_unit)):
         tower_body, tower = list_unit[i]
-        xs_warmer +=f"""
+        xs_warmer += f"""
 xsEffectAmount(cSetAttribute,{tower_body}, {ObjectAttribute.UNIT_TRAIT}, 8, warmer_stephano);
 xsEffectAmount(cSetAttribute,{tower_body}, {ObjectAttribute.TRAIT_PIECE}, {tower}, warmer_stephano);
 xsEffectAmount(cSetAttribute,{tower_body}, {ObjectAttribute.STANDING_GRAPHIC},2281, warmer_stephano);
@@ -1289,6 +1335,8 @@ xsEffectAmount(cSetAttribute,{tower_body}, {ObjectAttribute.UNIT_SIZE_Z}, 0.5, w
 xsEffectAmount(cSetAttribute,{BuildingInfo.FORTIFIED_OUTPOST.ID}, {ObjectAttribute.MOVEMENT_SPEED}, 0, warmer_stephano);
 xsEffectAmount(cSetAttribute,{BuildingInfo.FORTIFIED_OUTPOST.ID}, {ObjectAttribute.HIT_POINTS}, 1050, warmer_stephano);
 xsEffectAmount(cSetAttribute,{BuildingInfo.FORTIFIED_OUTPOST.ID}, {ObjectAttribute.ATTACK_RELOAD_TIME}, 3, warmer_stephano);
+xsEffectAmount(cSetAttribute,{BuildingInfo.FORTIFIED_OUTPOST.ID}, {ObjectAttribute.ATTACK}, 256*3+8, warmer_stephano);
+xsEffectAmount(cSetAttribute,{BuildingInfo.FORTIFIED_OUTPOST.ID}, {ObjectAttribute.MAXIMUM_RANGE}, 8, warmer_stephano); 
 xsEffectAmount(cSetAttribute,{BuildingInfo.FORTIFIED_OUTPOST.ID}, {ObjectAttribute.PROJECTILE_UNIT}, 367, warmer_stephano);
 xsEffectAmount(cSetAttribute,{BuildingInfo.FORTIFIED_OUTPOST.ID}, {ObjectAttribute.UNIT_SIZE_X}, 0.5, warmer_stephano);
 xsEffectAmount(cSetAttribute,{BuildingInfo.FORTIFIED_OUTPOST.ID}, {ObjectAttribute.UNIT_SIZE_Y}, 0.5, warmer_stephano); 
@@ -1343,7 +1391,7 @@ xsEffectAmount(cSetAttribute,{BuildingInfo.ARMY_TENT_E.ID}, {ObjectAttribute.UND
 bool supervision_tower = xsAddAura({BuildingInfo.ARMY_TENT_E.ID}, 952, warmer_stephano, {ObjectAttribute.ATTACK}, atk_tower, atk_size, permaAuraEffects, cAuraDiplomacyGaiaYouAlly);  
 xsEffectAmount(cSetAttribute,{BuildingInfo.ARMY_TENT_E.ID}, {ObjectAttribute.COMBAT_ABILITY},  32, warmer_stephano); 
 xsEffectAmount(cSetAttribute,{BuildingInfo.ARMY_TENT_E.ID}, {ObjectAttribute.TRAIN_TIME}, 0, warmer_stephano);
-    
+
 
 
 xsResetTaskAmount();
@@ -1366,11 +1414,12 @@ xsModifyObjectTasks(fireTower, warmer_stephano);
         }}
 """
 
-    xs_warmer +="}"
+    xs_warmer += "}"
 
     with open(xs_input_path, "a") as script_sister_land_pine:
         script_sister_land_pine.write(xs_warmer)
     return xs_warmer
+
 
 def harris_galvas_xs(scenario, trigger_manager):
     XS_general_ID = [900, 936, 944, 912, 947, 923, 906, 912, 947]
@@ -1424,10 +1473,10 @@ maxInterval 1
         xsDisplayInstructions("<GREY>Haris: RAAAAAAAAAA !!! I'M GONNA PUT MY FIST UP YOUR JAWS YOU DIRT ZOMBIFIED SOLDIER BASTARD !!!", 45, harris_galvas, {UnitInfo.HUSKARL.ID}, 0, false, true, "peak_anger_management", harris_galvas);
         gain = gain + 10;
     }}
-    
+
 }}
 """
-    xs_harris +=f"""
+    xs_harris += f"""
 int class_id_units_harris_galvas = -1;
 void setup_harris(){{
 int harris_galvas = xsGetWorldPlayerId(7);
@@ -1521,8 +1570,8 @@ xsEffectAmount(cAddAttribute,{HeroInfo.ZAKARE.ID},{ObjectAttribute.STONE_COSTS} 
             xs_harris += f"xsEffectAmount(cAddAttribute, {class_id}, {ObjectAttribute.ATTACK}, 256*4 + 1, harris_galvas);\n"
         else:
             xs_harris += f"xsEffectAmount(cAddAttribute, {class_id}, {ObjectAttribute.ATTACK}, 256*3 + 1, harris_galvas);\n"
-    xs_harris +="}"
-    xs_harris +=f"""
+    xs_harris += "}"
+    xs_harris += f"""
 void bullheaded() {{
 int harris_galvas = xsGetWorldPlayerId(7);
 xsEffectAmount(cAddAttribute,{HeroInfo.ZAKARE.ID},{ObjectAttribute.STONE_COSTS} , -15, harris_galvas);
@@ -1537,7 +1586,7 @@ xsEffectAmount(cAddAttribute,{HeroInfo.ZAKARE.ID},{ObjectAttribute.STONE_COSTS} 
     return xs_harris
 
 
-def area_open (scenario, trigger_manager):
+def area_open(scenario, trigger_manager):
     xs_input_path = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\AoE2DE\\resources\\_common\\xs\\security_breach_in_ruin.xs"
     xs_area = """
 bool value = false;
@@ -1545,6 +1594,8 @@ bool value = false;
     with open(xs_input_path, "a") as script_sister_land_pine:
         script_sister_land_pine.write(xs_area)
     return xs_area
+
+
 def wave_function(scenario, trigger_manager, vector, unit, danger_level, quantity, spawn_rate, rule_name,
                   second_area_vector):
     xs_input_path = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\AoE2DE\\resources\\_common\\xs\\security_breach_in_ruin.xs"
@@ -1590,7 +1641,7 @@ float military_pop = xsPlayerAttribute(PlayerID, 40);
             raise f"Error : Unit and vector must be the same lenght, one vector per unit, to define a vector make list with tuple [(x_coord,y_coord,x_increment,y_increment, limit_x, limit_y), and so on and so on] "
         else:
             for i in range(len(vector)):
-                if  isinstance(second_area_vector, list) and second_area_vector[i] is not None:
+                if isinstance(second_area_vector, list) and second_area_vector[i] is not None:
                     # In case of the second area, we unpack it's value for XS too
                     unit_id = unit[i]
                     second_area_x, second_area_y, x_incrementation_second_area, y_incrementation_second_area, limit_x_sec_area, limit_y_sec_area, open_variable = \
@@ -1640,7 +1691,7 @@ float military_pop = xsPlayerAttribute(PlayerID, 40);
         xs_script_wave += f"""
     // ----------------------------------------
 
-        if (military_pop < 600) {{
+        if ((military_pop < 600) && (totalSpawnedEnemy_{rule_name}_{unit_id}_{i} < maxSpawnEnemy_{rule_name}_{unit_id}_{i})) {{ 
         for (qty_{rule_name}_{unit_id}_{i} = 0; < SpawnRateEnemy_{rule_name}_{unit_id}_{i}) {{
 
 """
@@ -1706,7 +1757,7 @@ if (x_spawn_{rule_name}_{unit_id}_{i}>= limit_x_{rule_name}_{unit_id}_{i}) {{
         }}
         // close the if
         }} 
-        
+
             """
     mount_the_bool = """"""
     for i in range(len(unit)):
@@ -1739,13 +1790,14 @@ if (x_spawn_{rule_name}_{unit_id}_{i}>= limit_x_{rule_name}_{unit_id}_{i}) {{
     # Write inside the XS file
     with open(xs_input_path, "a") as script_sister_land_pine:
         script_sister_land_pine.write(xs_script_wave)
-def xs_variable (scenario,list_xs):
+
+
+def xs_variable(scenario, list_xs):
     xs_input_path = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\AoE2DE\\resources\\_common\\xs\\security_breach_in_ruin.xs"
     xs_area = ""
-    for i in range (len(list_xs)):
-
+    for i in range(len(list_xs)):
         xs_var = list_xs[i]
-        xs_variable=f"{xs_var}_variable"
+        xs_variable = f"{xs_var}_variable"
 
         xs_area += f"""
 bool {xs_variable} = false;
@@ -1753,13 +1805,14 @@ bool {xs_variable} = false;
     with open(xs_input_path, "a") as script_sister_land_pine:
         script_sister_land_pine.write(xs_area)
 
-def xs_function_creator(scenario,list_xs):
+
+def xs_function_creator(scenario, list_xs):
     xs_input_path = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\AoE2DE\\resources\\_common\\xs\\security_breach_in_ruin.xs"
     xs_area = ""
     for i in range(len(list_xs)):
         xs_var = list_xs[i]
         xs_variable = f"{xs_var}_variable"
-        xs_area +=f"""
+        xs_area += f"""
 bool {xs_variable} = false ;
 void {xs_var}_function () {{
 
@@ -1769,7 +1822,8 @@ void {xs_var}_function () {{
     with open(xs_input_path, "a") as script_sister_land_pine:
         script_sister_land_pine.write(xs_area)
 
-def xs_old_man_relic (scenario,trigger_manager):
+
+def xs_old_man_relic(scenario, trigger_manager):
     xs_input_path = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\AoE2DE\\resources\\_common\\xs\\security_breach_in_ruin.xs"
     cursed_units = [
         (UnitInfo.SPEARMAN.ID, -200, 4),
@@ -1795,7 +1849,7 @@ def xs_old_man_relic (scenario,trigger_manager):
             xsArraySetInt(old_man_classes, 9, 947);
         }
 """
-    for  p in range (1,8) :
+    for p in range(1, 8):
         xs_old_man += f"""
         void enchanted_boots_{p}() {{
         int player = xsGetWorldPlayerId({p});
@@ -1831,12 +1885,12 @@ def xs_old_man_relic (scenario,trigger_manager):
     }}
     """
     for p in range(1, 8):
-            xs_old_man += f"""
+        xs_old_man += f"""
     void cursed_spears_{p}() {{
         int player = xsGetWorldPlayerId({p});
     """
-            for n, (unit_id, bleed_value, bleed_duration) in enumerate(cursed_units):
-                xs_old_man += f"""
+        for n, (unit_id, bleed_value, bleed_duration) in enumerate(cursed_units):
+            xs_old_man += f"""
         xsEffectAmount(cSetAttribute, {unit_id}, {ObjectAttribute.COMBAT_ABILITY}, 132, player);
         xsEffectAmount(cAddAttribute, {unit_id}, {ObjectAttribute.HIT_POINTS}, -10, player);
         xsResetTaskAmount();
@@ -1853,11 +1907,11 @@ def xs_old_man_relic (scenario,trigger_manager):
                 xsModifyObjectTasks({unit_id}, player);
             }}
         }}
-    
+
     """
-            xs_old_man += "}\n"
+        xs_old_man += "}\n"
     for p in range(1, 8):
-        xs_old_man +=f"""
+        xs_old_man += f"""
 rule old_man_point_display_{p}
     active
     minInterval 1
@@ -1972,7 +2026,9 @@ void buy_hungry_relic_{p}() {{
     with open(xs_input_path, "a") as xs_file:
         xs_file.write(xs_old_man)
     return xs_old_man
-def xs_forge(scenario,trigger_manager):
+
+
+def xs_forge(scenario, trigger_manager):
     xs_input_path = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\AoE2DE\\resources\\_common\\xs\\security_breach_in_ruin.xs"
     forge_cost = {
         "sword": 3,
@@ -1981,16 +2037,16 @@ def xs_forge(scenario,trigger_manager):
         "tipped": 5,
         "gun": 6,
         "rivet": 8,
-        "silk_7" : 7,
+        "silk_7": 7,
         "silk_6": 6,
         "silk_5": 5,
         "silk_4": 4,
         "silk_3": 3,
-        "precious" : 4,
+        "precious": 4,
     }
-    xs_input =""
+    xs_input = ""
     for p in range(1, 8):
-        xs_input +=f"""
+        xs_input += f"""
 int tech_archer_forge_count_{p} = 0 ;
 int spent_forge_point_{p} = 0;
 """
@@ -2010,7 +2066,7 @@ int spent_forge_point_{p} = 0;
             xsArraySetInt(forge_class, 9, 947);
         }
     """
-    for p in range (1,8):
+    for p in range(1, 8):
         xs_input += f"""
         int atk_given_{p} = 1;
 int count_forge_of_the_sword_{p} = 0;
@@ -2034,9 +2090,9 @@ void forge_of_the_sword_{p}() {{
 
     for p in range(1, 8):
         xs_input += f"""
-    
-    
-    
+
+
+
     void chestplate_of_the_forge_{p}() {{
         int count_relic_{p} = 0;
         int armor_given_{p} = 1;
@@ -2059,7 +2115,7 @@ void forge_of_the_sword_{p}() {{
             if (is_melee == true) {{
                 xsEffectAmount(cAddAttribute, armor_class, 8, 256 * 3 + armor_given_{p}, player);
                 xsEffectAmount(cAddAttribute, armor_class, 8, 256 * 4 + armor_given_{p}, player);
-            
+
             }}
         }}
     }}
@@ -2127,7 +2183,7 @@ void forge_of_the_sword_{p}() {{
 }}
                 """
     for p in range(1, 8):
-            xs_input += f"""
+        xs_input += f"""
 void nailed_leather_of_the_forge_{p}() {{
 int player = xsGetWorldPlayerId({p});
 spent_forge_point_{p} = spent_forge_point_{p} + {forge_cost["nailed"]};
@@ -2170,8 +2226,8 @@ xsEffectAmount(cAddAttribute, 944, 8, 256 * 4 + canon_armor, player);
 }}
 
                     """
-    for p in range (1,8):
-        xs_input+=f"""
+    for p in range(1, 8):
+        xs_input += f"""
 
 int bullet_already_given_{p} = 0;
 
@@ -2194,8 +2250,8 @@ void gun_powder_of_the_forge_{p}() {{
     }}
 }}    
         """
-    for p in range (1,8):
-        xs_input+=f"""
+    for p in range(1, 8):
+        xs_input += f"""
 void siege_forge_tech_{p}() {{
 int siege_hp_bonus = 15;
 spent_forge_point_{p} = spent_forge_point_{p} + {forge_cost["rivet"]};
@@ -2270,7 +2326,7 @@ xsEffectAmount(cAddAttribute, 913, 0, siege_hp_bonus, player);
 
 """
     for p in range(1, 8):
-            xs_input += f"""
+        xs_input += f"""
     void precious_metal_{p}() {{
         int player = xsGetWorldPlayerId({p});
         spent_forge_point_{p} = spent_forge_point_{p} + {forge_cost["precious"]};
@@ -2301,8 +2357,8 @@ xsEffectAmount(cAddAttribute, 913, 0, siege_hp_bonus, player);
         }}
     }}
     """
-    for p in range (1,8):
-        xs_input+= f"""
+    for p in range(1, 8):
+        xs_input += f"""
     rule forge_display_{p}
     active
     minInterval 1
@@ -2317,9 +2373,11 @@ xsEffectAmount(cAddAttribute, 913, 0, siege_hp_bonus, player);
     with open(xs_input_path, "a") as xs_file:
         xs_file.write(xs_input)
     return xs_input
+
+
 def wave_activation(scenario):
     xs_input_path = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\AoE2DE\\resources\\_common\\xs\\security_breach_in_ruin.xs"
-    xs_input =f"""
+    xs_input = f"""
 void Desert_fortress_1_defence_function() {{
     xsEnableRule("dry_fortress_defence_area_1");
     xsEnableRule("dry_fortress_defence_area_4");
@@ -2361,6 +2419,8 @@ xsEnableRule("Final_area_defence_25");
 """
     with open(xs_input_path, "a") as xs_file:
         xs_file.write(xs_input)
+
+
 def danger_upgrade(scenario):
     xs_input_path = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\AoE2DE\\resources\\_common\\xs\\security_breach_in_ruin.xs"
     XS_general_ID = [900, 936, 944, 912, 947, 923, 906]
@@ -2442,12 +2502,14 @@ void gaia_buff_reset() {{
 """
     with open(xs_input_path, "a") as xs_file:
         xs_file.write(xs_input)
+
+
 def orange_unit_xs(scenario, trigger_manager):
     xs_input_path = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\AoE2DE\\resources\\_common\\xs\\security_breach_in_ruin.xs"
     aura_size = 5.0
     cutscene_size = 25.0
-    jean_regen = 30                                  # valeur non donnée, à régler
-    vlad_tower = BuildingInfo.WATCH_TOWER.ID         # tour non précisée, à remplacer
+    jean_regen = 30  # valeur non donnée, à régler
+    vlad_tower = BuildingInfo.WATCH_TOWER.ID  # tour non précisée, à remplacer
     pope_classes = [900, 906, 912, 913, 923, 936, 944, 947, 955]
     stop_classes = [900, 906, 912, 913, 923, 936, 944, 947, 955, 904]
 
@@ -2498,10 +2560,29 @@ void setup_orange_unit() {{
     for owner in ("enemy_player", "0"):
         for class_id in stop_classes:
             xs_orange += f"""
-    
+
     bool stop_unit_{class_id}_{'p8' if owner != '0' else 'gaia'} = xsAddAura({UnitInfo.INVISIBLE_OBJECT_A.ID}, {class_id}, {owner}, {ObjectAttribute.MOVEMENT_SPEED}, -0.99, {cutscene_size}, stopAuraEffect, cAuraDiplomacyAll);
 """
     xs_orange += "}\n"
 
     with open(xs_input_path, "a") as script_sister_land_pine:
         script_sister_land_pine.write(xs_orange)
+
+
+def XP_BONUS_RULE():
+    xs_input_path = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\AoE2DE\\resources\\_common\\xs\\security_breach_in_ruin.xs"
+    lines_medium = ""
+    lines_small = ""
+    for p in range(1, 8):
+        lines_medium += f"XP_value_P{p} = XP_value_P{p} + 1 ;"
+        lines_small += f"XP_value_P{p} = XP_value_P{p} + 0.5 ;"
+    xs = f"""
+void xp_medium_increase() {{
+{lines_medium}
+}}
+void xp_small_increase() {{
+{lines_small}
+}}
+    """
+    with open(xs_input_path, "a") as script_sister_land_pine:
+        script_sister_land_pine.write(xs)
