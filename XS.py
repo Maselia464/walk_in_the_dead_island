@@ -2356,7 +2356,152 @@ xsEnableRule("Final_area_defence_6");
 xsEnableRule("Final_area_defence_1");
 xsEnableRule("Final_area_defence_16");
 xsEnableRule("Final_area_defence_20");
+xsEnableRule("Final_area_defence_25");
 }}
 """
     with open(xs_input_path, "a") as xs_file:
         xs_file.write(xs_input)
+def danger_upgrade(scenario):
+    xs_input_path = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\AoE2DE\\resources\\_common\\xs\\security_breach_in_ruin.xs"
+    XS_general_ID = [900, 936, 944, 912, 947, 923, 906]
+    building_id = [952, 903]
+    xs_array = f"danger_buff_classes = xsArrayCreateInt({len(XS_general_ID)}, 0, \"danger_buff_classes\");\n"
+    for i in range(len(XS_general_ID)):
+        xs_array += f"    xsArraySetInt(danger_buff_classes, {i}, {XS_general_ID[i]});\n"
+    xs_building = ""
+    for i in range(len(building_id)):
+        xs_building += f"""
+        xsEffectAmount(cAddAttribute, {building_id[i]}, {ObjectAttribute.HIT_POINTS}, 10, enemy_player);
+        xsEffectAmount(cAddAttribute, {building_id[i]}, {ObjectAttribute.ATTACK}, 256*3 + 1, enemy_player);"""
+    xs_input = f"""
+int danger_to_reach_for_buff = 50;
+int what_to_buff = 1;
+int reload_buff_turn = 0;
+int Gaia_buff_military = 0;
+int danger_buff_classes = -1;
+
+rule danger_buff_setup
+minInterval 1
+maxInterval 1
+active
+{{
+    {xs_array}
+    xsDisableSelf();
+}}
+
+rule danger_buff_rule
+minInterval 120
+maxInterval 120
+active
+//bracket of the rule
+{{
+int enemy_player = xsGetWorldPlayerId(8);
+if (danger_level >= danger_to_reach_for_buff) {{
+    danger_to_reach_for_buff = danger_to_reach_for_buff + 25;
+    if (what_to_buff == 1) {{
+        reload_buff_turn = reload_buff_turn + 1;
+        for (idx_1 = 0; < xsArrayGetSize(danger_buff_classes)) {{
+            int class_id_value = xsArrayGetInt(danger_buff_classes, idx_1);
+            bool check_melee = (class_id_value == 906) || (class_id_value == 912) || (class_id_value == 947);
+            xsEffectAmount(cAddAttribute, class_id_value, {ObjectAttribute.HIT_POINTS}, 10, enemy_player);
+            xsEffectAmount(cAddAttribute, class_id_value, {ObjectAttribute.ARMOR}, 256*4 + 1, enemy_player);
+            xsEffectAmount(cAddAttribute, class_id_value, {ObjectAttribute.ARMOR}, 256*3 + 1, enemy_player);
+            if (check_melee == true) {{
+                xsEffectAmount(cAddAttribute, class_id_value, {ObjectAttribute.ATTACK}, 256*4 + 1, enemy_player);
+            }}
+            else {{
+                xsEffectAmount(cAddAttribute, class_id_value, {ObjectAttribute.ATTACK}, 256*3 + 1, enemy_player);
+            }}
+            if (reload_buff_turn == 2) {{
+                xsEffectAmount(cMulAttribute, class_id_value, {ObjectAttribute.ATTACK_RELOAD_TIME}, 0.95, enemy_player);
+            }}
+        }}
+        if (reload_buff_turn == 2) {{
+            reload_buff_turn = 0;
+        }}
+        {xs_building}
+        what_to_buff = 2;
+    }}
+    else {{
+        Gaia_buff_military = 1;
+        what_to_buff = 1;
+    }}
+}}
+//bracket of the rule
+}}
+bool gaia_buff_check() {{
+    if (Gaia_buff_military == 1) {{
+        return (true);
+    }}
+    return (false);
+}}
+
+void gaia_buff_reset() {{
+    Gaia_buff_military = 0;
+}}
+"""
+    with open(xs_input_path, "a") as xs_file:
+        xs_file.write(xs_input)
+def orange_unit_xs(scenario, trigger_manager):
+    xs_input_path = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\AoE2DE\\resources\\_common\\xs\\security_breach_in_ruin.xs"
+    aura_size = 5.0
+    cutscene_size = 25.0
+    jean_regen = 30                                  # valeur non donnée, à régler
+    vlad_tower = BuildingInfo.WATCH_TOWER.ID         # tour non précisée, à remplacer
+    pope_classes = [900, 906, 912, 913, 923, 936, 944, 947, 955]
+    stop_classes = [900, 906, 912, 913, 923, 936, 944, 947, 955, 904]
+
+    xs_orange = f"""
+void setup_orange_unit() {{
+    int enemy_player = xsGetWorldPlayerId(8);
+    int gaia_player = xsGetWorldPlayerId(0);
+    int addAuraEffect = 0;
+    int stopAuraEffect = cAuraEffectBitMultiply;   // vitesse x 0 = arrêt
+    xsEffectAmount(cSetAttribute, {BuildingInfo.BLACKSMITH.ID}, {ObjectAttribute.INVULNERABILITY_LEVEL}, 1, enemy_player);
+    xsEffectAmount(cSetAttribute, {BuildingInfo.UNIVERSITY.ID}, {ObjectAttribute.INVULNERABILITY_LEVEL}, 1, enemy_player);
+    xsEffectAmount(cSetAttribute, {BuildingInfo.CHIEFS_YURT.ID}, {ObjectAttribute.INVULNERABILITY_LEVEL}, 1, enemy_player);
+    xsEffectAmount(cSetAttribute, {BuildingInfo.MACEDONIAN_COMMAND_POST.ID}, {ObjectAttribute.INVULNERABILITY_LEVEL}, 1, enemy_player);
+
+    // Babur : 2 chameaux impériaux à sa mort
+    xsEffectAmount(cSetAttribute, {HeroInfo.BABUR.ID}, {ObjectAttribute.DEAD_UNIT_ID}, {UnitInfo.IMPERIAL_CAMEL_RIDER.ID}, enemy_player);
+    xsEffectAmount(cSetAttribute, {HeroInfo.BABUR.ID}, {ObjectAttribute.BLOOD_UNIT}, {UnitInfo.IMPERIAL_CAMEL_RIDER.ID}, enemy_player);
+
+    // Vlad Dracula : une tour à sa mort
+    xsEffectAmount(cSetAttribute, {vlad_tower}, {ObjectAttribute.TRAIN_TIME}, 0, enemy_player);
+    xsEffectAmount(cSetAttribute, {HeroInfo.VLAD_DRACULA.ID}, {ObjectAttribute.DEAD_UNIT_ID}, {vlad_tower}, enemy_player);
+
+    // Theodoric : +5 attaque infanterie
+    bool theodoric_infantry = xsAddAura({HeroInfo.THEODORIC_THE_GOTH.ID}, 906, enemy_player, {ObjectAttribute.ATTACK}, 5, {aura_size}, addAuraEffect, cAuraDiplomacyYou);
+
+    // Gawain : +5 attaque cavalerie et cavalerie légère
+    bool gawain_cav = xsAddAura({HeroInfo.GAWAIN.ID}, 912, enemy_player, {ObjectAttribute.ATTACK}, 5, {aura_size}, addAuraEffect, cAuraDiplomacyYou);
+    bool gawain_light_cav = xsAddAura({HeroInfo.GAWAIN.ID}, 947, enemy_player, {ObjectAttribute.ATTACK}, 5, {aura_size}, addAuraEffect, cAuraDiplomacyYou);
+
+    // Genghis Khan : +5 attaque archers à cheval
+    bool genghis_cav_archer = xsAddAura({HeroInfo.GENGHIS_KHAN.ID}, 936, enemy_player, {ObjectAttribute.ATTACK}, 5, {aura_size}, addAuraEffect, cAuraDiplomacyYou);
+
+    // Jean Bureau : régénération siège et scorpions
+    bool jean_siege = xsAddAura({HeroInfo.JEAN_BUREAU.ID}, 913, enemy_player, {ObjectAttribute.REGENERATION_RATE}, {jean_regen}, {aura_size}, addAuraEffect, cAuraDiplomacyYou);
+    bool jean_scorpion = xsAddAura({HeroInfo.JEAN_BUREAU.ID}, 955, enemy_player, {ObjectAttribute.REGENERATION_RATE}, {jean_regen}, {aura_size}, addAuraEffect, cAuraDiplomacyYou);
+"""
+    # Pape Léon : +150 PV/min et +20 PV max pour toutes les classes
+    for class_id in pope_classes:
+        xs_orange += f"""
+    bool pope_regen_{class_id} = xsAddAura({HeroInfo.POPE_LEO_I.ID}, {class_id}, enemy_player, {ObjectAttribute.REGENERATION_RATE}, 150, {aura_size}, addAuraEffect, cAuraDiplomacyYou);
+    bool pope_hp_{class_id} = xsAddAura({HeroInfo.POPE_LEO_I.ID}, {class_id}, enemy_player, {ObjectAttribute.HIT_POINTS}, 20, {aura_size}, addAuraEffect, cAuraDiplomacyYou);
+    xsEffectAmount(cSetAttribute, {BuildingInfo.BARRACKS.ID}, {ObjectAttribute.HIT_POINTS}, 5000, enemy_player);
+    xsEffectAmount(cSetAttribute, {BuildingInfo.WONDER.ID}, {ObjectAttribute.HIT_POINTS}, 30000, enemy_player);
+
+
+"""
+    # Outpost : arrête les unités ennemies dans la zone (joueur 8 ET Gaïa)
+    for owner in ("enemy_player", "0"):
+        for class_id in stop_classes:
+            xs_orange += f"""
+    
+    bool stop_unit_{class_id}_{'p8' if owner != '0' else 'gaia'} = xsAddAura({UnitInfo.INVISIBLE_OBJECT_A.ID}, {class_id}, {owner}, {ObjectAttribute.MOVEMENT_SPEED}, -0.99, {cutscene_size}, stopAuraEffect, cAuraDiplomacyAll);
+"""
+    xs_orange += "}\n"
+
+    with open(xs_input_path, "a") as script_sister_land_pine:
+        script_sister_land_pine.write(xs_orange)

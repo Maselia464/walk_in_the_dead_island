@@ -104,6 +104,7 @@ def barrack_function(scenario):
         "last_area_3": 56646,
         "last_area_4": 56447,
         "last_area_5": 56648,
+        "last_area_wonder": 55649,
 
         "Mid_defence_zone_1" : 24080,
         "Mid_defence_zone_2" : 24079,
@@ -129,6 +130,7 @@ def barrack_function(scenario):
         "Jungle_fortress_small_2" : 35918,
         "Jungle_fortress_small_3" : 35919,
         "Jungle_fortress_small_4" : 35920,
+
     }
 
     Stable_list = {
@@ -213,6 +215,7 @@ def barrack_function(scenario):
             quantity=[140, 50, 140],
             spawn_rate=[14, 5, 14],
             spawn_time=25,
+            rule="dry_fortress_defence_area_8",
             rule_to_activate="dry_fortress_defence_area_7",
 
         ),
@@ -1137,6 +1140,29 @@ def barrack_function(scenario):
             rule_to_activate="Final_area_defence_20",
 
         ),
+        Building_config(
+            barrack=barrack_list["last_area_wonder"],
+            unit_list=[HeroInfo.VLAD_DRACULA.ID, HeroInfo.ARCHER_OF_THE_EYES.ID, HeroInfo.ALEXANDER_DISMOUNTED.ID, HeroInfo.LAUTARO.ID,
+                       UnitInfo.ELITE_GHULAM.ID, HeroInfo.SABOTEUR.ID],
+            quantity=[175, 175, 175, 200, 175, 15],
+            spawn_rate=[15, 15, 15, 20, 15, 15],
+            spawn_time=15,
+            rule="Final_area_defence_25",
+            rule_to_activate="Final_area_defence_26",
+
+        ),
+        Building_config(
+            barrack=barrack_list["last_area_wonder"],
+            unit_list=[HeroInfo.GAWAIN.ID, HeroInfo.FRANKISH_PALADIN.ID, HeroInfo.THEODORIC_THE_GOTH.ID,
+                       HeroInfo.SHERIFF_OF_NOTTINGHAM.ID,
+                       UnitInfo.HOUFNICE.ID, UnitInfo.ONAGER.ID],
+            quantity=[175, 175, 175, 200, 175, 150],
+            spawn_rate=[15, 15, 15, 20, 15, 15],
+            spawn_time=15,
+            rule="Final_area_defence_26",
+            rule_to_activate="Final_area_defence_25",
+
+        ),
     ]
 # def barrack_rule(scenario,unit_list,barrack,spawn_rate,spawn_time,quantity,rule,rule_to_activate)
     for cfg in barrack_config:
@@ -1150,4 +1176,3 @@ def barrack_function(scenario):
             rule = cfg.rule,
             rule_to_activate = cfg.rule_to_activate,
         )
-    
