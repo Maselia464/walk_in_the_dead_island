@@ -25,6 +25,7 @@ from AoE2ScenarioParser import scenarios
 from AoE2ScenarioParser.scenarios.aoe2_de_scenario import AoE2DEScenario
 # Information about terrain IDs
 from AoE2ScenarioParser.datasets.terrains import TerrainId
+from Ai_kicker import ai_kick
 from dialogue_and_event import start_of_the_game, middle_area, jungle_fortress, last_area, the_first_fortress, the_blackmist
 from AoE2ScenarioParser.datasets.trigger_lists import \
     DiplomacyState, Operation, ButtonLocation, PanelLocation, \
@@ -36,7 +37,7 @@ from AoE2ScenarioParser.datasets.trigger_lists import \
     ChargeEvent, CombatAbility, FogVisibility, GarrisonType, \
     OcclusionMode, ProjectileHitMode, ProjectileVanishMode, \
     UnitTrait, ProjectileSmartMode, Age, ActionType, VictoryTimerType
-
+from link_file import All_scenario_link
 from AoE2ScenarioParser.objects.data_objects.trigger import Trigger
 from AoE2ScenarioParser.objects.data_objects.unit import Unit
 from AoE2ScenarioParser.objects.support import area
@@ -53,10 +54,10 @@ from AoE2ScenarioParser.objects.managers.option_manager import OptionManager
 
 from AoE2ScenarioParser.datasets.support.info_dataset_base import InfoDatasetBase
 from AoE2ScenarioParser.scenarios.aoe2_de_scenario import AoE2DEScenario
-from XS import xs_function,danger_level, wave_function, danger_rule_spawn, Gary_buerg_xs, Markus_skioliose_XS, Morange_legellan_xs,hamish_davelton_xs, warmer_stephano_xs, harris_galvas_xs, area_open, xs_old_man_relic, xs_forge, xs_function_creator, wave_activation, danger_upgrade, orange_unit_xs
+from XS import xs_function,danger_level, wave_function, danger_rule_spawn, Gary_buerg_xs, Markus_skioliose_XS, Morange_legellan_xs,hamish_davelton_xs, warmer_stephano_xs, harris_galvas_xs, area_open, xs_old_man_relic, xs_forge, xs_function_creator, wave_activation, danger_upgrade, orange_unit_xs,XP_BONUS_RULE
 from level_display import level_display
 from wave_composition import spawn_data_wave
-from Class_function import John_Galverb, Gary_buerg,Markus_skoliose, Morange_legellan, Hamish_davelton, Warmer_stephano, Haris_galvas
+from Class_function import John_Galverb, Gary_buerg,Markus_skoliose, Morange_legellan, Hamish_davelton, Warmer_stephano, Haris_galvas, handbook
 from special_area import special_area_function
 from Barrack_defense import barrack_function
 from Old_man_relic import old_man_relic_function, Blacksmith_of_takoas, forge_capture, university_capture
@@ -64,8 +65,8 @@ from unicodedata import category
 # Dictionnaire pour le script
 from AoE2ScenarioParser.objects.support.area import Area
 
-input_path = "C:\\Users\\USER\\Games\\Age of Empires 2 DE\\ID\\resources\\_common\\scenario\\7V1 security breach in the ruins.aoe2scenario"
-output_path = "C:\\Users\\USER\\Games\\Age of Empires 2 DE\\ID\\resources\\_common\\scenario\\BETA 7V1 unwished treasure of the ruins v0-1.aoe2scenario"
+input_path = All_scenario_link["input_path"]
+output_path = All_scenario_link["output_path"]
 
 scenario = AoE2DEScenario.from_file(input_path)
 scenario_uuid = scenario.uuid
@@ -176,6 +177,24 @@ def AREA_maker(scenario,flag,x_calculus,y_calculus,name,xs_name):
             area_y2=area_y2,
             object_type=ObjectType.BUILDING,
         )
+        simple_area.new_effect.change_ownership(
+            source_player=PlayerId.GAIA,
+            target_player=PlayerId.EIGHT,
+            area_x1=area_x,
+            area_y1=area_y,
+            area_x2=area_x2,
+            area_y2=area_y2,
+            object_list_unit_id=UnitInfo.MONK.ID,
+        )
+        simple_area.new_effect.change_ownership(
+            source_player=PlayerId.GAIA,
+            target_player=PlayerId.EIGHT,
+            area_x1=area_x,
+            area_y1=area_y,
+            area_x2=area_x2,
+            area_y2=area_y2,
+            object_list_unit_id=UnitInfo.MONK.ID,
+        )
         simple_area.new_effect.script_call(
             message=xs_name,
         )
@@ -199,6 +218,28 @@ def AREA_maker(scenario,flag,x_calculus,y_calculus,name,xs_name):
         if x_coordinate == 238.5 and y_coordinate == 204.5:
             activation_triggers["forge"] = simple_area
         if x_coordinate == 139.5 and y_coordinate == 6.5:
+            simple_area.new_condition.or_()
+            for p in range(1,8):
+                simple_area.new_condition.objects_in_area(
+                    source_player=p,
+                    area_x1=132,
+                    area_y1=14,
+                    area_x2=139,
+                    area_y2=31,
+                    quantity=1,
+                )
+                simple_area.new_condition.or_()
+                simple_area.new_condition.objects_in_area(
+                    source_player=p,
+                    area_x1=124,
+                    area_y1=24,
+                    area_x2=131,
+                    area_y2=31,
+                    quantity=1,
+                )
+                if p != PlayerId.SEVEN :
+                    simple_area.new_condition.or_()
+
             simple_area.new_effect.change_ownership(
                 source_player=PlayerId.GAIA,
                 target_player=PlayerId.EIGHT,
@@ -220,9 +261,9 @@ def AREA_maker(scenario,flag,x_calculus,y_calculus,name,xs_name):
             simple_area.new_effect.change_ownership(
                 source_player=PlayerId.GAIA,
                 target_player=PlayerId.EIGHT,
-                area_x1=132,
-                area_y1=14,
-                area_x2=139,
+                area_x1=124,
+                area_y1=24,
+                area_x2=131,
                 area_y2=31,
                 object_type=ObjectType.MILITARY,
             )
@@ -242,6 +283,9 @@ def AREA_maker(scenario,flag,x_calculus,y_calculus,name,xs_name):
             simple_area.new_effect.script_call(
                 message="dry_spawn_L_B_function();"
 
+            )
+            simple_area.new_effect.script_call(
+                message="xp_small_increase();"
             )
         if x_coordinate == 238.5 and y_coordinate == 6.5:
             simple_area.new_condition.or_()
@@ -333,6 +377,9 @@ def AREA_maker(scenario,flag,x_calculus,y_calculus,name,xs_name):
             simple_area.new_effect.script_call(
                 message="dry_spawn_fortress_A_function();"
             )
+            simple_area.new_effect.script_call(
+                message="xp_medium_increase();"
+            )
             music_credit(simple_area, lambda_core)
             for p in range(1, 8):
                 simple_area.new_effect.create_object(
@@ -388,6 +435,9 @@ def AREA_maker(scenario,flag,x_calculus,y_calculus,name,xs_name):
             simple_area.new_effect.script_call(
                 message="dry_spawn_chief_hut_big_A_function();"
             )
+            simple_area.new_effect.script_call(
+                message="xp_medium_increase();"
+            )
         if x_coordinate == 193.5 and y_coordinate == 186.5 or x_coordinate == 202.5 and y_coordinate == 195.5 or x_coordinate == 175.5 and y_coordinate == 177.5 or x_coordinate == 184.5 and y_coordinate == 177.5 :
             simple_area.new_effect.script_call(
                 message="jungle_spawn_river_A_function();"
@@ -442,6 +492,10 @@ def AREA_maker(scenario,flag,x_calculus,y_calculus,name,xs_name):
             fort_clear.new_effect.activate_trigger(
                 trigger_id=dialogue_start["blackmist_forge"].trigger_id,
             )
+            fort_clear.new_effect.script_call(
+                message="xp_medium_increase();"
+            )
+
             simple_area.new_effect.activate_trigger(
                 trigger_id=fort_clear.trigger_id,
             )
@@ -632,6 +686,9 @@ def AREA_maker(scenario,flag,x_calculus,y_calculus,name,xs_name):
                 enabled=False,
                 looping=False,
             )
+            fort_clear.new_effect.script_call(
+                message="xp_medium_increase();"
+            )
             for barrack_id in [35368, 35372]:
                 fort_clear.new_condition.destroy_object(
                     unit_object=barrack_id,
@@ -796,11 +853,33 @@ def AREA_maker(scenario,flag,x_calculus,y_calculus,name,xs_name):
             simple_area.new_effect.change_ownership(
                 source_player=PlayerId.GAIA,
                 target_player=PlayerId.EIGHT,
+                area_x1=231,
+                area_y1=24,
+                area_x2=238,
+                area_y2=49,
+                object_type=ObjectType.MILITARY,
+            )
+            simple_area.new_effect.change_ownership(
+                source_player=PlayerId.GAIA,
+                target_player=PlayerId.EIGHT,
                 area_x1=222,
                 area_y1=23,
                 area_x2=229,
                 area_y2=31,
                 object_type=ObjectType.MILITARY,
+            )
+            simple_area.new_effect.change_ownership(
+                source_player=PlayerId.GAIA,
+                target_player=PlayerId.EIGHT,
+                area_x1=222,
+                area_y1=23,
+                area_x2=229,
+                area_y2=31,
+                object_type=ObjectType.BUILDING,
+            )
+        if x_coordinate == 184.5 and y_coordinate == 6.5:
+            simple_area.new_effect.script_call(
+                message="xp_medium_increase();"
             )
 
 print(list_flag_A)
@@ -813,6 +892,22 @@ Gaia_change = trigger_manager.add_trigger(
 Gaia_change.new_effect.script_call(
     message="setup_orange_unit();"
 )
+for p in range (1,8):
+    Gaia_change.new_effect.enable_disable_technology(
+        source_player=p,
+        technology=TechInfo.SPIES_AND_TREASON.ID,
+        enabled=False
+    )
+    Gaia_change.new_effect.enable_disable_technology(
+        source_player=p,
+        technology=TechInfo.MURDER_HOLES.ID,
+        enabled=True,
+    )
+    Gaia_change.new_effect.research_technology(
+        source_player=p,
+        technology=TechInfo.MURDER_HOLES.ID,
+        force_research_technology=True,
+    )
 Gaia_change.new_effect.change_ownership(
         source_player=PlayerId.EIGHT,
         target_player=PlayerId.GAIA,
@@ -849,6 +944,42 @@ Gaia_change.new_effect.change_ownership(
         area_y2 = 239,
         object_type=ObjectType.MILITARY,
     )
+Gaia_change.new_effect.change_ownership(
+        source_player=PlayerId.EIGHT,
+        target_player=PlayerId.GAIA,
+        area_x1 = 0,
+        area_y1 = 12,
+        area_x2 = 10,
+        area_y2 = 239,
+        object_list_unit_id=UnitInfo.MONK.ID,
+    )
+Gaia_change.new_effect.change_ownership(
+        source_player=PlayerId.EIGHT,
+        target_player=PlayerId.GAIA,
+        area_x1 = 0,
+        area_y1 = 12,
+        area_x2 = 10,
+        area_y2 = 239,
+        object_list_unit_id=UnitInfo.MISSIONARY.ID,
+    )
+Gaia_change.new_effect.change_ownership(
+        source_player=PlayerId.EIGHT,
+        target_player=PlayerId.GAIA,
+        area_x1 = 11,
+        area_y1 = 5,
+        area_x2 = 239,
+        area_y2 = 238,
+        object_list_unit_id=UnitInfo.MISSIONARY.ID,
+    )
+Gaia_change.new_effect.change_ownership(
+        source_player=PlayerId.EIGHT,
+        target_player=PlayerId.GAIA,
+        area_x1 = 11,
+        area_y1 = 5,
+        area_x2 = 239,
+        area_y2 = 238,
+        object_list_unit_id=UnitInfo.MONK.ID,
+    )
 disable_list = [BuildingInfo.BLACKSMITH.ID,BuildingInfo.UNIVERSITY.ID]
 setup_map = trigger_manager.add_trigger(
         name=f"Setup map",
@@ -856,6 +987,11 @@ setup_map = trigger_manager.add_trigger(
         looping=False,
         execute_on_load=True,
     )
+setup_map.new_effect.enable_disable_object(
+    source_player=PlayerId.SIX,
+    object_list_unit_id=BuildingInfo.OUTPOST.ID,
+    enabled=False,
+)
 for p in range (1,8):
     for disable in range (len(disable_list)):
         disable_id = disable_list[disable]
@@ -863,6 +999,16 @@ for p in range (1,8):
             source_player=p,
             object_list_unit_id=disable_id,
             enabled=False,
+        )
+        setup_map.new_effect.enable_disable_technology(
+            source_player=p,
+            technology=TechInfo.CARTOGRAPHY.ID,
+            enabled=True,
+        )
+        setup_map.new_effect.research_technology(
+            source_player=p,
+            technology=TechInfo.CARTOGRAPHY.ID,
+            force_research_technology=True,
         )
 gaia_buff = trigger_manager.add_trigger(
         name=f"GAIA BUFF",
@@ -953,7 +1099,7 @@ warmer_stephano_xs(scenario, trigger_manager)
 Warmer_stephano(scenario,trigger_manager)
 harris_galvas_xs(scenario,trigger_manager)
 Haris_galvas(scenario,trigger_manager)
-
+XP_BONUS_RULE()
 xs_old_man_relic(scenario,trigger_manager)
 old_man_relic_function(scenario,trigger_manager,activation_triggers)
 xs_forge(scenario,trigger_manager)
@@ -970,7 +1116,7 @@ spawn_zone_list = ["dry_spawn_chief_hut_big_A", "dry_spawn_knight_A", "dry_spawn
 xs_function_creator(scenario, spawn_zone_list)
 orange_unit_xs(scenario,trigger_manager)
 danger_upgrade(scenario)
-
+handbook(scenario,trigger_manager)
 
 level_display(scenario,trigger_manager)
 
@@ -1018,5 +1164,6 @@ for p in range (1,8):
         )
 barrack_function(scenario)
 start_of_the_game(scenario=scenario)
+ai_kick(scenario=scenario)
 scenario.write_to_file(output_path)
-main()
+main(output_path)
