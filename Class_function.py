@@ -102,7 +102,7 @@ def John_Galverb(scenario,trigger_manager):
     ),
     technology_setup(
         name="Economie direction",
-        description="Research economy direction : The workrate aura granted by the Expedition Manager is increased by 5%.",
+        description="Research economy direction : The workrate aura granted by the Expedition Manager is increased by 15%.",
         tech_id=TechInfo.BLANK_TECHNOLOGY_1.ID,
         location=BuildingInfo.TENT_C.ID,
         button=2,
@@ -111,11 +111,11 @@ def John_Galverb(scenario,trigger_manager):
         research_time=10,
         cost_type=(Attribute.UNUSED_RESOURCE_498, None),
         cost_quantity=(1, None),
-        icon_id=114,
+        icon_id=3,
     ),
     technology_setup(
         name="Troop management",
-        description="Research troop management : Healing aura effect of the expedition manager for military unit is increased by 5%, attack speed of military unit arround the expedition manager is increased by 4%",
+        description="Research troop management : Healing aura effect of the expedition manager for military unit is increased by 15%, attack speed of military unit arround the expedition manager is increased by 14%",
         tech_id=TechInfo.BLANK_TECHNOLOGY_2.ID,
         location=BuildingInfo.TENT_C.ID,
         button=3,
@@ -335,17 +335,17 @@ def Gary_buerg(scenario,trigger_manager):
         execute_on_load=True,
     )
     drill_cycle.new_condition.research_technology(
-        technology=TechInfo.BLANK_TECHNOLOGY_0.ID,
+        technology=TechInfo.LOOM.ID,
         source_player=player,
     )
     drill_cycle.new_effect.enable_disable_technology(
         source_player=player,
-        technology=TechInfo.BLANK_TECHNOLOGY_0.ID,
+        technology=TechInfo.LOOM.ID,
         enabled=False,
     )
     drill_cycle.new_effect.enable_disable_technology(
         source_player=player,
-        technology=TechInfo.BLANK_TECHNOLOGY_0.ID,
+        technology=TechInfo.LOOM.ID,
         enabled=True,
     )
     drill_cycle.new_effect.script_call(
@@ -489,6 +489,9 @@ def Markus_skoliose (scenario,trigger_manager):
             trigger=shared_trigger,
             icon_id=cfg.icon_id,
         )
+    shared_trigger.new_effect.script_call(
+        message="setup_markus();"
+    )
 # All my loves to the devs of AOE2 who though that the chinese bonus has to be a float into an int for some reason
     chinese_cost_trigger = trigger_manager.add_trigger(
         name=f"Chinese tech cost fix player {player}",
@@ -691,6 +694,7 @@ def Morange_legellan(scenario,trigger_manager):
             cost_quantity=(1050, None),
         ),
     ]
+    hero_list = [HeroInfo.ZHOU_YU.ID,HeroInfo.ZHANG_FEI.ID,HeroInfo.ZAKARE.ID,HeroInfo.ZHAO_YUN.ID]
     for cfg in set_up_yellow_tech:
         shared_trigger = tech_define(
             scenario,
@@ -830,9 +834,15 @@ def Morange_legellan(scenario,trigger_manager):
         **area.select_entire_map().to_dict(),
     )
 
+
+HAMISH_TECH_PRICES = [950, 1250, 1550, 1850, 2150, 2450, 2750, 3050, 3350, 3500]
+
+
+
+
 def Hamish_davelton(scenario,trigger_manager):
-    quest_duration_deer = 60*2
-    quest_duration_kill = 60*2
+    quest_duration_deer = 60*10
+    quest_duration_kill = 60*10
     player = PlayerId.FIVE
     shared_trigger = None
     scenario_uuid = scenario.uuid
@@ -848,7 +858,7 @@ def Hamish_davelton(scenario,trigger_manager):
             player=player,
             research_time=5,
             cost_type=(Attribute.GOLD_STORAGE, Attribute.UNUSED_RESOURCE_498),
-            cost_quantity=(3500, 1),
+            cost_quantity=(HAMISH_TECH_PRICES[0], 1),  # MODIFIE : 950 au depart
             icon_id=64,
         ),
         technology_setup(
@@ -861,7 +871,7 @@ def Hamish_davelton(scenario,trigger_manager):
             player=player,
             research_time=5,
             cost_type=(Attribute.GOLD_STORAGE, Attribute.UNUSED_RESOURCE_498),
-            cost_quantity=(3500, 1),
+            cost_quantity=(HAMISH_TECH_PRICES[0], 1),  # MODIFIE : 950 au depart
             icon_id=17,
         ),
         technology_setup(
@@ -946,6 +956,34 @@ def Hamish_davelton(scenario,trigger_manager):
         operation=Operation.SET,
     )
 
+# ------------------------------------------------------------------------- PRIX DES TECHS (NOUVEAU)
+    # Triggers en chaine : un seul actif a la fois, il attend que hamish_price_check() renvoie true
+    # (toutes les 3 techs), change le prix puis active le palier suivant.
+    price_triggers = []
+    for tier in range(1, len(HAMISH_TECH_PRICES)):
+        price_triggers.append(trigger_manager.add_trigger(
+            name=f"Hamish tech price tier {tier}",
+            enabled=(tier == 1),
+            looping=False,
+        ))
+    for i, price_trigger in enumerate(price_triggers):
+        price_trigger.new_condition.script_call(
+            xs_function="hamish_price_check();",
+        )
+        for tech in (TechInfo.BLANK_TECHNOLOGY_0.ID, TechInfo.BLANK_TECHNOLOGY_1.ID):
+            price_trigger.new_effect.change_technology_cost(
+                source_player=player,
+                technology=tech,
+                resource_1=Attribute.GOLD_STORAGE,
+                resource_1_quantity=HAMISH_TECH_PRICES[i + 1],
+                resource_2=Attribute.UNUSED_RESOURCE_498,  # garde le jeton dans le cout
+                resource_2_quantity=1,
+            )
+        if i + 1 < len(price_triggers):
+            price_trigger.new_effect.activate_trigger(
+                trigger_id=price_triggers[i + 1].trigger_id,
+            )
+
     list_unit_transform = [HeroInfo.ATAULF.ID,HeroInfo.ALGIRDAS.ID,HeroInfo.ARISTIDES.ID]
     deer_status_start = trigger_manager.add_trigger(
         name="Hamish start the cerberos quest",
@@ -959,16 +997,30 @@ def Hamish_davelton(scenario,trigger_manager):
         looping=True,
         execute_on_load=True,
     )
+    # MODIFIE : non boucle (bouclait sans condition), nom unique
     transform = trigger_manager.add_trigger(
-        name="Hamish end the cerberos quest",
+        name="Hamish transform deer status",
         enabled=False,
-        looping=True,
+        looping=False,
         execute_on_load=True,
     )
 # ------------------------------------------------------------------------- START !
     deer_status_start.new_condition.research_technology(
         source_player=player,
         technology=TechInfo.BLANK_TECHNOLOGY_1.ID,
+    )
+    deer_status_start.new_effect.enable_disable_technology(  # REPETITION : reset immediat comme les techs de John
+        technology=TechInfo.BLANK_TECHNOLOGY_1.ID,
+        source_player=player,
+        enabled=False,
+    )
+    deer_status_start.new_effect.enable_disable_technology(
+        technology=TechInfo.BLANK_TECHNOLOGY_1.ID,
+        source_player=player,
+        enabled=True,
+    )
+    deer_status_start.new_effect.script_call(  # NOUVEAU : active l'inflation, remet le prix de la statue
+        message="activate_deer_count();"
     )
     deer_status_start.new_effect.enable_disable_object(
         source_player=player,
@@ -982,11 +1034,7 @@ def Hamish_davelton(scenario,trigger_manager):
         display_time=quest_duration_deer,
 
     )
-    deer_status_start.new_effect.change_object_cost(
-        source_player=player,
-        object_list_unit_id=BuildingInfo.ARMY_TENT_C.ID,
-
-    )
+    # SUPPRIME : change_object_cost vide (le prix est remis par activate_deer_count)
     deer_status_start.new_effect.activate_trigger(
         trigger_id=deer_status_end.trigger_id,
     )
@@ -1017,24 +1065,13 @@ def Hamish_davelton(scenario,trigger_manager):
     deer_status_end.new_effect.deactivate_trigger(
         trigger_id=deer_status_end.trigger_id,
     )
+    deer_status_end.new_effect.remove_object(
+        source_player=player,
+        object_list_unit_id=BuildingInfo.ARMY_TENT_C.ID,
+        object_state=ObjectState.ALIVE,
+    )
 
 # ------------------------------------------------------------------------- TRANSFORM
-    transform.new_effect.enable_disable_technology(
-        technology=TechInfo.BLANK_TECHNOLOGY_1.ID,
-        source_player=player,
-        enabled=False,
-    )
-    transform.new_effect.enable_disable_technology(
-        technology=TechInfo.BLANK_TECHNOLOGY_1.ID,
-        source_player=player,
-        enabled=True,
-    )
-    transform.new_effect.modify_resource(
-        source_player=player,
-        tribute_list=Attribute.UNUSED_RESOURCE_498,
-        quantity=1,
-        operation=Operation.SET,
-    )
     for i in range (len(list_unit_transform)):
         transform.new_effect.replace_object(
             source_player=player,
@@ -1048,12 +1085,18 @@ def Hamish_davelton(scenario,trigger_manager):
             object_list_unit_id=list_unit_transform[i],
             **area.select_entire_map().to_dict(),
         )
-    deer_status_end.new_effect.remove_object(
+    # SUPPRIME : reset de la tech Cernunnos, fait dans deer_status_start
+    transform.new_effect.modify_resource(
         source_player=player,
-        object_list_unit_id=BuildingInfo.ARMY_TENT_C.ID,
-        object_state=ObjectState.ALIVE,
+        tribute_list=Attribute.UNUSED_RESOURCE_498,
+        quantity=1,
+        operation=Operation.SET,
+    )
+    transform.new_effect.activate_trigger(  # NOUVEAU : la quete de Cernunnos peut etre relancee
+        trigger_id=deer_status_start.trigger_id,
     )
 
+# ------------------------------------------------------------------------- LA MORRIGAN
     Kill_function_hamish_start = trigger_manager.add_trigger(
         name="Hamish start la morigan",
         enabled=True,
@@ -1061,7 +1104,7 @@ def Hamish_davelton(scenario,trigger_manager):
         execute_on_load=True,
     )
     Kill_function_hamish_end = trigger_manager.add_trigger(
-        name="Hamish end start la morigan",
+        name="Hamish end la morigan",
         enabled=False,
         looping=True,
         execute_on_load=True,
@@ -1070,6 +1113,16 @@ def Hamish_davelton(scenario,trigger_manager):
     Kill_function_hamish_start.new_condition.research_technology(
         source_player=player,
         technology=TechInfo.BLANK_TECHNOLOGY_0.ID,
+    )
+    Kill_function_hamish_start.new_effect.enable_disable_technology(  # REPETITION : reset immediat comme les techs de John
+        technology=TechInfo.BLANK_TECHNOLOGY_0.ID,
+        source_player=player,
+        enabled=False,
+    )
+    Kill_function_hamish_start.new_effect.enable_disable_technology(
+        technology=TechInfo.BLANK_TECHNOLOGY_0.ID,
+        source_player=player,
+        enabled=True,
     )
     Kill_function_hamish_start.new_effect.script_call(
         message="hamish_limit_calcul();"
@@ -1105,16 +1158,8 @@ def Hamish_davelton(scenario,trigger_manager):
     Kill_function_hamish_end.new_effect.deactivate_trigger(
         trigger_id=Kill_function_hamish_end.trigger_id,
     )
-    transform.new_effect.enable_disable_technology(
-        technology=TechInfo.BLANK_TECHNOLOGY_0.ID,
-        source_player=player,
-        enabled=False,
-    )
-    transform.new_effect.enable_disable_technology(
-        technology=TechInfo.BLANK_TECHNOLOGY_0.ID,
-        source_player=player,
-        enabled=True,
-    )
+
+# ------------------------------------------------------------------------- BRIGID
     ceremony_start = trigger_manager.add_trigger(
         name="Hamish start the ceremony",
         enabled=True,
@@ -1122,7 +1167,7 @@ def Hamish_davelton(scenario,trigger_manager):
         execute_on_load=True,
     )
     ceremony_end = trigger_manager.add_trigger(
-        name="Hamish end start la morigan",
+        name="Hamish end the ceremony",  # MODIFIE : nom unique
         enabled=False,
         looping=True,
         execute_on_load=True,
@@ -1145,8 +1190,24 @@ def Hamish_davelton(scenario,trigger_manager):
         source_player=player,
         technology=TechInfo.BLANK_TECHNOLOGY_2.ID,
     )
+    ceremony_end.new_effect.enable_disable_technology(  # REPETITION : reset immediat comme les techs de John
+        technology=TechInfo.BLANK_TECHNOLOGY_2.ID,
+        source_player=player,
+        enabled=False,
+    )
+    ceremony_end.new_effect.enable_disable_technology(
+        technology=TechInfo.BLANK_TECHNOLOGY_2.ID,
+        source_player=player,
+        enabled=True,
+    )
     ceremony_end.new_effect.script_call(
         message="ceremonie_reward();"
+    )
+    ceremony_end.new_effect.modify_resource(  # NOUVEAU : la ceremonie rend le jeton
+        source_player=player,
+        tribute_list=Attribute.UNUSED_RESOURCE_498,
+        quantity=1,
+        operation=Operation.SET,
     )
     ceremony_end.new_effect.activate_trigger(
         trigger_id=ceremony_start.trigger_id,
@@ -1603,10 +1664,10 @@ def Haris_galvas(scenario,trigger_manager):
             description="Rage point : <cost> \nHarris is clinicaly insane, You must kill enemy unit in a short period of time to gain rage point to spend here, the stone stone is the amount of rage point you have",
             building=BuildingInfo.TENT_C.ID,
             button=15,
-            enabled_object=False,
+            enabled_object=True,
             player=player,
             cost_type=(Attribute.STONE_STORAGE, Attribute.UNUSED_RESOURCE_200),
-            cost_quantity=(0, 9999),
+            cost_quantity=(1, 9999),
 
         ),
 
@@ -1644,7 +1705,7 @@ def Haris_galvas(scenario,trigger_manager):
             trigger=shared_trigger,
         )
     shared_trigger.new_effect.script_call(
-        message="setup_harris()",
+        message="setup_harris();",
     )
     for i in range (len(tech_list)):
         tech_id, xs = tech_list[i]
@@ -1675,3 +1736,75 @@ def Haris_galvas(scenario,trigger_manager):
                 technology=tech_id,
                 enabled=True,
             )
+
+# A coller dans Class_function.py, puis appeler handbook(scenario, trigger_manager) dans main.py
+
+HANDBOOK_BUTTON = 14  # le 7 est deja pris par la tente d'expedition de chaque classe : bouton a verifier dans l'editeur
+
+
+def handbook(scenario, trigger_manager):
+    handbook_description = {
+        1: "Hello :)\n"
+           "As Blue, you get to play John Galverb, expert in expeditions and in scams.\n"
+           "Your villagers can build an expedition tent, where you can train an expedition manager. "
+           "This good fella has an aura that boosts villager work rate, heals soldiers and gives them attack speed.\n"
+           "Every 5 levels you can pick an upgrade for your expedition manager. "
+           "Play around your expedition manager to get huge value in fights. It also works on your allies!",
+        2: "Guten Tag, my petite German!\n"
+           "As Red, you get to play Gary Buerg from Germany. Your whole class revolves around relics: "
+           "for every 5 relics, your whole army gets +1 attack!\n"
+           "You can build an expedition tent equipped with a drill that digs into the soil for relics. "
+           "The price of digging increases every time you dig, until it reaches 5000 gold.",
+        3: "Ouch, you got the entire team lost in a very dangerous place!\n"
+           "As Green, you play Markus, and your whole existence is about playing the long game. "
+           "Unlike the other players, you gain extra skill points from the special buildings in the south of the map, "
+           "and building your cartograph outposts earns you even more skill points every 5 levels.\n"
+           "You also have an expedition tent: every 10 levels you get to pick one tech, and the others get better for the next level up. "
+           "So yeah, enjoy farming kills.",
+        4: "Demat to you, you Bretonny Frenchman!\n"
+           "You play Morange, an angry Frenchman, and your class revolves around mercenaries. "
+           "You have access to the tavern and the expedition tent.\n"
+           "The tavern lets you recruit mercenaries for gold. Be aware: the more you recruit, the more they cost. "
+           "The expedition tent lets you upgrade said mercenaries every 10 levels.",
+        5: "Hullo! As Aqua, you play Hamish Davelton from Scotland.\n"
+           "If you don't have a PhD, it's gonna be a hard time. You have the expedition shrine, "
+           "and inside said shrine you get 3 techs. Each tech gives you a quest to accomplish to help you or your team.\n"
+           "If you don't do well enough, you might get a debuff instead, so be very careful how you play this.",
+        6: "Mister Purple, you play Warmer Stephano, the engineer of defence.\n"
+           "You have access to the expedition tent and the defence workshop. "
+           "The defence workshop lets you build unpacked towers that you choose from the expedition tent. "
+           "You can only pick 4 towers: one at the start, and the others every 10 levels.\n"
+           "Also, ALL TOWERS get +10% HP and +2 attack every 5 levels. "
+           "Now go out there and fulfill your destiny of mining stone and wood forever.",
+        7: "You only trust your cousin Purple.\n"
+           "Mister Grey, you play Harris. Basically, you have anger issues, "
+           "and the best therapy is to break every tooth of your enemies on that rock.\n"
+           "Your expedition tent lets you pick a tech if you have enough rage points. "
+           "To get rage points you have to kill fast: when you kill a unit, you have 10 seconds to kill the next one, "
+           "and so on and so on.",
+    }
+    shared_trigger = trigger_manager.add_trigger(
+        name="Handbook setup"
+    )
+    for p in range(1, 8):
+        object_define(
+            scenario,
+            trigger_manager,
+            name="Handbook",
+            description=handbook_description[p],
+            object=HeroInfo.FRIAR_TUCK.ID,
+            player=p,
+            building=BuildingInfo.TOWN_CENTER.ID,
+            button=HANDBOOK_BUTTON,
+            enabled_object=True,
+            cost_quantity=(10000, None),
+            cost_type=(Attribute.UNUSED_RESOURCE_140, None),
+            trigger=shared_trigger,
+        )
+        shared_trigger.new_effect.modify_attribute(
+            source_player=p,
+            object_list_unit_id=HeroInfo.FRIAR_TUCK.ID,
+            quantity=26,
+            operation=Operation.SET,
+            object_attributes=ObjectAttribute.ICON_ID,
+        )

@@ -108,6 +108,9 @@ def special_area_function (scenario,trigger_manager,X_area, Y_area,trigger):
        trigger.new_effect.script_call(
            message="dry_spawn_knight_B_function();"
        )
+       trigger.new_effect.script_call(
+           message="xp_small_increase();"
+       )
     elif X_area == 222.5 and Y_area == 33.5:
         data_extension = [
             extension_setup(

@@ -67,21 +67,21 @@ from AoE2ScenarioParser.objects.support.area import Area
 def start_of_the_game(scenario: AoE2DEScenario) :
     trigger_manager = scenario.trigger_manager
     # ------------------------------ SONS ------------------------------
-    # hamish_1 = "Hamish_dial_1.wem"
-    # hamish_2 = "Hamish_dial_2.wem"
-    # Garry = "Galbert_1.wem"
-    # Markus_1 = "Markus_1.wem"
-    # Morange_1 = "Morange_1.wem"
-    # Morange_2 = "Morange_2.wem"
-    # Morange_3 = "Morange_3.wem"
-    # Warmer_1 = "Warmer_1.wem"
-    # Warmer_2 = "Warmer_2.wem"
-    # Harris_1 = "Harris_1.wem"
-    # Harris_2 = "Harris_2.wem"
-    # John_1 = "John_1.wem"
-    # John_2 = "John_2.wem"
-    # John_3 = "John_3.wem"
-    # John_4 = "John_4.wem"
+    hamish_1 = "Hamish_dial_1.wem"
+    hamish_2 = "Hamish_dial_2.wem"
+    Garry = "Galbert_1.wem"
+    Markus_1 = "Markus_1.wem"
+    Morange_1 = "Morange_1.wem"
+    Morange_2 = "Morange_2.wem"
+    Morange_3 = "Morange_3.wem"
+    Warmer_1 = "Warmer_1.wem"
+    Warmer_2 = "Warmer_2.wem"
+    Harris_1 = "Harris_1.wem"
+    Harris_2 = "Harris_2.wem"
+    John_1 = "John_1.wem"
+    John_2 = "John_2.wem"
+    John_3 = "John_3.wem"
+    John_4 = "John_4.wem"
 
     # ------------------------------ AVATARS (joueur, objet) ------------------------------
     JOHN = (PlayerId.ONE, UnitInfo.HAND_CANNONEER.ID)
@@ -103,27 +103,41 @@ def start_of_the_game(scenario: AoE2DEScenario) :
 
     dialogue_5 = "<BLUE>John:  Gentlemen, Gentlemen, behave yourself ! If we want this exploration to be successful we have to be bounded and organize"
     dialogue_6 = "<YELLOW>Morrange: Say what you want John I'm not helping you scamming the resident of this place"
-    dialogue_7 = "<BLUE>John: Morrange please... You should by now I'm just here to avenge my friend who die in this place... Markus status report, where are we ? What is the next path ?"
+    dialogue_7 = "<BLUE>John: Morrange please... You should by now I'm just here to avenge my poor friend who died in this place... Markus status report, where are we ? Where are we going  ?"
     dialogue_8 = "<GREEN>Markus: Hmmm... We... Well. If I take the median line and hmmm calibrate the position I... I think we are lost, I'm sorry I don't know where we are..."
-    dialogue_9 = "<BLUE>John: What !? Do you mean you don't know where we are !? Markus ! I thought you were the man that could lead from point A to the Atlantic ocean"
-    dialogue_10 = "<RED>Garry: Actually John I think this is quite expected. Ya. As we can observe this place is evolving as we speak and I believe the ruins is sensing something, So it's making this kind of protection YA ? Now you can see this rock and this palisade they weren't there before ! Oh I believe Markus' map are kinda outdated, so hmm what should we do boss ? I believe the best course of action is to dig it in right ?"
-    dialogue_11 = "<BLUE>John: Well, that an information I wished to know sooner Garry... No matter *tick* if we want live we must act NOW ! Hamish Harris go forth and kill ! The rest do the same but with strategy. Warmer you got our back right ?"
-    dialogue_12 = "<PURPLE>Warmer : Don't worry mister Galbert, my tower are ready to rain hell to these creatures ! HIN HIN HIN HAN! Just one thing, HARRIS ! You kill the creatures not the man next to you okay ? nah if you don't tell him he's gonna murder everyone because they speak too loud apparently"
-    dialogue_13 = "<GREY>Harris : Don't worry cousin ! I already establish a very, very detail calculation to find what is not a monster and potential ally ! I got this right under the rug like we all say "
-    dialogue_14 = "<YELLOW>Morrange: Uuuh is it too late to leave him here ? Like... I don't trust him."
-    dialogue_15 = "<AQUA>Hamish : Lads ! You don't need to be worried. This one will jump in danger to save your arse ! He he, I am right Harris ? Harris... ? Where did he go ?"
+    dialogue_9 = "<BLUE>John: What !? Do you mean you don't know where we are !? Markus ! Have you seen the monster that's trying to kill us, they gonna murder us all if you can figure where we are ! Come on ! Markus you're the cartographer you should know where we are !"
+    dialogue_10 = "<RED>Garry: Hmmmmmm... Wonderbat! John, I think I have an explanation! The ruins are evolving! Right now, this lovely place has sensed the danger, and so it protects itself by creating extra rooms and soldiers. The more we wait, the more dangerous it becomes. We have to act as quickly as we can!"
+    dialogue_11 = "<BLUE>John: *huge sight* of course... Of course ! Every corrupted place evolve into something more dangerous *inhale* *exhale* if only they were original... Alright ! Men ! If we want to win this we need to act now ! Harris Hamish go forth and kill ! The rest do the same with strategy. Warmer were gonna need your towers ! You got our back right ? ?"
+    dialogue_12 = "<PURPLE>Warmer : Yep lock and loaded John ! Don't worry,  My towers gonna defend our campement just fine. Harris I'm gonna need you to be big boy and not kill your friends. You kill the monster today not your friend, it's very important harris I'm watching you !  "
+    dialogue_13 = "<GREY>Harris : Don't worry cousin I've establish a very... Very precise methods to determine a friend from a foe. I'm a 100% sure I will make no accidental kill today, I will be very precise on my killing, I would be so precise that even the cartographer will find is path I'm sure of it "
+    dialogue_14 = "<YELLOW>Morrange: *Angry croissant noise* I call for a vote that harris has no weapon whatsover ! I don't trust him at all ! The scottish man that ok I guess but him No ! Please no !"
+    dialogue_15 = "<AQUA>Hamish : Hoy Harris ! Take no offence on this one he's french and the french they hate everything, I'm sure we have a fun time with ya lads you are trustworthy you have this in ya"
 
     # ------------------------------ 1 : Hamish ------------------------------
-    disable_targeting = [UnitInfo.MAN_AT_ARMS.ID,UnitInfo.LONG_SWORDSMAN.ID,UnitInfo.PIKEMAN.ID,UnitInfo.CROSSBOWMAN.ID,UnitInfo.SCORPION.ID,UnitInfo.SKIRMISHER.ID,UnitInfo.HAND_CANNONEER.ID,UnitInfo.KNIGHT.ID,UnitInfo.CAVALIER.ID,UnitInfo.MILITIA.ID,UnitInfo.SCOUT_CAVALRY.ID,UnitInfo.LIGHT_CAVALRY.ID,UnitInfo.VILLAGER_MALE.ID, UnitInfo.VILLAGER_FEMALE.ID]
+    disable_targeting = [UnitInfo.MAN_AT_ARMS.ID,UnitInfo.LONG_SWORDSMAN.ID,UnitInfo.PIKEMAN.ID,UnitInfo.CROSSBOWMAN.ID,UnitInfo.SCORPION.ID,UnitInfo.SKIRMISHER.ID,UnitInfo.HAND_CANNONEER.ID,UnitInfo.KNIGHT.ID,UnitInfo.CAVALIER.ID,UnitInfo.MILITIA.ID,UnitInfo.SCOUT_CAVALRY.ID,UnitInfo.LIGHT_CAVALRY.ID,UnitInfo.VILLAGER_MALE.ID, UnitInfo.VILLAGER_FEMALE.ID, UnitInfo.MONK.ID]
     first_dialogue = trigger_manager.add_trigger(
         name="Harris is a crazy man",
         enabled=True,
         looping=False,
         execute_on_load=True,
     )
+    Freeze_EVERYONE = trigger_manager.add_trigger(
+        name="Freeze",
+        enabled=True,
+        looping=False,
+        execute_on_load=True,
+    )
     for p in range (1,9):
+        Freeze_EVERYONE.new_effect.remove_object(
+            source_player=p,
+            object_list_unit_id=BuildingInfo.MARKET.ID,
+            area_x1=0,
+            area_y1=15,
+            area_y2=4,
+            area_x2=21,
+        )
         for y in range (len(disable_targeting)):
-            first_dialogue.new_effect.disable_unit_targeting(
+            Freeze_EVERYONE.new_effect.disable_unit_targeting(
                 source_player=p,
                 object_list_unit_id=disable_targeting[y],
                 area_x1 = 0,
@@ -131,7 +145,7 @@ def start_of_the_game(scenario: AoE2DEScenario) :
                 area_y2 = 25,
                 area_x2 = 36,
             )
-            first_dialogue.new_effect.disable_unit_attackable(
+            Freeze_EVERYONE.new_effect.disable_unit_attackable(
                 source_player=p,
                 object_list_unit_id=disable_targeting[y],
                 area_x1=0,
@@ -139,7 +153,7 @@ def start_of_the_game(scenario: AoE2DEScenario) :
                 area_y2=25,
                 area_x2=36,
             )
-            first_dialogue.new_effect.disable_object_selection(
+            Freeze_EVERYONE.new_effect.disable_object_selection(
                 source_player=p,
                 object_list_unit_id=disable_targeting[y],
                 area_x1=0,
@@ -147,10 +161,13 @@ def start_of_the_game(scenario: AoE2DEScenario) :
                 area_y2=25,
                 area_x2=36,
             )
+    first_dialogue.new_condition.timer(
+        timer=1,
+    )
     first_dialogue.new_effect.display_instructions(
         source_player=HAMISH[0],
         message=dialogue_1,
-        # sound_name=hamish_1,
+        sound_name=hamish_1,
         object_list_unit_id=HAMISH[1],
         display_time=SHORT,
         instruction_panel_position=PanelLocation.TOP
@@ -164,12 +181,12 @@ def start_of_the_game(scenario: AoE2DEScenario) :
         execute_on_load=False,
     )
     second_dialogue.new_condition.timer(
-        timer=15,
+        timer=18,
     )
     second_dialogue.new_effect.display_instructions(
         source_player=MORRANGE[0],
         message=dialogue_2,
-        # sound_name=Morange_1,
+        sound_name=Morange_1,
         display_time=SHORT,
         object_list_unit_id=MORRANGE[1],
         instruction_panel_position=PanelLocation.MIDDLE,
@@ -183,12 +200,12 @@ def start_of_the_game(scenario: AoE2DEScenario) :
         execute_on_load=False,
     )
     third_dialogue.new_condition.timer(
-        timer=35,
+        timer=34,
     )
     third_dialogue.new_effect.display_instructions(
         source_player=WARMER[0],
         message=dialogue_3,
-        # sound_name=Warmer_1,
+        sound_name=Warmer_1,
         display_time=LONG,
         object_list_unit_id=WARMER[1],
         instruction_panel_position=PanelLocation.BOTTOM,
@@ -255,7 +272,7 @@ def start_of_the_game(scenario: AoE2DEScenario) :
         execute_on_load=False,
     )
     fourth_dialogue.new_condition.timer(
-        timer=70,
+        timer=57,
     )
     fourth_dialogue.new_effect.clear_instructions(
         instruction_panel_position=PanelLocation.MIDDLE
@@ -269,7 +286,7 @@ def start_of_the_game(scenario: AoE2DEScenario) :
     fourth_dialogue.new_effect.display_instructions(
         source_player=HARRIS[0],
         message=dialogue_4,
-        # sound_name=Harris_1,
+        sound_name=Harris_1,
         display_time=LONG,
         object_list_unit_id=HARRIS[1],
         instruction_panel_position=PanelLocation.TOP,
@@ -283,12 +300,12 @@ def start_of_the_game(scenario: AoE2DEScenario) :
         execute_on_load=False,
     )
     fifth_dialogue.new_condition.timer(
-        timer=85,
+        timer=78,
     )
     fifth_dialogue.new_effect.display_instructions(
         source_player=JOHN[0],
         message=dialogue_5,
-        # sound_name=John_1,
+        sound_name=John_1,
         display_time=LONG,
         object_list_unit_id=JOHN[1],
         instruction_panel_position=PanelLocation.MIDDLE,
@@ -302,12 +319,12 @@ def start_of_the_game(scenario: AoE2DEScenario) :
         execute_on_load=False,
     )
     six_dialogue.new_condition.timer(
-        timer=100,
+        timer=102,
     )
     six_dialogue.new_effect.display_instructions(
         source_player=MORRANGE[0],
         message=dialogue_6,
-        # sound_name=Morange_2,
+        sound_name=Morange_2,
         display_time=SHORT,
         object_list_unit_id=MORRANGE[1],
         instruction_panel_position=PanelLocation.BOTTOM,
@@ -321,7 +338,7 @@ def start_of_the_game(scenario: AoE2DEScenario) :
         execute_on_load=False,
     )
     seven_dialogue.new_condition.timer(
-        timer=175,
+        timer=123,
     )
     seven_dialogue.new_effect.clear_instructions(
         instruction_panel_position=PanelLocation.MIDDLE
@@ -335,7 +352,7 @@ def start_of_the_game(scenario: AoE2DEScenario) :
     seven_dialogue.new_effect.display_instructions(
         source_player=JOHN[0],
         message=dialogue_7,
-        # sound_name=John_2,
+        sound_name=John_2,
         display_time=LONG,
         object_list_unit_id=JOHN[1],
         instruction_panel_position=PanelLocation.TOP,
@@ -349,12 +366,12 @@ def start_of_the_game(scenario: AoE2DEScenario) :
         execute_on_load=False,
     )
     eight_dialogue.new_condition.timer(
-        timer=145,
+        timer=151,
     )
     eight_dialogue.new_effect.display_instructions(
         source_player=MARKUS[0],
         message=dialogue_8,
-        # sound_name=Markus_1,
+        sound_name=Markus_1,
         display_time=LONG,
         object_list_unit_id=MARKUS[1],
         instruction_panel_position=PanelLocation.MIDDLE,
@@ -368,12 +385,12 @@ def start_of_the_game(scenario: AoE2DEScenario) :
         execute_on_load=False,
     )
     nine_dialogue.new_condition.timer(
-        timer=175,
+        timer=178,
     )
     nine_dialogue.new_effect.display_instructions(
         source_player=JOHN[0],
         message=dialogue_9,
-        # sound_name=John_3,
+        sound_name=John_3,
         display_time=LONG,
         object_list_unit_id=JOHN[1],
         instruction_panel_position=PanelLocation.BOTTOM,
@@ -387,7 +404,7 @@ def start_of_the_game(scenario: AoE2DEScenario) :
         execute_on_load=False,
     )
     ten_dialogue.new_condition.timer(
-        timer=205,
+        timer=216,
     )
     ten_dialogue.new_effect.clear_instructions(
         instruction_panel_position=PanelLocation.MIDDLE
@@ -401,7 +418,7 @@ def start_of_the_game(scenario: AoE2DEScenario) :
     ten_dialogue.new_effect.display_instructions(
         source_player=GARRY[0],
         message=dialogue_10,
-        # sound_name=Garry,
+        sound_name=Garry,
         display_time=LONG,
         object_list_unit_id=GARRY[1],
         instruction_panel_position=PanelLocation.TOP,
@@ -415,12 +432,12 @@ def start_of_the_game(scenario: AoE2DEScenario) :
         execute_on_load=False,
     )
     eleven_dialogue.new_condition.timer(
-        timer=235,
+        timer=268,
     )
     eleven_dialogue.new_effect.display_instructions(
         source_player=JOHN[0],
         message=dialogue_11,
-        # sound_name=John_4,
+        sound_name=John_4,
         display_time=LONG,
         object_list_unit_id=JOHN[1],
         instruction_panel_position=PanelLocation.MIDDLE,
@@ -434,12 +451,12 @@ def start_of_the_game(scenario: AoE2DEScenario) :
         execute_on_load=False,
     )
     twelve_dialogue.new_condition.timer(
-        timer=265,
+        timer=326,
     )
     twelve_dialogue.new_effect.display_instructions(
         source_player=WARMER[0],
         message=dialogue_12,
-        # sound_name=Warmer_2,
+        sound_name=Warmer_2,
         display_time=LONG,
         object_list_unit_id=WARMER[1],
         instruction_panel_position=PanelLocation.BOTTOM,
@@ -453,7 +470,7 @@ def start_of_the_game(scenario: AoE2DEScenario) :
         execute_on_load=False,
     )
     thirteen_dialogue.new_condition.timer(
-        timer=305,
+        timer=370,
     )
     thirteen_dialogue.new_effect.clear_instructions(
         instruction_panel_position=PanelLocation.MIDDLE
@@ -467,7 +484,7 @@ def start_of_the_game(scenario: AoE2DEScenario) :
     thirteen_dialogue.new_effect.display_instructions(
         source_player=HARRIS[0],
         message=dialogue_13,
-        # sound_name=Harris_2,
+        sound_name=Harris_2,
         display_time=LONG,
         object_list_unit_id=HARRIS[1],
         instruction_panel_position=PanelLocation.TOP,
@@ -481,12 +498,12 @@ def start_of_the_game(scenario: AoE2DEScenario) :
         execute_on_load=False,
     )
     fourteen_dialogue.new_condition.timer(
-        timer=345,
+        timer=416,
     )
     fourteen_dialogue.new_effect.display_instructions(
         source_player=MORRANGE[0],
         message=dialogue_14,
-        # sound_name=Morange_3,
+        sound_name=Morange_3,
         display_time=SHORT,
         object_list_unit_id=MORRANGE[1],
         instruction_panel_position=PanelLocation.MIDDLE,
@@ -500,12 +517,12 @@ def start_of_the_game(scenario: AoE2DEScenario) :
         execute_on_load=False,
     )
     fifteen_dialogue.new_condition.timer(
-        timer=375,
+        timer=445,
     )
     fifteen_dialogue.new_effect.display_instructions(
         source_player=HAMISH[0],
         message=dialogue_15,
-        # sound_name=hamish_2,
+        sound_name=hamish_2,
         display_time=LONG,
         object_list_unit_id=HAMISH[1],
         instruction_panel_position=PanelLocation.BOTTOM,
